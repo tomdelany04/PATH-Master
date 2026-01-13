@@ -1,0 +1,390 @@
+---
+title: "MSc-Thesis"
+author: "Tom Delany"
+date: "2025-10-31"
+output: html_document
+---
+```{r}
+
+library(gtsummary)
+theme_gtsummary_journal(journal = "jama")
+
+
+```
+
+
+
+###Introduction
+##Currently a draft containing some background information from reading. There are some subheadings with no text, these are just planned sections of our final introduction.
+**Clinical Motivation and Heterogeneity of Treatment Effect**
+Currently, the majority of treatment decisions made by regulatory bodies, payers, physicians and other stakeholders is based on data pertaining to average treatment effects @Willke2012. Randomised-controlled trials remain the gold-standard for the determination of casual effects. Reliance on average effects from small cohorts of selected participants in clinical trial is not always representative of the effects in an individual patient. This nonrandom variance in the magnitude and direction of treatment effects between individuals is referred to as the heterogeneity of treatment effect.
+
+This is not a contemporary observation and is one that was identified long before formal statistical approaches to model this heterogeneity were deployed @Albert2005. Currently, subgroup analyses are the most common method of exploring treatment-effect heterogeneity in clinical trials. The approach involves dividing trial participants into groups defined by a particular characteristic such as Sex or Age. Subgroup analyses are simple to implement and easily interpretable to key stakeholders, however, they can suffer from a number of limitations. Well-established limitations include high rates of false positives and negatives and their inability to inform individual treatment decisions. These analyses generally consider one factor at a time and therefore cannot account for the fact that patients have multiple characteristics that jointly influence treatment response @Kent2020. Recently there has been increased interest in multivariate models for treatment effect heterogeneity. 
+
+**Predictive Approaches to Treatment effect Heterogeneity**
+Predictive approaches to treatment effect heterogeneity (PATH) are methods of increasing importance in precision medicine, designed to determine the reason for different responses in patients to the the same treatment. To achieve this, risk- and effect-based models are constructed, aiming to provide a patient's expected outcome at the individual-level with versus without treatment. These models incorporate all relevant patient attributes simultaneously, allowing for a comprehensive characterization of inter-individual differences in treatment effect @Kent2020. 
+
+**Methods to employ PATH**
+There are two approaches to predictive HTE analysis: risk-based modelling and effects-based modelling. Risk-based modelling involves constructing a multivariable model that predicts individual baseline risk, after which treatment effects are examined across strata of predicted risk @Selby2025. Effects-based modelling, in contrast, involves the direct estimation of individual treatment effects and is often performed using regression models, though more recently nonparametric machine-learning algorithms have been applied. At the time of the release of the PATH statement in 2020, risk-based modelling was the more substantiated of the two approaches, while effects-based models were viewed as promising—particularly in larger datasets. In recent years, there has been growing interest in reducing model overfitting in effects-based models. Overfitting occurs when a model begins to describe random error rather than true relationships between variables, substantially reducing its generalizability. The following section will discuss both risk-based and effects-based approaches in more detail, outlining their use cases, limitations, and how future developments may guide their clinical deployment. 
+
+Risk-Based
+#Expand on Risk based method. Give examples
+Risk-based approaches stratify patients according to their baseline risk of the primary trial outcome. Stratification is typically performed using an existing or an in-house multivariable prediction model, from which estimates of relative and absolute treatment effects are computed across prespecified risk strata. This approach is practical and clinically important because a patient’s baseline risk of experiencing a bad outcome without treatment determines the absolute benefit they can gain from therapy. Since absolute benefit, defined as the difference in risk between receiving and not receiving treatment, is mathematically tied to baseline risk, stratifying patients often reveals meaningful variations in benefit. For example, a patient at very low risk may gain little absolute benefit, and if the treatment carries even a small risk of harm, the trade-off may be unfavourable @Bellavia and Murphy2024 @Selby2025.
+
+Effect-Models
+#Expand on effects based method with example @Selby2025 performs a review of ~60 papers employing these techniques.
+
+Effects-based models involve the construction of a regression model directly on randomized controlled trial data, where individual treatment effects are estimated using multivariate regression that includes treatment, covariate, and interaction terms @Selby2025. Non-parametric machine learning approaches have also been used to examine individual treatment effects, including reward-based Q-learning techniques @LuedtkeandVanderlaan2015. This approach develops models directly on trial data to predict treatment effects by including terms for factors that might change the relative effectiveness of the treatment. While promising, these models can be complex and are vulnerable to statistical issues such as overfitting, where results appear strong in the analysed data but do not predict accurately in new patients.
+
+**Clinical Relevance of PATH**
+Enables precision medicine, personalized treatment
+
+
+**PATH reporting**
+Standardized reporting guidance (PATH statement)
+
+**Context of Datasets**
+International Stroke Trial
+The international stroke trial was an open label randomised trial of 19,435 patients assigned to 4 arms (aspirin, subcutaneous heparin, both and no intervention) @Collaborators1997. The primary outcome found no significant reduction in deaths at 14 days with the only difference in cause of death being an increased number of deatsh from haemorrhagic stroke and extracranial bleeding.  
+**Model Types to be Used**
+-This can be edited throughout project, depending on which models we employ.
+
+Risk model for Gusto dataset
+
+**Hypothesis**
+
+
+**Aims**
+
+**Objectives**
+
+
+
+
+
+**Gusto Trial**
+The GUSTO trial was a large international, multicentre, randomised open-label trial that compared 4 thrombolytic strategies in the treatment of acute myopcardial infarction. 41021 patients were randomised to the the 4 tratement groups ().On average, Accelerated t-PA was associated with a significant reduction in 30 day mortality as compared to the two streptokinase strategies @Gusto1993.
+a
+Since the release of the initial study, an amount of further analyses have been conducted on the dataset. These analyses have included the construction of multivariate logistic regression models to predict mortality rate T-PA vs streptokinase groups @Califf1997. The model was as follows:
+
+The model uncovered that high risk patients derived the greatest benefit from tPA and that the absolute benefit of tPA is a function of the underlying risk of the patient. @Steyerberg2000 confirmed the utility of adjustment for baseline characteristics in clinical trials, by showing the superiority of two adjusted models over an unadjusted odds ratio. The logistic models had a higher statistical power and produced more extreme (i.e., larger magnitude) treatment effects because adjustment both corrected small baseline imbalances and stratified the estimation across strong prognostic variables such as age.
+
+
+```{r}
+data(gusto)   # loads original GUSTO dataset
+
+gusto_raw <- gusto   # always keep this untouched
+
+
+
+```
+
+```{r}
+library(dplyr)
+gusto <- gusto_raw %>% filter(tx %in% c("SK","tPA")) %>%
+  select(day30, tx, age, Killip, sysbp, pulse, pmi, miloc, sex) %>% mutate(
+    day30 = factor(day30, levels = c(0, 1), labels = c("No", "Yes")), across(c(tx, Killip, pmi, miloc, sex), as.factor))
+
+
+head(gusto)
+
+
+
+```
+```{r}
+library(table1)
+
+label(gusto$age)    <- "Age (years)"
+label(gusto$Killip) <- "Killip class"
+label(gusto$sysbp)  <- "Systolic BP (mmHg)"
+label(gusto$pulse)  <- "Pulse (bpm)"
+label(gusto$pmi)    <- "Previous MI"
+label(gusto$miloc)  <- "MI location"
+label(gusto$sex)    <- "Sex"
+label(gusto$day30)  <- "30-day mortality"
+label(gusto$tx)     <- "Treatment"
+
+
+
+```
+
+```{r}
+tab1 <- table1( ~ age + Killip + sysbp + pulse + pmi + miloc + sex + day30 | tx, data = gusto, test = TRUE)
+
+tab1
+
+
+
+
+```
+
+
+**PATH**
+First we look at the primary outcome
+```{r}
+
+table1(~day30|tx, data=gusto)
+
+```
+
+```{r}
+
+gusto$tx <- droplevels(gusto$tx) # Drop the SK + tPA category which has 0 obs
+gusto$tpa <- as.numeric(gusto$tx) - 1 #code for logistic regression
+
+label(gusto$tpa) <- "tPA"
+
+levels(gusto$tpa) <- c("SK", "tPA")
+
+tab2 <- table(gusto$day30, gusto$tpa)
+tab2
+
+library(broom)
+
+mod <- glm(day30 ~ tpa, data = gusto, family = binomial) #Perform logistic regression
+
+
+
+or_tbl <- tidy(mod, exponentiate = TRUE, conf.int = TRUE) #odds ratio table
+
+
+
+or_clean <- or_tbl %>% #or_tbl will include standard error, statistic, drop these
+  filter(term == "tpa") %>%
+  select(Odds_Ratio = estimate, 
+         Lower_CI  = conf.low, 
+         Upper_CI  = conf.high,
+    p.value
+  )
+
+or_clean
+```
+
+
+```{r}
+#Extract values from count table to compute absolute differences
+library(DescTools)
+library(kableExtra)
+CI <- BinomDiffCI(
+  x1 = tab2[2, 1], 
+  n1 = sum(tab2[, 1]),
+  x2 = tab2[2, 2], 
+  n2 = sum(tab2[, 2]),
+  method = "scorecc"
+)
+
+colnames(CI) <- c("Absolute difference", "Lower CI", "Upper CI") #rename columns
+
+result <- round(CI, 3)
+
+result %>%
+  as.data.frame() %>%
+  kable() %>%
+  kable_styling(full_width = FALSE, position = "left")
+```
+
+
+
+
+```{r}
+library(splines)
+#Recreate splines shown in harrel's model using glm and ns()
+
+sysbp_maxed = with(gusto,pmin(sysbp, 120))
+
+model1 <- glm(
+  day30 ~ 
+    tpa +
+    age +
+    Killip +
+    sysbp_maxed +
+    ns(pulse, knots = 50) +
+    pmi +
+    miloc,
+  data = gusto,
+  family = binomial
+)
+
+summary(model1)
+
+```
+```{r}
+##Check for interaction
+
+model2 <- glm(
+  day30 ~ tx*(
+    tpa +
+    age +
+    Killip +
+    sysbp_maxed +
+    ns(pulse, knots = 50) +
+    pmi +
+    miloc),
+  data = gusto,
+  family = binomial
+)
+
+
+anova(model2, test = "LRT")
+
+```
+
+The Treatment effect appears constant across all covariates. 
+
+
+
+```{r}
+#Check for interaction with linear predictor
+model_no_tx <- glm(
+  day30 ~ age + Killip + sysbp_maxed + ns(pulse, 50) + pmi + miloc,
+  data = gusto,
+  family = binomial
+)
+
+gusto$lp <- predict(model_no_tx, type = "link")
+
+model_lp_int <- glm(
+  day30 ~ tx * lp,
+  data = gusto,
+  family = binomial
+)
+
+anova(model_lp_int, test = "LRT")
+```
+
+There is no significant interaction between treatment and the linear predictor.
+
+**No interaction is needed**
+We have no evidence against the assumption that the overall effect of treatment is applicable to all patients.
+
+```{r}
+library(ggplot2)
+
+ggplot(gusto, aes(x = plogis(lp))) +
+  geom_histogram(bins = 15) + xlim(0,0.4)
+
+
+```
+
+
+
+
+**Digitalis trial Code**
+The DIG Trial was a large, randomized, double-blind, multicentre study conducted across more than 300 centres in the United States and Canada. It was designed to evaluate the safety and effectiveness of digoxin in patients with chronic congestive heart failure who were in sinus rhythm. Before this trial, the long-term impact of digoxin on mortality and hospitalization had been uncertain. The main trial enrolled 6,800 patients with heart failure and a left ventricular ejection fraction of 0.45 or less, all of whom received either digoxin or placebo in addition to standard therapy with diuretics and ACE inhibitors. The primary outcome was all-cause mortality over an average follow-up period of 37 months, with secondary outcomes including cardiovascular mortality and hospitalization for worsening heart failure.
+
+The trial found that digoxin did not reduce overall mortality, with similar death rates in the digoxin and placebo groups. However, it did decrease the risk of hospitalization, both overall and specifically for worsening heart failure. For the combined outcome of death or hospitalization due to worsening heart failure, digoxin showed a clear benefit, reducing this risk meaningfully. The trial also suggested that the benefit of digoxin may be greater in patients at higher baseline risk, such as those with severely reduced ejection fraction, enlarged hearts, or more advanced symptoms. This makes the DIG Trial a useful example of how treatment effects can vary according to baseline risk, aligning well with predictive approaches to treatment-effect heterogeneity
+
+```{r}
+library(readr)
+library(dplyr)
+dig.df<-read_csv("DIG.csv",
+                 col_types = "nnnnnnnnn")
+
+dig.df<- select(dig.df, "TRTMT", "AGE", "SEX", "BMI", "DIABP",  "CVD", "WHF","HYPERTEN",  "DEATH")
+
+glimpse(dig.df)
+```
+
+```{r}
+
+
+dig.df <- dig.df
+#TRTMT
+dig.df$TRTMT <- as.numeric(as.character(dig.df$TRTMT))
+dig.df$TRTMT<- factor(dig.df$TRTMT,
+                     levels = c(0,1),
+                     labels = c("placebo", "Digoxin"))
+
+#SEX
+dig.df$SEX <- as.numeric(as.character(dig.df$SEX))
+dig.df$SEX<- factor(dig.df$SEX,
+                     levels = c(1,2),
+                     labels = c("Male", "Female")) 
+
+dig.df$CVD <- factor(dig.df$CVD ,
+                      levels = c(0 , 1), 
+                      labels = c("No", "Yes"))
+# WHF
+dig.df$WHF <- factor(dig.df$WHF,
+                     levels  = c(0,1), 
+                      labels= c("Not Worsening HF", "Worsening HF"))
+
+#HYPERTEN
+dig.df$HYPERTEN <- as.numeric(as.character(dig.df$HYPERTEN))
+dig.df$HYPERTEN<- factor(dig.df$HYPERTEN,
+                     levels = c(0,1),
+                     labels = c("Not Hypertensive", "Hypertensive")) 
+
+#DEATH
+dig.df$DEATH <- as.numeric(as.character(dig.df$DEATH))
+dig.df$DEATH<- factor(dig.df$DEATH,
+                     levels = c(0,1),
+                     labels = c("Alive", "Death")) 
+
+```
+
+```{r}
+fit_model <- glm(DEATH ~ TRTMT + AGE + BMI + DIABP + SEX + CVD + WHF + HYPERTEN, data = dig.df, family = binomial)
+summary(fit_model)
+```
+
+
+```{r}
+library(table1)
+table1(~DEATH + AGE + BMI + DIABP + SEX + CVD + WHF + HYPERTEN | TRTMT, data =dig.df,  digits =2)
+
+```
+
+
+
+```{r}
+library(Hmisc)
+library(boot)
+library(table1)
+
+
+label(dig.df$SEX)<- "Sex"
+label(dig.df$AGE)<- "Age"
+label(dig.df$BMI)<- "BMI"
+label(dig.df$DEATH) <- "Death"
+
+
+units(dig.df$AGE)<- "years"
+units(dig.df$BMI)<- "kg/sqm"
+
+dig.df <- na.omit(dig.df)
+
+
+pvalue <- function(x,...) {
+  y <- unlist(x)
+  g <- factor(rep(1:length(x), times = sapply(x, length)))
+  
+  if (is.numeric(y)){
+    p <- t.test(y~g)$p.value   # For continuous variable
+  }else {
+    p <- chisq.test(table(y,g))$p.value   # categorical chi-square test
+  }
+  c("", sub("<", "&lt;", format.pval(p, digits = 3, eps = 0.001)))
+}
+
+table1(
+  ~ DEATH + AGE + BMI + DIABP + SEX + CVD + WHF + HYPERTEN  | TRTMT,
+  data = dig.df,
+  overall = FALSE,
+  caption = "Table 2. Basline Characterstics by treatment group",
+  footnote =  "P-values from t-test or Chi-square test.",
+  topclass = "Rtable1- grid Rtable1-shade Rtable1-times",
+  extra.col = list('p-value' = pvalue)
+)
+
+```
+
+```{r}
+library(splines)
+fit_model_spline <- glm(DEATH ~ TRTMT +
+       ns(AGE, df = 3)+
+       ns(BMI, df = 3)+
+       ns(DIABP, df = 3)+ SEX + CVD + WHF + HYPERTEN, data = dig.df, family = binomial)
+
+summary(fit_model_spline)
+```
