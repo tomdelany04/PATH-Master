@@ -253,12 +253,15 @@ res <- rma(ai=tevent, bi=tnoevent, ci=cevent, di=cnoevent, data=data.subgroups, 
 
 ### set up forest plot (with 2x2 table counts added); rows argument is used
 ### to specify exactly in which rows the outcomes will be plotted)
+par(fg="maroon")
 forest(res, xlim=c(-8, 2.5), at=log(c(0.5, 1)), alim=c(log(0.2), log(2)), atransf=exp,
        ilab=cbind(data.subgroups$tn, data.subgroups$pt, data.subgroups$cn, data.subgroups$pc),
        ilab.xpos=c(-5,-4,-3,-2), adj=1,
        cex=.9, ylim=c(0, 24),
        rows=c(1:2, (4:5)-.5, 6:7, 10:13, 15),
-       xlab="", mlab="", psize=.8, addfit=F)
+       xlab="", mlab="", psize=1, lwd = 1.5, addfit=F,
+       col = "maroon",
+       shade = F)
 # lines(x=c(-.15, -.15), y=c(0, 17)) ## could add a reference line of the overall treatment effect
 
 text(c(-5,-4,-3,-2, 2.2), 18, c("n", "%mort", "n", "%mort", "OR    [95% CI]"),
