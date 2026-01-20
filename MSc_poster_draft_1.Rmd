@@ -92,7 +92,7 @@ Usually you want to have a nice table displaying some important results that you
 You can reference tables like so: Table \@ref(tab:mytable). Some basic summaries of the dataset are below:
 
 ```{r mytable, out.width='80%'}
-knitr::kable(iris[1:10, 1:4], caption = 'Table caption.',align = 'c',"html") %>%
+knitr::kable("Descriptive table.png", caption = 'Table 1. Patients Baseline characterstics (DIG Trial)',align = 'c',"html") %>%
   kable_styling(font_size = 20)
 ```
 
