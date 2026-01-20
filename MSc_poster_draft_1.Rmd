@@ -1,8 +1,8 @@
 ---
-title: MSc Health Data Science Project Title
+title: Predictive Approaches to Treatment Effect Heterogeneity in heart failure and Stroke Patients
 author:
-  - name: Student A Name
-  - name: Student B Name
+  - name: Tom Delany
+  - name: Misgana Ojamo
     affil: 1
 affiliation:
   - num: 1
