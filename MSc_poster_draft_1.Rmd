@@ -140,7 +140,7 @@ We will use the `plasticanalysis` package for this.
 
 # GitHub
 
-The code and datasets for this project can be viewed at our GitHub repository here: <https://github.com/>
+The code and datasets for this project can be viewed at our GitHub repository here: <https://github.com/tomdelany04/PATH-Master/>
 
 
 
