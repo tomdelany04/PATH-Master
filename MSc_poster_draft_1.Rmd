@@ -73,10 +73,9 @@ Most treatment decisions rely on average effects from randomised controlled tria
 3.  Assess the clinical relevance and reporting implications of PATH analyses
 
 # Data Sources and Datasets
-Data from our figures and further analyses is available from the following sources
-You can even use the bibliography the same way: Our data were taken from a cluster-randomised trial [^2], available from the [Irish Social Science Data Archive](https://www.ucd.ie/issda/data/).
+Analyses are based on published clinical trial data from the GUSTO-I trial [^2] and the Digitalis Investigation Group trial. 
 
-[^2]: Murphy et al. 2005 doi: 10.1186/1468-6708-6-11
+[^2]: The GUSTO investigators, 1993, doi: 10.1056/NEJM199309023291001
 
 <!-- This #### below causes the columns to break -->
 
@@ -102,15 +101,7 @@ ggplot(mpg, aes(displ, hwy, colour = class)) +
   geom_point()
 ```
 
-```{r morefigs, out.width='80%', echo=FALSE, fig.cap='Amazing, right?!', fig.height=4}
 
-df1 <- data.frame(dose=c("D0.5", "D1", "D2"),
-                len=c(4.2, 10, 29.5))
-ggplot(df1, aes(x=dose, y=len, fill=dose)) +
-  geom_bar(stat="identity") +
-  theme_minimal()
-
-```
 
 You can even make your plots interactive for the HTML version of the poster. You can use the HTML poster for the presentation session, and the PDF poster will be printed - so be sure the static version looks okay.
 
@@ -119,7 +110,11 @@ You can even make your plots interactive for the HTML version of the poster. You
 knitr::include_graphics("forest_gusto.png")
 
 ```
+```{r fig-proportional, echo=FALSE, fig.cap="Figure 4: Absolute treatment benefit increases with baseline risk", out.width="100%", fig.align="center"}
 
+knitr::include_graphics("absolute_benefit.png")
+
+```
 #### 
 
 # Next Project Steps

@@ -319,13 +319,13 @@ f <- model1
 
 p1exp <- plogis(logxp0) - plogis(logxp0+coef(f)[2])
 
-plot(x=xp, y=p1exp, type='l', lty=2, lwd=3, xlim=c(0,.35), ylim=c(-0.007,.05), col = "maroon",
+plot(x=xp, y=p1exp, type='l', lty=1, lwd=4, xlim=c(0,.35), ylim=c(-0.007,.05), col = "maroon",
      xlab="Baseline risk", ylab="Benefit by tPA", cex.lab=1.2, las=1, bty='l' )
 
 lines(x=c(0,.5), y=c(0,0))
 histSpike(plogis(lp.no.tx), add=T, side=1, nint=300, frac=.15)
 
-points(x=rate0, y=ratediff, pch=1, cex=2, lwd=2, col = "blue")
+points(x=rate0, y=ratediff, pch=1, cex=1.5, lwd=2, col = "blue")
 arrows(x0=rate0, x1=rate0, y0=CI[,2], y1=CI[,3], angle=90, code=3, len=.1, col = "blue")
 
 legend("topleft", lty=c(2,NA), pch=c(NA,1), lwd=c(3,2), bty='n', col = c("maroon", "blue"),cex=1.2,
@@ -374,12 +374,12 @@ g <- 4  # quarters
 
 plot(x=xp, y=p1exp, type='l', lty=1, lwd=4,
      xlim=c(0,.35), ylim=c(-0.007,.05),
-     col="maroon",
+     col="red",
      xlab="Baseline risk", ylab="Benefit by tPA",
      cex.lab=1.2, las=1, bty='l' )
 
 lines(x=xp, y=p1, type='l', lty=2, lwd=3, col="blue")
-lines(x=xp, y=p2, type='l', lty=3, lwd=2, col="green")
+lines(x=xp, y=p2, type='l', lty=3, lwd=2, col="springgreen4")
 lines(x=xp, y=l,  type='l', lty=1, lwd=3, col="black")
 
 lines(x=c(0,.5), y=c(0,0))
@@ -413,7 +413,7 @@ legend("topleft",
        pch=c(NA,NA,NA,NA,1),
        lwd=c(4,3,2,3,1),
        bty='n',
-       col=c("maroon","blue","green","black","black"),
+       col=c("red","blue","springgreen4","black","black"),
        cex=1.2,
        legend=c("Expected with proportional effect",
                 "Linear interaction",
