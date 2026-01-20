@@ -1,5 +1,5 @@
 ---
-title: Predictive Approaches to Treatment Effect Heterogeneity in heart failure and Stroke Patients
+title: Predictive Approaches to Treatment Effect Heterogeneity
 author:
   - name: Tom Delany
   - name: Misgana Ojamo
