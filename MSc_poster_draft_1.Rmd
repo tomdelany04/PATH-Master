@@ -112,7 +112,7 @@ knitr::include_graphics("forest_gusto.png")
 
 ```
 
-Above is a Forest Plot which display the PATH (risk-based) subgroups alongside traditional subgroups (Age, Sex, Location of MI). 
+Above is a Forest Plot which display the PATH (risk-based) subgroups alongside traditional subgroups (Age, Sex, Location of MI). Low risk according to the linear predictor (lp<-2.36) implies low benefit (<1%); higher risk, higher benefit (>2%)
 
 ```{r fig-proportional, echo=FALSE, fig.cap="Figure 4: Absolute treatment benefit increases with baseline risk", out.width="100%", fig.align="center"}
 
