@@ -66,6 +66,7 @@ library(kableExtra)
 Most treatment decisions rely on average effects from randomised controlled trials. Although RCTs remain the gold standard for causal inference, average effects from trial populations may not reflect individual treatment response. Subgroup analyses, while simple, have well-known limitations, including high false-positive and false-negative rates and limited value for individual decision-making [^1]. Predictive approaches to treatment effect heterogeneity (PATH) are increasingly important in precision medicine, aiming to explain why patients respond differently to the same treatment by estimating individual outcomes with versus without treatment.
 
 [^1]: Kent et al. 2020, doi: 10.7326/M18-3668
+
 ## Objectives of Project
 
 1.  Implement and evaluate predictive HTE models across multiple clinical datasets
@@ -110,6 +111,9 @@ You can even make your plots interactive for the HTML version of the poster. You
 knitr::include_graphics("forest_gusto.png")
 
 ```
+
+
+
 ```{r fig-proportional, echo=FALSE, fig.cap="Figure 4: Absolute treatment benefit increases with baseline risk", out.width="100%", fig.align="center"}
 
 knitr::include_graphics("absolute_benefit.png")
