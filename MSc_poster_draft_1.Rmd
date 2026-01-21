@@ -111,28 +111,7 @@ You can even make your plots interactive for the HTML version of the poster. You
 
 ```{r fig-forest, echo=FALSE, fig.cap="Figure 3: Forest plot of treatment heterogeneity", out.width="100%", fig.align="center"}
 
-library(metafor)
-par(mar=c(4,4,1,2))
-### fit random-effects model (use slab argument to define "study" labels)
-res <- rma(ai=tevent, bi=tnoevent, ci=cevent, di=cnoevent, data=data.subgroups, measure="OR",
-           slab=name, method="ML")
-
-### set up forest plot (with 2x2 table counts added); rows argument is used
-### to specify exactly in which rows the outcomes will be plotted)
-par(fg="maroon")
-forest(res, xlim=c(-8, 2.5), at=log(c(0.5, 1)), alim=c(log(0.2), log(2)), atransf=exp,
-       ilab=cbind(data.subgroups$tn, data.subgroups$pt, data.subgroups$cn, data.subgroups$pc),
-       ilab.xpos=c(-5,-4,-3,-2), adj=1,
-       cex=.9, ylim=c(0, 24),
-       rows=c(1:2, (4:5)-.5, 6:7, 10:13, 15),
-       xlab="", mlab="", psize=1, lwd = 1.5, addfit=F,
-       col = "maroon",
-       shade = F)
-
-text(c(-5,-4,-3,-2, 2.2), 18, c("n", "%mort", "n", "%mort", "OR    [95% CI]"),
-     font=2, adj=1, cex=.9)
-text(-8, 18, c("GUSTO-I trial"), font=2, adj=0, cex=.9)
-text(c(-4.5,-2.5),  19, c("tPA", "SK"), font=2, adj=1)
+knitr::include_graphics("Forest_gusto.png")
 
 ```
 
@@ -149,13 +128,12 @@ knitr::include_graphics("absolute_benefit.png")
 
 # Next Project Steps
 
-We plan to conduct further analysis using:
+We plan to conduct further analysis on the International Stroke Trial and the National Lung screening Trial, to evaluate the generalizability of predictive approaches to treatment-effect heterogeneity across different clinical domain. We also plan to implement a machine-learning approach using causal forests to estimate individualized treatment effects [^5].
 
--   Variable discombobulation [^3]
--   Expand our minds with explosive machine learning [^4].
+[^5]: Jawadekar et al. 2023, doi: 10.1093/aje/kwad043
 
+We will use the `grf` package for this.
 
-We will use the `plasticanalysis` package for this.
 
 
 # GitHub
