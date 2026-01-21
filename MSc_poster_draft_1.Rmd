@@ -93,6 +93,33 @@ Analyses are based on published clinical trial data from the GUSTO-I trial [^3] 
 # Early Results / Descriptive Statistics of Datasets
 
 
+```{r standard-plot, out.width='80%', fig.align='center', fig.cap='Great figure!', fig.height=4}
+table1(~DEATH + AGE + BMI + DIABP + SEX + CVD + WHF + HYPERTEN + HOSP | TRTMT, data =dig.df,  digits =2)
+```
+
+
+```{r morefigs, out.width='80%', echo=FALSE, fig.cap='Baseline Risk', fig.height=4}
+knitr::include_graphics("Baseline_Mortality_risk_by_risk_group.png") 
+
+```
+
+```{r morefigs, out.width='80%', echo=FALSE, fig.cap='Figure 2.1: Overall mortality rate across the study', fig.height=4}
+overall_mor <- ggplot(dig.df, 
+       aes(x = Month, fill = TRTMT, y = after_stat(density)) ) + 
+  geom_histogram() +
+  geom_density(alpha = 0.8) +
+  labs(title = "Distribution of summary statstics DIG participants in each treatment group", 
+       subtitle = "Histogram for Month of Death and Treatment Group",
+       caption = "\n: Distribution of month of death of patients by
+              in each treatment arms",
+       x = "Month", 
+       y= "Frequency")
+
+
+ggplotly(overall_mor)
+```
+
+
 
 ```{r fig-forest, echo=FALSE, fig.cap="Forest plot of treatment heterogeneity", out.width="100%", fig.align="center"}
 
@@ -101,6 +128,26 @@ knitr::include_graphics("Forest_gusto.png")
 ```
 
 Above is a Forest Plot which display the PATH (risk-based) subgroups alongside traditional subgroups (Age, Sex, Location of MI). Low risk according to the linear predictor (lp<-2.36) implies low benefit (<1%); higher risk, higher benefit (>2%).
+
+```{r fig-forest, echo=FALSE, fig.cap="Forest plot of treatment heterogeneity", out.width="100%", fig.align="center"}
+
+p <- ggplot(hte_summary,
+       aes(x = risk_quarter, y = ard)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey50") +
+  geom_pointrange(aes(ymin = lower, ymax = upper),
+                  size = 0.9, color = "darkred") +
+  coord_flip() + # Traditional forest plot orientation
+  scale_y_continuous(labels = scales::percent_format(accuracy= 1))+
+  labs(
+    title = "Figure 3. Heterogeneity of digoxin treatment effect by baseline risk",
+    subtitle = "Measure: Absolute Risk Difference (Lives Saved)",
+    x = "Risk Quarter",
+    y = "Absolute Risk Difference (CER - TER)"
+  ) +
+  theme_minimal()
+ggplotly(p)
+```
+
 
 ```{r fig-proportional, echo=FALSE, fig.cap="Absolute treatment benefit increases with baseline risk", out.width="100%", fig.align="center"}
 
