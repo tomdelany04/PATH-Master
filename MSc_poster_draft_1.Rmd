@@ -17,9 +17,9 @@ primary_colour:	"#a80050"	# Secondary colour use for poster design.
 secondary_colour:	"#84003d"	# Main colour used for poster design.
 accent_colour:	"#e6007e"	# A third colour option.
 author_textcol: "white"
-title_textsize: "90pt"
-author_textsize: "60pt"
-body_textsize: "25pt"
+title_textsize: "60pt"
+author_textsize: "40pt"
+body_textsize: "20pt"
 output: 
   posterdown::posterdown_html:
     self_contained: true
@@ -63,9 +63,14 @@ library(kableExtra)
 
 <!-- You can add references by inserting the following ^[reference details here] -->
 
-Most treatment decisions rely on average effects from randomised controlled trials. Although RCTs remain the gold standard for causal inference, average effects from trial populations may not reflect individual treatment response. Subgroup analyses, while simple, have well-known limitations, including high false-positive and false-negative rates and limited value for individual decision-making [^1]. Predictive approaches to treatment effect heterogeneity (PATH) are increasingly important in precision medicine, aiming to explain why patients respond differently to the same treatment by estimating individual outcomes with versus without treatment.
+• Relying on average trial effects ignores that real patients differ in demographics, disease severity, and behaviors (HTE) [^1].
+
+• Traditional subgroup analyses (one variable at a time) have low power, high false positives, and aren’t truly patient-centred.
+
+• Predictive approaches to treatment effect heterogeneity (PATH) model risk and treatment effects to estimate individual patient outcomes across treatments [^2].
 
 [^1]: Kent et al. 2020, doi: 10.7326/M18-3668
+[^2]: Willke et al. 2012, doi: 10.1186/1471-2288-12-185
 
 ## Objectives of Project
 
@@ -74,10 +79,10 @@ Most treatment decisions rely on average effects from randomised controlled tria
 3.  Assess the clinical relevance and reporting implications of PATH analyses
 
 # Data Sources and Datasets
-Analyses are based on published clinical trial data from the GUSTO-I trial [^2] and the Digitalis Investigation Group trial. 
+Analyses are based on published clinical trial data from the GUSTO-I trial [^3] and the Digitalis Investigation Group trial [^4]. 
 
-[^2]: The GUSTO investigators, 1993, doi: 10.1056/NEJM199309023291001
-[^3]: N Engl J Med, Feb. 1997, doi: 10.1056/NEJM199702203360801
+[^3]: The GUSTO investigators, 1993, doi: 10.1056/NEJM199309023291001
+[^4]: The Digitalis Investigation Group, Feb. 1997, doi: 10.1056/NEJM199702203360801
 
 <!-- This #### below causes the columns to break -->
 
@@ -87,13 +92,10 @@ Analyses are based on published clinical trial data from the GUSTO-I trial [^2] 
 
 # Early Results / Descriptive Statistics of Datasets
 
-Usually you want to have a nice table displaying some important results that you have calculated. In `posterdown` this is as easy as using the `kable` table formatting you are probably use to as per typical R Markdown formatting.
-
 You can reference tables like so: Table \@ref(tab:mytable). Some basic summaries of the dataset are below:
 
 ```{r mytable, out.width='80%'}
-knitr::kable("Descriptive table.png", caption = 'Table 1. Patients Baseline characterstics (DIG Trial)',align = 'c',"html") %>%
-  kable_styling(font_size = 20)
+
 ```
 
 Figure \@ref(fig:standard-plot), and Figure \@ref(fig:morefigs) below show the patterns in our dataset. Make sure that all the details in your plots will be legible when printed (legend text, axis text, and any labels)
@@ -109,7 +111,28 @@ You can even make your plots interactive for the HTML version of the poster. You
 
 ```{r fig-forest, echo=FALSE, fig.cap="Figure 3: Forest plot of treatment heterogeneity", out.width="100%", fig.align="center"}
 
-knitr::include_graphics("forest_gusto.png")
+library(metafor)
+par(mar=c(4,4,1,2))
+### fit random-effects model (use slab argument to define "study" labels)
+res <- rma(ai=tevent, bi=tnoevent, ci=cevent, di=cnoevent, data=data.subgroups, measure="OR",
+           slab=name, method="ML")
+
+### set up forest plot (with 2x2 table counts added); rows argument is used
+### to specify exactly in which rows the outcomes will be plotted)
+par(fg="maroon")
+forest(res, xlim=c(-8, 2.5), at=log(c(0.5, 1)), alim=c(log(0.2), log(2)), atransf=exp,
+       ilab=cbind(data.subgroups$tn, data.subgroups$pt, data.subgroups$cn, data.subgroups$pc),
+       ilab.xpos=c(-5,-4,-3,-2), adj=1,
+       cex=.9, ylim=c(0, 24),
+       rows=c(1:2, (4:5)-.5, 6:7, 10:13, 15),
+       xlab="", mlab="", psize=1, lwd = 1.5, addfit=F,
+       col = "maroon",
+       shade = F)
+
+text(c(-5,-4,-3,-2, 2.2), 18, c("n", "%mort", "n", "%mort", "OR    [95% CI]"),
+     font=2, adj=1, cex=.9)
+text(-8, 18, c("GUSTO-I trial"), font=2, adj=0, cex=.9)
+text(c(-4.5,-2.5),  19, c("tPA", "SK"), font=2, adj=1)
 
 ```
 
@@ -131,9 +154,6 @@ We plan to conduct further analysis using:
 -   Variable discombobulation [^3]
 -   Expand our minds with explosive machine learning [^4].
 
-[^3]: Massey et al. 2005 doi: 15.36.413
-
-[^4]: Smith et al. 1991 doi: 12.36.486
 
 We will use the `plasticanalysis` package for this.
 
