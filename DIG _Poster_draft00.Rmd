@@ -1,0 +1,248 @@
+---
+title: "DIG_Poster"
+author: "Misgana Ojamo, 25298404"
+date: "2026-01-20"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Title
+#Predictive Approaches to Treatment Effect Heterogeneity in heart failure and Stroke Patients
+
+#Background and Problem:
+•	Reliance on averages assumes that the study population accurately represents the individual patient. However, HTE recognizes that a "real" patient is likely different from the average trial patient due to variations in characteristics like demographics, disease severity, or health behavior. [2] *R. J. Willke, Z. Zheng, P. Subedi, R. Althin, and C. D. Mullins, Dec. 2012, doi: 10.1186/1471-2288-12-185.*
+•	Traditional subgroup analysis; contrasting treatment effects by dividing patients one variable at a time (e.g., comparing results for males versus females, or young versus old) suffer from low statistical power and the risk of identifying false positive results and claiming an effect difference exists. [3] *D. M. Kent et al., Jan. 2020, doi: 10.7326/M18-3667.*
+•	Crucially, they fail to provide truly patient-centred estimates because individual patients have many attributes that affect outcomes simultaneously.[3] [1] *D. M. Kent, E. Steyerberg, and D. Van Klaveren, Dec. 2018, doi: 10.1136/bmj.k4245.*
+•	For clinical decision-making, HTE is most important when assessed on the absolute scale (such as absolute risk difference), which directly helps patients and clinicians weigh the benefits against the harms of a treatment.
+
+
+#Objectives of the Project 
+1.	To investigate the benefit of Digoxin under different levels of baseline risk using PATH predictive modelling framework  in DIG trial
+2.	To estimate baseline mortality risk in the DIG trial using predictive models
+3.	To stratify patients into risk groups and evaluate heterogeneity of digoxin treatment effects across these groups with PATH guidelines. 
+4.	To visualise individualized treatment benefit predictions and related uncertainty using an interactive Shiny dashboard. 
+
+#Data Sources and Datasets
+https://biolincc.nhlbi.nih.gov/media/studies/dig/data_dictionary/DIG.pdf?link_time=2026-01-20_15:05:39.377825
+
+
+
+
+```{r}
+library(rms)
+library(ggplot2)
+library(Hmisc)
+library(tidyr)
+library(table1)
+library(plotly)
+library(readr)
+library(dplyr)
+library(kableExtra)
+library(broom)
+```
+
+```{r}
+dig.df<-read_csv("DIG.csv",
+                 col_types = "nnnnnnnnn")
+dig.df<- select(dig.df, "TRTMT", "AGE", "SEX", "BMI", "DIABP",  "CVD", "WHF","HYPERTEN", "DEATH", "HOSP")
+glimpse(dig.df)
+```
+
+```{r}
+#TRTMT
+dig.df$TRTMT<- factor(dig.df$TRTMT,
+                     levels = c(0,1),
+                     labels = c("Placebo", "Digoxin"))
+
+#DEATH
+dig.df$DEATH<- factor(dig.df$DEATH,
+                     levels = c(0,1),
+                     labels = c("Alive", "Dead")) 
+#SEX
+dig.df$SEX <- as.numeric(as.character(dig.df$SEX))
+dig.df$SEX<- factor(dig.df$SEX,
+                     levels = c(1,2),
+                     labels = c("Male", "Female")) 
+
+dig.df$CVD <- factor(dig.df$CVD ,
+                      levels = c(0 , 1), 
+                      labels = c("No", "Yes"))
+# WHF
+dig.df$WHF <- factor(dig.df$WHF,
+                     levels  = c(0,1), 
+                      labels= c("Not Worsening HF", "Worsening HF"))
+
+#Hypertension
+dig.df$HYPERTEN <- as.numeric(as.character(dig.df$HYPERTEN))
+dig.df$HYPERTEN<- factor(dig.df$HYPERTEN,
+                     levels = c(0,1),
+                     labels = c("Not Hypertensive", "Hypertensive")) 
+
+#Hospitalization
+dig.df$HOSP <- as.numeric(as.character(dig.df$HOSP))
+dig.df$HOSP<- factor(dig.df$HOSP,
+                     levels = c(0,1),
+                     labels = c("Not Hospitalised", "Hospitalised")) 
+```
+
+
+# Early Results/ Descriptive Statistics of Datasets
+```{r}
+# Early Results/ Descriptive Statistics of Datasets
+table1(~DEATH + AGE + BMI + DIABP + SEX + CVD + WHF + HYPERTEN + HOSP | TRTMT, data =dig.df,  digits =2)
+
+```
+
+*caption = "Table 1. Baseline characteristics and statistical comparisons of Digitalis Investigation Trial patients; continuous variables are expressed as mean (standard deviation) and categorical variables are expressed as counts (percentages)"*
+
+```{r}
+# Fitting logistic regression model 
+# Overall treatment effect
+fit_model <- lrm(DEATH ~ TRTMT+AGE + BMI + DIABP + SEX + CVD + WHF + HYPERTEN + HOSP, data = dig.df, x = T, y= T)
+```
+
+```{r}
+#Death due to CVD
+cvd_mortality_by_treatment<- dig.df%>%
+  group_by(TRTMT, CVD)%>%
+  summarise(
+    Total = n(),
+    Deaths = sum(DEATH== "Dead", na.rm = T),
+    Mortality_Rate = Deaths/Total
+  )
+
+
+
+cvd_plot_strat<- ggplot(cvd_mortality_by_treatment,
+                        aes(x = CVD, y=Mortality_Rate , fill = TRTMT))+
+  #using position dodge to place each treatment groups side by side
+  geom_col(position = position_dodge(width = 0.8), color = "lightblue")+
+   scale_y_continuous(labels = scales::percent)+
+  scale_fill_manual(values = c("#8970b3", "#2d7e74"))+
+  labs(
+    title = "Mortality rate by CVD status in each treatment group ",
+    x = "Cardiovascular Disease(CVD) status",
+    y = "Mortality Rate(%)",
+    fill = "Treatment Group",
+    caption = "\n Mortality rate by among patients with and without CVD in each treatment group")
+
+
+ggplotly(cvd_plot_strat)
+```
+
+```{r}
+# Linear predictor on logit scale assuming no treatment
+dig.df$lp_no_tx <- predict(fit_model,
+                           newdata = transform(dig.df, TRTMT = "Placebo"),
+                           type = "lp")
+
+# Logit to Baseline probability(Control Event Rate)
+dig.df$baseline_risk <- plogis(dig.df$lp_no_tx)
+```
+
+```{r}
+# Grouping patients into four equal size strata, based on baseline risk
+dig.df$risk_quarter <- cut2(dig.df$lp_no_tx, g=4)
+levels(dig.df$risk_quarter) <- c("Low risk(Q1)", "Mild", "Moderate", "High Risk(Q4)")
+```
+
+```{r}
+# Table: Baseline Characteristics by Risk Group
+# The table below will be swapped for better poster view
+# Risk profiling table 
+table_d <- dig.df %>%
+  filter(!is.na(risk_quarter)) %>% 
+  group_by(risk_quarter) %>% 
+  summarise(
+    N= n(),
+    Mean_Age = round(mean(AGE, na.rm = T),1),
+    Female_Percertage = round(mean(SEX == "Female"),1),
+    CVD_Percentage = round(mean(CVD == "Yes", na.rm = T)*100,1),
+    WHF_Percentage = round(mean(WHF == "Worsening HF", na.rm = T)*100,1),
+    HOSPN_Percentage = round(mean(HOSP == "Hospitalised", na.rm = T)*100,1),
+    Mortality_Percentage = round(mean(DEATH == "Dead")*100, 1))
+
+kable(table_d, caption = "Table 2. Baseline characterstics by prediced risk group(DIG Trial)") %>% 
+  kable_styling(full_width = F)
+```
+
+
+```{r}
+# Baseline Mortality Risk by Risk group
+n_labels <- dig.df %>%
+  filter(!is.na(risk_quarter)) %>%
+  count(risk_quarter) %>%
+  mutate(label = paste0("n = ", n))
+
+ggplot(
+  dig.df %>% filter(!is.na(risk_quarter)),
+  aes(x = risk_quarter, y = baseline_risk)
+) +
+  geom_boxplot(fill = "lightgreen") +
+  geom_text(
+    data = n_labels,
+    aes(x = risk_quarter, y = max(dig.df$baseline_risk, na.rm = TRUE),
+        label = label),
+    vjust = -0.5,
+    size = 4
+  ) +
+  labs(
+    title = "Figure 2: Baseline Mortality Risk distribution by Risk Group",
+    x = "Predicted Risk Group",
+    y = "Baseline Mortality Risk (Placebo)"
+  ) +
+  theme_minimal()
+
+```
+
+```{r}
+# Observed Absolute Risk Difference and 95%CI in each risk group
+
+hte_summary <- dig.df %>% 
+  filter(!is.na(risk_quarter)) %>% 
+  group_by(risk_quarter) %>% 
+  summarise(
+    n_placebo = sum(TRTMT == "Placebo"),
+    deaths_placebo = sum(DEATH == "Dead" & TRTMT == "Placebo"),
+    n_digoxin = sum(TRTMT == "Digoxin"),
+    deaths_digoxin = sum(DEATH == "Dead" & TRTMT == "Digoxin"), .groups ="drop"
+  ) %>% 
+  rowwise() %>% 
+  mutate(
+    # Perform a test of two proportions to get ARD and CI
+    test_prop = list(prop.test(c(deaths_placebo, deaths_digoxin),
+                            c(n_placebo, n_digoxin), correct = F)),
+    cer = deaths_placebo/n_placebo,
+    ter = deaths_digoxin/n_digoxin,
+    ard = cer - ter, # Lives saved 
+    lower = test_prop$conf.int[1], 
+    upper = test_prop$conf.int[2]
+  ) 
+  
+```
+
+```{r}
+# Forest plot of Absolute Risk Difference
+ggplot(hte_summary,
+       aes(x = risk_quarter, y = ard)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey50") +
+  geom_pointrange(aes(ymin = lower, ymax = upper),
+                  size = 0.9, color = "darkred") +
+  coord_flip() + # Traditional forest plot orientation
+  scale_y_continuous(labels = scales::percent_format(accuracy= 1))+
+  labs(
+    title = "Figure 3. Heterogeneity of digoxin treatment effect by baseline risk",
+    subtitle = "Measure: Absolute Risk Difference (Lives Saved)",
+    x = "Risk Quarter",
+    y = "Absolute Risk Difference (CER - TER)"
+  ) +
+  theme_minimal()
+```
+
+
