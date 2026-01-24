@@ -45,25 +45,11 @@ div.footnotes {
 
 <!-- Don't change anything above, except the title and author names, unless you know what you are doing. -->
 
-```{r, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE,
-                      warning = FALSE,
-                      tidy = FALSE,
-                      message = FALSE,
-                      fig.align = 'center',
-                      out.width = "100%")
-options(knitr.table.format = "html") 
-# Load any additional libraries here
-library(tidyverse)
-library(plotly)
-library(kableExtra)
-```
-
-# Background and Problem
+# Background
 
 <!-- You can add references by inserting the following ^[reference details here] -->
 
-• Relying on average trial effects ignores that real patients differ in demographics, disease severity, and behaviors (HTE) [^1].
+• Relying on average trial effects ignores that patients differ in demographics, disease severity, and behaviors (HTE) [^1], crucially, these factors may modify the effectiveness of treatment.
 
 • Traditional subgroup analyses (one variable at a time) have low power, high false positives, and aren’t truly patient-centred.
 
@@ -72,13 +58,13 @@ library(kableExtra)
 [^1]: Kent et al. 2020, doi: 10.7326/M18-3668
 [^2]: Willke et al. 2012, doi: 10.1186/1471-2288-12-185
 
-## Objectives of Project
+## Objectives
 
 1.  Implement and evaluate predictive HTE models across multiple clinical datasets
 2.  Compare risk-based and effects-based approaches in practice
 3.  Assess the clinical relevance and reporting implications of PATH analyses
 
-# Data Sources and Datasets
+# Data Sources
 Analyses are based on published clinical trial data from the GUSTO-I trial [^3] and the Digitalis Investigation Group trial [^4]. 
 
 [^3]: The GUSTO investigators, 1993, doi: 10.1056/NEJM199309023291001
@@ -90,62 +76,57 @@ Analyses are based on published clinical trial data from the GUSTO-I trial [^3] 
 
 #### 
 
-# Early Results / Descriptive Statistics of Datasets
+# Early Results
 
 
-```{r standard-plot, out.width='80%', fig.align='center', fig.cap='Great figure!', fig.height=4}
-table1(~DEATH + AGE + BMI + DIABP + SEX + CVD + WHF + HYPERTEN + HOSP | TRTMT, data =dig.df,  digits =2)
-```
-
-
-```{r morefigs, out.width='80%', echo=FALSE, fig.cap='Baseline Risk', fig.height=4}
+```{r fig-baseline, out.width='80%', echo=FALSE, fig.cap='Baseline Risk', fig.height=4}
 knitr::include_graphics("Baseline_Mortality_risk_by_risk_group.png") 
 
-```
-
-```{r morefigs, out.width='80%', echo=FALSE, fig.cap='Figure 2.1: Overall mortality rate across the study', fig.height=4}
-overall_mor <- ggplot(dig.df, 
-       aes(x = Month, fill = TRTMT, y = after_stat(density)) ) + 
-  geom_histogram() +
-  geom_density(alpha = 0.8) +
-  labs(title = "Distribution of summary statstics DIG participants in each treatment group", 
-       subtitle = "Histogram for Month of Death and Treatment Group",
-       caption = "\n: Distribution of month of death of patients by
-              in each treatment arms",
-       x = "Month", 
-       y= "Frequency")
-
-
-ggplotly(overall_mor)
 ```
 
 
 
 ```{r fig-forest, echo=FALSE, fig.cap="Forest plot of treatment heterogeneity", out.width="100%", fig.align="center"}
 
-knitr::include_graphics("Forest_gusto.png")
+library(metafor)
+
+# loading saved rds
+pack <- readRDS("gusto_forest_pack.rds")
+
+data.subgroups <- pack$data_subgroups
+res <- pack$res
+
+par(mar=c(4,4,1,2))
+par(fg="maroon")
+
+
+forest(res, 
+       xlim=c(-1.2,0.8), 
+       at=log(c(0.5, 1)), 
+       alim=c(log(0.2), log(2)), 
+       atransf=exp,
+       adj=1,
+       cex=.9, ylim=c(0, 22),
+       rows=c(1:2, (4:5)-.5, 6:7, 10:13, 15),
+       xlab="", mlab="", psize=1, lwd = 1.5, addfit=F,
+       col = "maroon",
+       shade = F)
+
+# Right-side OR header (pulled left)
+text(.8, 18, "OR [95% CI]", font=2, adj=1, cex=.9)
+
+
+# Left-side title (pulled right)
+text(-1.2, 18, "GUSTO-I trial", font=2, adj=0, cex=.9)
 
 ```
 
 Above is a Forest Plot which display the PATH (risk-based) subgroups alongside traditional subgroups (Age, Sex, Location of MI). Low risk according to the linear predictor (lp<-2.36) implies low benefit (<1%); higher risk, higher benefit (>2%).
 
-```{r fig-forest, echo=FALSE, fig.cap="Forest plot of treatment heterogeneity", out.width="100%", fig.align="center"}
+```{r fig-HTE, echo=FALSE, fig.cap="Forest plot of treatment heterogeneity", out.width="100%", fig.align="center"}
 
-p <- ggplot(hte_summary,
-       aes(x = risk_quarter, y = ard)) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "grey50") +
-  geom_pointrange(aes(ymin = lower, ymax = upper),
-                  size = 0.9, color = "darkred") +
-  coord_flip() + # Traditional forest plot orientation
-  scale_y_continuous(labels = scales::percent_format(accuracy= 1))+
-  labs(
-    title = "Figure 3. Heterogeneity of digoxin treatment effect by baseline risk",
-    subtitle = "Measure: Absolute Risk Difference (Lives Saved)",
-    x = "Risk Quarter",
-    y = "Absolute Risk Difference (CER - TER)"
-  ) +
-  theme_minimal()
-ggplotly(p)
+knitr::include_graphics("DIG_HTE_Forest_Plot.png")
+
 ```
 
 
@@ -159,7 +140,7 @@ The solid red curve shows the expected absolute risk reduction under a proportio
 
 #### 
 
-# Next Project Steps
+# Next Steps
 
 We plan to conduct further analysis on the International Stroke Trial and the National Lung screening Trial, to evaluate the generalizability of predictive approaches to treatment-effect heterogeneity across different clinical domain. We also plan to implement a machine-learning approach using causal forests to estimate individualized treatment effects [^5].
 
