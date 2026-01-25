@@ -22,7 +22,7 @@ author_textsize: "40pt"
 body_textsize: "20pt"
 output: 
   posterdown::posterdown_html:
-    self_contained: true
+    self_contained: false
     pandoc_args: --mathjax
     number_sections: false
 knit: pagedown::chrome_print
@@ -81,12 +81,65 @@ Analyses are based on published clinical trial data from the GUSTO-I trial [^3] 
 
 #### 
 
-# Early Results - Gusto
 
+# Early Results
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+library(table1)
+library(metafor)
+library(Hmisc)
+library(splines)
+```
+
+
+
+```{r DIG-fig-forest, echo=FALSE, message = FALSE, warning = FALSE, fig.cap="DIG- Trial, Forest plot of treatment heterogeneity", out.width="100%", fig.align="center"}
+
+
+
+
+# Load the fitted model (this RDS already contains the data in res2$data)
+res2 <- readRDS("dig_forest_baseline_risk_model.rds")
+data.subgroups <- res2$data
+
+
+par(mar=c(4,4,1,2))
+par(fg="#84003d")
+
+
+# Relabel subgroups
+data.subgroups[1:2, "name"] <- c("EF > 0.25", "EF <= 0.25")
+data.subgroups[3:4, "name"] <- c("Age < 70", "Age >= 70")
+data.subgroups[5:6, "name"] <- c("NYHA Class I/II", "NYHA Class III/IV")
+data.subgroups[7:10, "name"] <- paste("Risk Quarter", 1:4)
+data.subgroups[11, "name"] <- "Overall (Trial Average)"
+
+
+# Refit so the plot uses updated labels (and keep everything self-contained)
+res <- rma(ai=tevent, bi=tnoevent, ci=cevent, di=cnoevent,
+data=data.subgroups, measure="OR",
+slab=name, method="ML")
+
+
+forest(res, xlim=c(-1.2,0.8),
+at=log(c(0.5, 1, 2)),
+alim=c(log(0.2), log(2)),
+atransf=exp,
+adj=1,
+cex=.9, ylim=c(0,22),
+rows=c(1:2, (4:5)-.5, 6:7, 10:13, 15),
+xlab="", mlab="", psize=1, lwd=1.5, addfit=FALSE,
+col="#84003d",
+shade=FALSE)
+
+
+# Headers
+text(-1.2, 18, "DIG Trial Subgroups", font=2, adj=0, cex=.9)
+text(0.8, 18, "OR [95% CI]", font=2, adj=1, cex=.9)
+```
+
+DIG trial forest plot showing treatment-effect heterogeneity across baseline risk strata and key prognostic subgroups (ejection fraction, age, NYHA class, and risk quartiles). Points represent odds ratios and horizontal lines indicate 95% confidence intervals; the vertical line denotes no effect (OR = 1).
 
 ```{r fig-forest, echo=FALSE, message = FALSE, warning = FALSE, fig.cap="Forest plot of treatment heterogeneity", out.width="100%", fig.align="center"}
-
-library(metafor)
 
 # loading saved rds
 pack <- readRDS("gusto_forest_pack.rds")
@@ -119,13 +172,10 @@ text(-1.2, 18, "GUSTO-I trial", font=2, adj=0, cex=.9)
 
 ```
 
-Forest Plot displaying the PATH (risk-based) subgroups alongside traditional subgroups (Age, Sex, Location of MI). Low risk according to the linear predictor (lp<-2.36) implies low benefit (<1%); higher risk, higher benefit (>2%).
-
-
+Above is a Forest Plot which display the PATH (risk-based) subgroups alongside traditional subgroups (Age, Sex, Location of MI). Low risk according to the linear predictor (lp<-2.36) implies low benefit (<1%); higher risk, higher benefit (>2%).
 
 ```{r fig-proportional, echo=FALSE, message = FALSE, warning= FALSE, fig.cap="Absolute treatment benefit increases with baseline risk", out.width="100%", fig.align="center"}
 
-library(Hmisc)
 pack2 <- readRDS("gusto_benefit_pack.rds")
 
 
@@ -163,18 +213,7 @@ legend=c("Expected with proportional effect", "Grouped patients"))
 
 The solid maroon curve shows the expected absolute risk reduction under a proportional treatment effect model, illustrating increasing benefit with higher baseline risk. Blue points show observed absolute risk reductions within risk-based subgroups, with 95% confidence intervals.
 
-```{r fig-baseline, out.width='80%', echo=FALSE, fig.cap='Baseline Risk', fig.height=4}
-knitr::include_graphics("Baseline_Mortality_risk_by_risk_group.png") 
 
-```
-
-```{r fig-HTE, echo=FALSE, fig.cap="Forest plot of treatment heterogeneity", out.width="100%", fig.align="center"}
-
-knitr::include_graphics("DIG_HTE_Forest_Plot.png")
-
-```
-
-The solid maroon curve shows the expected absolute risk reduction under a proportional treatment effect model, illustrating increasing benefit with higher baseline risk. Blue points show observed absolute risk reductions within risk-based subgroups, with 95% confidence intervals.
 
 #### 
 
@@ -196,4 +235,5 @@ The code and datasets for this project can be viewed at our GitHub repository he
 
 
 # References
+
 
