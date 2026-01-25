@@ -71,6 +71,7 @@ Analyses are based on published clinical trial data from the GUSTO-I trial [^3] 
 [^4]: The Digitalis Investigation Group, Feb. 1997, doi: 10.1056/NEJM199702203360801
 
 • The GUSTO trial was an international, randomized clinical trial comparing four thrombolytic strategies in 41,021 patients with acute myocardial infarction, conducted from 1989–1993, showing that accelerated t-PA with intravenous heparin reduced 30-day mortality compared with streptokinase-based regimens.
+
 • The DIG trial was a randomized, double-blind, multicentre clinical trial of digoxin vs placebo in 6,800 heart-failure patients conducted from 1991–1995 with a mean 37-month follow-up, showing no reduction in overall mortality but fewer hospitalizations for worsening heart failure with digoxin.
 
 
@@ -80,14 +81,7 @@ Analyses are based on published clinical trial data from the GUSTO-I trial [^3] 
 
 #### 
 
-# Early Results
-
-
-```{r fig-baseline, out.width='80%', echo=FALSE, fig.cap='Baseline Risk', fig.height=4}
-knitr::include_graphics("Baseline_Mortality_risk_by_risk_group.png") 
-
-```
-
+# Early Results - Gusto
 
 
 ```{r fig-forest, echo=FALSE, message = FALSE, warning = FALSE, fig.cap="Forest plot of treatment heterogeneity", out.width="100%", fig.align="center"}
@@ -127,12 +121,6 @@ text(-1.2, 18, "GUSTO-I trial", font=2, adj=0, cex=.9)
 
 Above is a Forest Plot which display the PATH (risk-based) subgroups alongside traditional subgroups (Age, Sex, Location of MI). Low risk according to the linear predictor (lp<-2.36) implies low benefit (<1%); higher risk, higher benefit (>2%).
 
-```{r fig-HTE, echo=FALSE, fig.cap="Forest plot of treatment heterogeneity", out.width="100%", fig.align="center"}
-
-knitr::include_graphics("DIG_HTE_Forest_Plot.png")
-
-```
-
 
 ```{r fig-proportional, echo=FALSE, message = FALSE, warning= FALSE, fig.cap="Absolute treatment benefit increases with baseline risk", out.width="100%", fig.align="center"}
 
@@ -169,6 +157,16 @@ lty=c(2, NA), pch=c(NA, 1), lwd=c(3, 2),
 bty="n", col=c("#84003d", "blue"), cex=1.2,
 legend=c("Expected with proportional effect", "Grouped patients"))
 
+
+```
+```{r fig-baseline, out.width='80%', echo=FALSE, fig.cap='Baseline Risk', fig.height=4}
+knitr::include_graphics("Baseline_Mortality_risk_by_risk_group.png") 
+
+```
+
+```{r fig-HTE, echo=FALSE, fig.cap="Forest plot of treatment heterogeneity", out.width="100%", fig.align="center"}
+
+knitr::include_graphics("DIG_HTE_Forest_Plot.png")
 
 ```
 
