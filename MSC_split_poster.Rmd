@@ -1,0 +1,200 @@
+---
+title: Predictive Approaches to Treatment Effect Heterogeneity
+author:
+  - name: Tom Delany
+  - name: Misgana Ojamo
+    affil: 1
+affiliation:
+  - num: 1
+    address: School of Mathematical and Statistical Sciences, University of Galway
+logoleft_name: https&#58;//sport.universityofgalway.ie/assets/img/logo2.png
+
+poster_height: "594mm"
+poster_width: "841mm"
+column_numbers: 4
+column_margins: "0.5in"	
+primary_colour:	"#a80050"	# Secondary colour use for poster design.
+secondary_colour:	"#84003d"	# Main colour used for poster design.
+accent_colour:	"#e6007e"	# A third colour option.
+author_textcol: "white"
+title_textsize: "60pt"
+author_textsize: "40pt"
+body_textsize: "20pt"
+output: 
+  posterdown::posterdown_html:
+    self_contained: true
+    pandoc_args: --mathjax
+    number_sections: false
+knit: pagedown::chrome_print
+---
+
+```{css, echo=FALSE}
+div.logo_left{
+  width: 20%;
+}
+div.poster_title{
+  width: 80%;
+}
+.section h4 {
+    break-after: column;
+}
+div.footnotes {
+    font-size: 18pt;
+}
+```
+
+<!-- Don't change anything above, except the title and author names, unless you know what you are doing. -->
+
+# Background
+
+<!-- You can add references by inserting the following ^[reference details here] -->
+
+• Relying on average trial effects ignores that patients differ in demographics, disease severity, and behaviors - termed patient Heterogeneity (HTE) [^1], crucially, these factors may modify the effectiveness of treatment.
+
+• Traditional subgroup analyses (one variable at a time) have low power, high false positives, and aren’t truly patient-centred.
+
+• Predictive Approaches to Treatment effect Heterogeneity (PATH) model risk and treatment effects to estimate individual patient outcomes across treatments [^2].
+
+[^1]: Kent et al. 2020, doi: 10.7326/M18-3668
+[^2]: Willke et al. 2012, doi: 10.1186/1471-2288-12-185
+
+## Objectives
+
+1.  Implement and evaluate predictive HTE models across multiple clinical datasets
+2.  Compare risk-based and effects-based approaches in practice
+3.  Assess the clinical relevance and reporting implications of PATH analyses
+
+# Data Sources
+Analyses are based on published clinical trial data from the GUSTO-I trial [^3] and the Digitalis Investigation Group trial [^4]. 
+
+[^3]: The GUSTO investigators, 1993, doi: 10.1056/NEJM199309023291001
+[^4]: The Digitalis Investigation Group, Feb. 1997, doi: 10.1056/NEJM199702203360801
+
+• The GUSTO trial was an international, randomized clinical trial comparing four thrombolytic strategies in 41,021 patients with acute myocardial infarction, conducted from 1989–1993, showing that accelerated t-PA with intravenous heparin reduced 30-day mortality compared with streptokinase-based regimens.
+• The DIG trial was a randomized, double-blind, multicentre clinical trial of digoxin vs placebo in 6,800 heart-failure patients conducted from 1991–1995 with a mean 37-month follow-up, showing no reduction in overall mortality but fewer hospitalizations for worsening heart failure with digoxin.
+
+
+<!-- This #### below causes the columns to break -->
+
+<!-- You can change where you put these breaks, and the "column_numbers: 4" argument in the YAMLS header to change the layout of the poster, with care! -->
+
+#### 
+
+# Early Results
+
+
+```{r fig-baseline, out.width='80%', echo=FALSE, fig.cap='Baseline Risk', fig.height=4}
+knitr::include_graphics("Baseline_Mortality_risk_by_risk_group.png") 
+
+```
+
+
+
+```{r fig-forest, echo=FALSE, message = FALSE, warning = FALSE, fig.cap="Forest plot of treatment heterogeneity", out.width="100%", fig.align="center"}
+
+library(metafor)
+
+# loading saved rds
+pack <- readRDS("gusto_forest_pack.rds")
+
+data.subgroups <- pack$data_subgroups
+res <- pack$res
+
+par(mar=c(4,4,1,2))
+par(fg="#84003d")
+
+
+forest(res, 
+       xlim=c(-1.2,0.8), 
+       at=log(c(0.5, 1)), 
+       alim=c(log(0.2), log(2)), 
+       atransf=exp,
+       adj=1,
+       cex=.9, ylim=c(0, 22),
+       rows=c(1:2, (4:5)-.5, 6:7, 10:13, 15),
+       xlab="", mlab="", psize=1, lwd = 1.5, addfit=F,
+       col = "#84003d",
+       shade = F)
+
+# Right-side OR header (pulled left)
+text(.8, 18, "OR [95% CI]", font=2, adj=1, cex=.9)
+
+
+# Left-side title (pulled right)
+text(-1.2, 18, "GUSTO-I trial", font=2, adj=0, cex=.9)
+
+```
+
+Above is a Forest Plot which display the PATH (risk-based) subgroups alongside traditional subgroups (Age, Sex, Location of MI). Low risk according to the linear predictor (lp<-2.36) implies low benefit (<1%); higher risk, higher benefit (>2%).
+
+```{r fig-HTE, echo=FALSE, fig.cap="Forest plot of treatment heterogeneity", out.width="100%", fig.align="center"}
+
+knitr::include_graphics("DIG_HTE_Forest_Plot.png")
+
+```
+
+
+```{r fig-proportional, echo=FALSE, message = FALSE, warning= FALSE, fig.cap="Absolute treatment benefit increases with baseline risk", out.width="100%", fig.align="center"}
+
+library(Hmisc)
+pack2 <- readRDS("gusto_benefit_pack.rds")
+
+
+par(mar=c(4,4,1,2))
+par(fg="#84003d")
+
+
+plot(x = pack2$xp, y = pack2$p1exp,
+type="l", lty=1, lwd=4,
+xlim=c(0,.35), ylim=c(-0.007,.05),
+col="#84003d",
+xlab="Baseline risk", ylab="Benefit by tPA",
+cex.lab=1.2, las=1, bty="l")
+
+
+lines(x=c(0,.5), y=c(0,0), col="#84003d")
+
+
+histSpike(plogis(pack2$lp_no_tx), add=TRUE, side=1, nint=300, frac=.15)
+
+
+points(x=pack2$rate0, y=pack2$ratediff, pch=1, cex=1.5, lwd=2, col="blue")
+arrows(x0=pack2$rate0, x1=pack2$rate0,
+y0=pack2$CI[,2], y1=pack2$CI[,3],
+angle=90, code=3, len=.1, col="blue")
+
+
+legend("topleft",
+lty=c(2, NA), pch=c(NA, 1), lwd=c(3, 2),
+bty="n", col=c("#84003d", "blue"), cex=1.2,
+legend=c("Expected with proportional effect", "Grouped patients"))
+
+
+```
+
+The solid maroon curve shows the expected absolute risk reduction under a proportional treatment effect model, illustrating increasing benefit with higher baseline risk. Blue points show observed absolute risk reductions within risk-based subgroups, with 95% confidence intervals.
+
+#### 
+
+# Next Steps
+
+We plan to conduct further analysis on the International Stroke Trial[^5] and the National Lung screening Trial [^6], to evaluate the generalizability of predictive approaches to treatment-effect heterogeneity across different clinical domain. We also plan to implement a machine-learning approach using causal forests for patient risk prediction [^7].
+
+[^5]: Sandercock et al., 2011, doi: 10.1186/1745-6215-12-101
+[^6]: The National Lung Screening Trial Research Team, 2011, doi: 10.1056/NEJMoa1102873
+[^7]: Jawadekar et al., 2023, doi: 10.1093/aje/kwad043
+
+We will use the `grf` package for this.
+
+
+
+# GitHub
+
+The code and datasets for this project can be viewed at our GitHub repository here: <https://github.com/tomdelany04/PATH-Master/>
+
+
+
+# References
+
+
+
