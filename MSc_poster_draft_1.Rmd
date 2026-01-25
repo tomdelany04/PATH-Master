@@ -70,20 +70,18 @@ Analyses are based on published clinical trial data from the GUSTO-I trial [^3] 
 [^3]: The GUSTO investigators, 1993, doi: 10.1056/NEJM199309023291001
 [^4]: The Digitalis Investigation Group, Feb. 1997, doi: 10.1056/NEJM199702203360801
 
+• The GUSTO trial was an international, randomized clinical trial comparing four thrombolytic strategies in 41,021 patients with acute myocardial infarction, conducted from 1989–1993, showing that accelerated t-PA with intravenous heparin reduced 30-day mortality compared with streptokinase-based regimens.
+
+• The DIG trial was a randomized, double-blind, multicentre clinical trial of digoxin vs placebo in 6,800 heart-failure patients conducted from 1991–1995 with a mean 37-month follow-up, showing no reduction in overall mortality but fewer hospitalizations for worsening heart failure with digoxin.
+
+
 <!-- This #### below causes the columns to break -->
 
 <!-- You can change where you put these breaks, and the "column_numbers: 4" argument in the YAMLS header to change the layout of the poster, with care! -->
 
 #### 
 
-# Early Results
-
-
-```{r fig-baseline, out.width='80%', echo=FALSE, fig.cap='Baseline Risk', fig.height=4}
-knitr::include_graphics("Baseline_Mortality_risk_by_risk_group.png") 
-
-```
-
+# Early Results - Gusto
 
 
 ```{r fig-forest, echo=FALSE, message = FALSE, warning = FALSE, fig.cap="Forest plot of treatment heterogeneity", out.width="100%", fig.align="center"}
@@ -123,12 +121,6 @@ text(-1.2, 18, "GUSTO-I trial", font=2, adj=0, cex=.9)
 
 Above is a Forest Plot which display the PATH (risk-based) subgroups alongside traditional subgroups (Age, Sex, Location of MI). Low risk according to the linear predictor (lp<-2.36) implies low benefit (<1%); higher risk, higher benefit (>2%).
 
-```{r fig-HTE, echo=FALSE, fig.cap="Forest plot of treatment heterogeneity", out.width="100%", fig.align="center"}
-
-knitr::include_graphics("DIG_HTE_Forest_Plot.png")
-
-```
-
 
 ```{r fig-proportional, echo=FALSE, message = FALSE, warning= FALSE, fig.cap="Absolute treatment benefit increases with baseline risk", out.width="100%", fig.align="center"}
 
@@ -167,16 +159,28 @@ legend=c("Expected with proportional effect", "Grouped patients"))
 
 
 ```
+```{r fig-baseline, out.width='80%', echo=FALSE, fig.cap='Baseline Risk', fig.height=4}
+knitr::include_graphics("Baseline_Mortality_risk_by_risk_group.png") 
 
-The solid red curve shows the expected absolute risk reduction under a proportional treatment effect model, illustrating increasing benefit with higher baseline risk. Blue points show observed absolute risk reductions within risk-based subgroups, with 95% confidence intervals.
+```
+
+```{r fig-HTE, echo=FALSE, fig.cap="Forest plot of treatment heterogeneity", out.width="100%", fig.align="center"}
+
+knitr::include_graphics("DIG_HTE_Forest_Plot.png")
+
+```
+
+The solid maroon curve shows the expected absolute risk reduction under a proportional treatment effect model, illustrating increasing benefit with higher baseline risk. Blue points show observed absolute risk reductions within risk-based subgroups, with 95% confidence intervals.
 
 #### 
 
 # Next Steps
 
-We plan to conduct further analysis on the International Stroke Trial and the National Lung screening Trial, to evaluate the generalizability of predictive approaches to treatment-effect heterogeneity across different clinical domain. We also plan to implement a machine-learning approach using causal forests for patient risk prediction [^5].
+We plan to conduct further analysis on the International Stroke Trial[^5] and the National Lung screening Trial [^6], to evaluate the generalizability of predictive approaches to treatment-effect heterogeneity across different clinical domain. We also plan to implement a machine-learning approach using causal forests for patient risk prediction [^7].
 
-[^5]: Jawadekar et al. 2023, doi: 10.1093/aje/kwad043
+[^5]: Sandercock et al., 2011, doi: 10.1186/1745-6215-12-101
+[^6]: The National Lung Screening Trial Research Team, 2011, doi: 10.1056/NEJMoa1102873
+[^7]: Jawadekar et al., 2023, doi: 10.1093/aje/kwad043
 
 We will use the `grf` package for this.
 
@@ -187,8 +191,5 @@ We will use the `grf` package for this.
 The code and datasets for this project can be viewed at our GitHub repository here: <https://github.com/tomdelany04/PATH-Master/>
 
 
-
 # References
-
-
 
