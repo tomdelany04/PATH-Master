@@ -248,8 +248,53 @@ kable(as.data.frame((data.subgroups))) %>% kable_styling(full_width=F, position 
 library(metafor)
 par(mar=c(4,4,1,2))
 ### fit random-effects model (use slab argument to define "study" labels)
+
+##the following is for the poster only, used to export the neccessary rds file to create the forest
+###################################################################################################
 res <- rma(ai=tevent, bi=tnoevent, ci=cevent, di=cnoevent, data=data.subgroups, measure="OR",
            slab=name, method="ML")
+forest_pack <- list(
+  data_subgroups = data.subgroups,
+  res = res,
+
+  plot_settings = list(
+    par_mar = c(4,4,1,2),
+    fg = "maroon",
+
+    forest_args = list(
+      xlim = c(-8, 2.5),
+      at = log(c(0.5, 1)),
+      alim = c(log(0.2), log(2)),
+      atransf = exp,
+      ilab_xpos = c(-5,-4,-3,-2),
+      adj = 1,
+      cex = .9,
+      ylim = c(0, 24),
+      rows = c(1:2, (4:5)-.5, 6:7, 10:13, 15),
+      xlab = "",
+      mlab = "",
+      psize = 1,
+      lwd = 1.5,
+      addfit = FALSE,
+      col = "maroon",
+      shade = FALSE
+    ),
+
+    header = list(
+      col_positions = c(-5,-4,-3,-2, 2.2),
+      row = 18,
+      labels = c("n", "%mort", "n", "%mort", "OR    [95% CI]"),
+      trial_title = "GUSTO-I trial",
+      trial_title_x = -8,
+      group_labels = c("tPA", "SK"),
+      group_label_x = c(-4.5, -2.5),
+      group_label_row = 19
+    )
+  )
+)
+
+saveRDS(forest_pack, "gusto_forest_pack.rds")
+####################################################################################
 
 ### set up forest plot (with 2x2 table counts added); rows argument is used
 ### to specify exactly in which rows the outcomes will be plotted)
@@ -331,9 +376,19 @@ arrows(x0=rate0, x1=rate0, y0=CI[,2], y1=CI[,3], angle=90, code=3, len=.1, col =
 legend("topleft", lty=c(2,NA), pch=c(NA,1), lwd=c(3,2), bty='n', col = c("maroon", "blue"),cex=1.2,
        legend=c("Expected with proportional effect", "Grouped patients"))
 
+#######################################################
+#for poster
+benefit_pack <- list(
+  xp = xp,
+  p1exp = p1exp,
+  lp_no_tx = as.numeric(lp.no.tx),   # force numeric now
+  rate0 = as.numeric(rate0),
+  ratediff = as.numeric(ratediff),
+  CI = as.matrix(CI)
+)
 
-
-
+saveRDS(benefit_pack, "gusto_benefit_pack.rds")
+####################################################
 
 #Relaxation of the proportional effect
 #Inclusion of the linear predictor,

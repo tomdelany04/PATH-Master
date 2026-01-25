@@ -86,7 +86,7 @@ knitr::include_graphics("Baseline_Mortality_risk_by_risk_group.png")
 
 
 
-```{r fig-forest, echo=FALSE, fig.cap="Forest plot of treatment heterogeneity", out.width="100%", fig.align="center"}
+```{r fig-forest, echo=FALSE, message = FALSE, warning = FALSE, fig.cap="Forest plot of treatment heterogeneity", out.width="100%", fig.align="center"}
 
 library(metafor)
 
@@ -97,7 +97,7 @@ data.subgroups <- pack$data_subgroups
 res <- pack$res
 
 par(mar=c(4,4,1,2))
-par(fg="maroon")
+par(fg="#84003d")
 
 
 forest(res, 
@@ -109,7 +109,7 @@ forest(res,
        cex=.9, ylim=c(0, 22),
        rows=c(1:2, (4:5)-.5, 6:7, 10:13, 15),
        xlab="", mlab="", psize=1, lwd = 1.5, addfit=F,
-       col = "maroon",
+       col = "#84003d",
        shade = F)
 
 # Right-side OR header (pulled left)
@@ -130,9 +130,41 @@ knitr::include_graphics("DIG_HTE_Forest_Plot.png")
 ```
 
 
-```{r fig-proportional, echo=FALSE, fig.cap="Absolute treatment benefit increases with baseline risk", out.width="100%", fig.align="center"}
+```{r fig-proportional, echo=FALSE, message = FALSE, warning= FALSE, fig.cap="Absolute treatment benefit increases with baseline risk", out.width="100%", fig.align="center"}
 
-knitr::include_graphics("absolute_benefit.png")
+library(Hmisc)
+pack2 <- readRDS("gusto_benefit_pack.rds")
+
+
+par(mar=c(4,4,1,2))
+par(fg="#84003d")
+
+
+plot(x = pack2$xp, y = pack2$p1exp,
+type="l", lty=1, lwd=4,
+xlim=c(0,.35), ylim=c(-0.007,.05),
+col="#84003d",
+xlab="Baseline risk", ylab="Benefit by tPA",
+cex.lab=1.2, las=1, bty="l")
+
+
+lines(x=c(0,.5), y=c(0,0), col="#84003d")
+
+
+histSpike(plogis(pack2$lp_no_tx), add=TRUE, side=1, nint=300, frac=.15)
+
+
+points(x=pack2$rate0, y=pack2$ratediff, pch=1, cex=1.5, lwd=2, col="blue")
+arrows(x0=pack2$rate0, x1=pack2$rate0,
+y0=pack2$CI[,2], y1=pack2$CI[,3],
+angle=90, code=3, len=.1, col="blue")
+
+
+legend("topleft",
+lty=c(2, NA), pch=c(NA, 1), lwd=c(3, 2),
+bty="n", col=c("#84003d", "blue"), cex=1.2,
+legend=c("Expected with proportional effect", "Grouped patients"))
+
 
 ```
 
