@@ -159,6 +159,9 @@ legend=c("Expected with proportional effect", "Grouped patients"))
 
 
 ```
+
+The solid maroon curve shows the expected absolute risk reduction under a proportional treatment effect model, illustrating increasing benefit with higher baseline risk. Blue points show observed absolute risk reductions within risk-based subgroups, with 95% confidence intervals.
+
 ```{r fig-baseline, out.width='80%', echo=FALSE, fig.cap='Baseline Risk', fig.height=4}
 knitr::include_graphics("Baseline_Mortality_risk_by_risk_group.png") 
 
