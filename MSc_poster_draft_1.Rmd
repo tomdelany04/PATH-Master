@@ -49,11 +49,11 @@ div.footnotes {
 
 <!-- You can add references by inserting the following ^[reference details here] -->
 
-• Relying on average trial effects ignores that patients differ in demographics, disease severity, and behaviors (HTE) [^1], crucially, these factors may modify the effectiveness of treatment.
+• Relying on average trial effects ignores that patients differ in demographics, disease severity, and behaviors - termed patient Heterogeneity (HTE) [^1], crucially, these factors may modify the effectiveness of treatment.
 
 • Traditional subgroup analyses (one variable at a time) have low power, high false positives, and aren’t truly patient-centred.
 
-• Predictive approaches to treatment effect heterogeneity (PATH) model risk and treatment effects to estimate individual patient outcomes across treatments [^2].
+• Predictive Approaches to Treatment effect Heterogeneity (PATH) model risk and treatment effects to estimate individual patient outcomes across treatments [^2].
 
 [^1]: Kent et al. 2020, doi: 10.7326/M18-3668
 [^2]: Willke et al. 2012, doi: 10.1186/1471-2288-12-185
@@ -174,7 +174,7 @@ The solid red curve shows the expected absolute risk reduction under a proportio
 
 # Next Steps
 
-We plan to conduct further analysis on the International Stroke Trial and the National Lung screening Trial, to evaluate the generalizability of predictive approaches to treatment-effect heterogeneity across different clinical domain. We also plan to implement a machine-learning approach using causal forests to estimate individualized treatment effects [^5].
+We plan to conduct further analysis on the International Stroke Trial and the National Lung screening Trial, to evaluate the generalizability of predictive approaches to treatment-effect heterogeneity across different clinical domain. We also plan to implement a machine-learning approach using causal forests for patient risk prediction [^5].
 
 [^5]: Jawadekar et al. 2023, doi: 10.1093/aje/kwad043
 
