@@ -70,10 +70,73 @@ Analyses are based on published clinical trial data from the GUSTO-I trial [^3] 
 [^3]: The GUSTO investigators, 1993, doi: 10.1056/NEJM199309023291001
 [^4]: The Digitalis Investigation Group, Feb. 1997, doi: 10.1056/NEJM199702203360801
 
-• The GUSTO trial was an international, randomized clinical trial comparing four thrombolytic strategies in 41,021 patients with acute myocardial infarction, conducted from 1989–1993, showing that accelerated t-PA with intravenous heparin reduced 30-day mortality compared with streptokinase-based regimens.
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+library(table1)
+library(metafor)
+library(Hmisc)
+library(splines)
+library(dplyr)
+library(gtsummary)
+library(gt)
+```
 
-• The DIG trial was a randomized, double-blind, multicentre clinical trial of digoxin vs placebo in 6,800 heart-failure patients conducted from 1991–1995 with a mean 37-month follow-up, showing no reduction in overall mortality but fewer hospitalizations for worsening heart failure with digoxin.
 
+
+```{r, echo = F, message = FALSE, warning = FALSE}
+trial_summary <- data.frame(
+Characteristic = c("Patients (n)", "Treatments", "Years ran", "Design", "Follow-up", "Location", "Primary outcome"),
+`GUSTO` = c(41021, "Accelerated tPA vs streptokinase (± heparin)", "1989–1993", "Open-Label", "30 days", "15 Countries", "30-day mortality"),
+`DIG` = c(6800, "Digoxin vs placebo", "1991–1995", "Double-blind, placebo-controlled", "37 Months (mean)", "USA", "All-cause mortality")
+)
+
+
+trial_summary %>%
+gt() %>%
+tab_caption("Overview of GUSTO and DIG trials") %>%
+  
+tab_options(
+  
+table.border.top.color = "#84003d",
+table.border.bottom.color = "#84003d",
+table.border.left.color = "#84003d",
+table.border.right.color = "#84003d",
+
+
+
+table_body.hlines.color = "#84003d",
+table_body.vlines.color = "#84003d",
+
+column_labels.border.bottom.color = "#84003d",
+
+
+data_row.padding = px(16), 
+column_labels.padding = px(14)
+
+) %>% tab_style(
+style = cell_borders(sides = "right", color = "#84003d", weight = px(2)),
+locations = cells_body(columns = "GUSTO")
+) %>%
+tab_style(
+style = cell_borders(sides = "right", color = "#84003d", weight = px(2)),
+locations = cells_column_labels(columns = "GUSTO")
+) %>%
+
+tab_style(
+style = cell_text(size = px(18), color = "black"),
+locations = cells_body(everything())
+) %>%
+
+tab_style(
+style = cell_text(size = px(20), color = "black", weight = "bold"),
+locations = cells_column_labels(everything())
+)
+
+
+
+
+
+
+```
 
 <!-- This #### below causes the columns to break -->
 
@@ -83,58 +146,70 @@ Analyses are based on published clinical trial data from the GUSTO-I trial [^3] 
 
 
 # Early Results
-```{r, echo = FALSE, message = FALSE, warning = FALSE}
-library(table1)
-library(metafor)
-library(Hmisc)
-library(splines)
+
+
+```{r fig-descriptive_table_gusto, echo = F, message = FALSE, warning = FALSE, out.width='80%'}
+
+gusto_prep <- readRDS("gusto_prep.rds")
+
+
+gusto_tab1_overall <- table1(~ age + miloc + sex, data = gusto_prep)
+gusto_tab1_overall
+
+dig <- read.csv("DIG.csv")   
+dig_raw <- dig                                   
+
+dig.df <- dig %>%
+  select(TRTMT, AGE, EJF_PER, FUNCTCLS, DEATH, SYSBP, HEARTRTE, PREVMI) %>%
+  mutate(
+    TRTMT = factor(TRTMT, levels = c(0, 1), labels = c("Placebo", "Digoxin")),
+    DEATH = factor(DEATH, levels = c(0, 1), labels = c("Alive", "Dead")),
+    DEATHn = as.integer(DEATH == "Dead"),
+    Digoxin = as.integer(TRTMT == "Digoxin"),
+    Classification = factor(
+      FUNCTCLS, levels = c(1, 2, 3, 4),
+      labels = c("NYHA_1", "NYHA_2", "NYHA_3", "NYHA_4")
+    ),
+    Ejection_Fraction = EJF_PER,
+    sysbp_maxed = pmin(SYSBP, 120)
+  )
+
+# Early results
+dig_tab1 <- table1(
+  ~ AGE + Ejection_Fraction + Classification,
+  data = dig.df, digits = 2
+)
+
+dig_tab1
+
+
+
 ```
+
 
 
 
 ```{r DIG-fig-forest, echo=FALSE, message = FALSE, warning = FALSE, fig.cap="DIG- Trial, Forest plot of treatment heterogeneity", out.width="100%", fig.align="center"}
 
-
-
-
-# Load the fitted model (this RDS already contains the data in res2$data)
-res2 <- readRDS("dig_forest_baseline_risk_model.rds")
-data.subgroups <- res2$data
-
+res <- readRDS("dig_forest_baseline_risk_model.rds")
 
 par(mar=c(4,4,1,2))
 par(fg="#84003d")
 
-
-# Relabel subgroups
-data.subgroups[1:2, "name"] <- c("EF > 0.25", "EF <= 0.25")
-data.subgroups[3:4, "name"] <- c("Age < 70", "Age >= 70")
-data.subgroups[5:6, "name"] <- c("NYHA Class I/II", "NYHA Class III/IV")
-data.subgroups[7:10, "name"] <- paste("Risk Quarter", 1:4)
-data.subgroups[11, "name"] <- "Overall (Trial Average)"
-
-
-# Refit so the plot uses updated labels (and keep everything self-contained)
-res <- rma(ai=tevent, bi=tnoevent, ci=cevent, di=cnoevent,
-data=data.subgroups, measure="OR",
-slab=name, method="ML")
-
-
 forest(res, xlim=c(-1.2,0.8),
-at=log(c(0.5, 1, 2)),
-alim=c(log(0.2), log(2)),
-atransf=exp,
-adj=1,
-cex=.9, ylim=c(0,22),
-rows=c(1:2, (4:5)-.5, 6:7, 10:13, 15),
-xlab="", mlab="", psize=1, lwd=1.5, addfit=FALSE,
-col="#84003d",
-shade=FALSE)
+       at=log(c(0.5, 1, 2)),
+       alim=c(log(0.2), log(2)),
+       atransf=exp,
+       adj=1,
+       cex=.9, ylim=c(0,22),
+       rows=c(1:2, (4:5)-.5, 6:7, 10:13, 15),
+       xlab="", mlab="", psize=1, lwd=1.5, addfit=FALSE,
+       col="#84003d",
+       shade=FALSE)
 
+text(-1.2, 18, "DIG Trial", font=2, adj=0, cex=.9)
+text(0.8,  18, "OR [95% CI]", font=2, adj=1, cex=.9)
 
-# Headers
-text(-1.2, 18, "DIG Trial Subgroups", font=2, adj=0, cex=.9)
-text(0.8, 18, "OR [95% CI]", font=2, adj=1, cex=.9)
 ```
 
 DIG trial forest plot showing treatment-effect heterogeneity across baseline risk strata and key prognostic subgroups (ejection fraction, age, NYHA class, and risk quartiles). Points represent odds ratios and horizontal lines indicate 95% confidence intervals; the vertical line denotes no effect (OR = 1).
@@ -170,7 +245,9 @@ text(.8, 18, "OR [95% CI]", font=2, adj=1, cex=.9)
 # Left-side title (pulled right)
 text(-1.2, 18, "GUSTO-I trial", font=2, adj=0, cex=.9)
 
+
 ```
+
 
 Above is a Forest Plot which display the PATH (risk-based) subgroups alongside traditional subgroups (Age, Sex, Location of MI). Low risk according to the linear predictor (lp<-2.36) implies low benefit (<1%); higher risk, higher benefit (>2%).
 

@@ -32,7 +32,27 @@ tab1 <- table1( ~ age + Killip + sysbp + pulse + pmi + miloc + sex + day30 | tx,
 
 tab1
 
+####################### table trimmed for poster, to only include three subgroups
 
+
+gusto_prep <- gusto_raw %>%
+  filter(tx %in% c("SK","tPA")) %>%
+  transmute(
+    age = age,
+    miloc = as.factor(miloc),
+    sex = as.factor(sex),
+    cohort = factor("GUSTO")
+  )
+
+label(gusto_prep$age) <- "Age (years)"
+label(gusto_prep$miloc) <- "MI location"
+label(gusto_prep$sex) <- "Sex"
+label(gusto_prep$cohort) <- ""
+
+saveRDS(gusto_prep, "gusto_prep.rds")
+
+
+################################
 
 
 
