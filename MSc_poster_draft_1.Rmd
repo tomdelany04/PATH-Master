@@ -92,7 +92,10 @@ Characteristic = c("Patients (n)", "Treatments", "Years ran", "Design", "Follow-
 
 trial_summary %>%
 gt() %>%
-tab_caption("Overview of GUSTO and DIG trials") %>%
+tab_header("Overview of GUSTO and DIG trials") %>% 
+  
+tab_style(style = cell_text(size = px(28), weight = "bold", color = "#84003d"),
+locations = cells_title(groups = "title")) %>%
   
 tab_options(
   
@@ -101,13 +104,15 @@ table.border.bottom.color = "#84003d",
 table.border.left.color = "#84003d",
 table.border.right.color = "#84003d",
 
-
+table.border.bottom.width = px(3),
+table.border.top.width = px(3),
+table.border.left.width = px(3),
+table.border.right.width = px(3),
 
 table_body.hlines.color = "#84003d",
 table_body.vlines.color = "#84003d",
 
 column_labels.border.bottom.color = "#84003d",
-
 
 data_row.padding = px(16), 
 column_labels.padding = px(14)
@@ -119,6 +124,14 @@ locations = cells_body(columns = "GUSTO")
 tab_style(
 style = cell_borders(sides = "right", color = "#84003d", weight = px(2)),
 locations = cells_column_labels(columns = "GUSTO")
+) %>% 
+tab_style(
+style = cell_borders(sides = "right", color = "#84003d", weight = px(2)),
+locations = cells_body(columns = "Characteristic")
+) %>%
+tab_style(
+style = cell_borders(sides = "right", color = "#84003d", weight = px(2)),
+locations = cells_column_labels(columns = "Characteristic")
 ) %>%
 
 tab_style(
@@ -295,7 +308,7 @@ The solid maroon curve shows the expected absolute risk reduction under a propor
 
 # Next Steps
 
-We plan to conduct further analysis on the International Stroke Trial (IST) [^5] and the National Lung screening Trial (NLST) [^6], to evaluate the generalizability of PATH across different clinical domains (Table 2). We also plan to implement a machine-learning approach using causal forests for patient risk prediction. We will use the `grf` package for this.
+We plan to conduct further analysis on the International Stroke Trial (IST) [^5] and the National Lung screening Trial (NLST) [^6], to evaluate the generalizability of PATH across domains (Table 2). We also plan to implement a machine-learning approach using causal forests for patient risk prediction. We will use the `grf` package for this.
 
 ```{r, echo = F, message = FALSE, warning = FALSE}
 trial_summary <- data.frame(
@@ -307,7 +320,10 @@ Characteristic = c("Patients (n)", "Treatments", "Years ran", "Design", "Follow-
 
 trial_summary %>%
 gt() %>%
-tab_caption("Overview of IST and NLST trials") %>%
+tab_header("Overview of IST and NLST trials") %>% 
+  
+tab_style(style = cell_text(size = px(28), weight = "bold", color = "#84003d"),
+locations = cells_title(groups = "title")) %>%
   
 tab_options(
   
@@ -316,7 +332,10 @@ table.border.bottom.color = "#84003d",
 table.border.left.color = "#84003d",
 table.border.right.color = "#84003d",
 
-
+table.border.bottom.width = px(3),
+table.border.top.width = px(3),
+table.border.left.width = px(3),
+table.border.right.width = px(3),
 
 table_body.hlines.color = "#84003d",
 table_body.vlines.color = "#84003d",
@@ -334,7 +353,15 @@ locations = cells_body(columns = "IST")
 tab_style(
 style = cell_borders(sides = "right", color = "#84003d", weight = px(2)),
 locations = cells_column_labels(columns = "IST")
+) %>% tab_style(
+style = cell_borders(sides = "right", color = "#84003d", weight = px(2)),
+locations = cells_body(columns = "Characteristic")
 ) %>%
+tab_style(
+style = cell_borders(sides = "right", color = "#84003d", weight = px(2)),
+locations = cells_column_labels(columns = "Characteristic")
+) %>%
+
 
 tab_style(
 style = cell_text(size = px(18), color = "black"),
