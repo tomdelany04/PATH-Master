@@ -18,7 +18,7 @@ secondary_colour:	"#84003d"	# Main colour used for poster design.
 accent_colour:	"#e6007e"	# A third colour option.
 author_textcol: "white"
 title_textsize: "60pt"
-author_textsize: "40pt"
+author_textsize: "38pt"
 body_textsize: "20pt"
 output: 
   posterdown::posterdown_html:
@@ -58,7 +58,7 @@ div.footnotes {
 [^1]: Kent et al. 2020, doi: 10.7326/M18-3668
 [^2]: Willke et al. 2012, doi: 10.1186/1471-2288-12-185
 
-## Objectives
+### Objectives:
 
 1.  Implement and evaluate predictive HTE models across multiple clinical datasets
 2.  Compare risk-based and effects-based approaches in practice
@@ -78,6 +78,8 @@ library(splines)
 library(dplyr)
 library(gtsummary)
 library(gt)
+library(xfun)
+library(patchwork)
 ```
 
 
@@ -85,8 +87,8 @@ library(gt)
 ```{r, echo = F, message = FALSE, warning = FALSE}
 trial_summary <- data.frame(
 Characteristic = c("Patients (n)", "Treatments", "Years ran", "Design", "Follow-up", "Location", "Primary outcome"),
-`GUSTO` = c(41021, "Accelerated tPA vs Streptokinase (± heparin)", "1989–1993", "Open-Label", "30 days", "International - 15 Countries", "30-day mortality"),
-`DIG` = c(6800, "Digoxin vs Placebo", "1991–1995", "Double-blind, placebo-controlled", "37 Months (mean)", "USA - 302 Centres", "All-cause mortality")
+`GUSTO` = c("41,021", "Accelerated tPA vs Streptokinase (± heparin)", "1989–1993", "Open-Label", "30 days", "International - 15 Countries", "30-day mortality"),
+`DIG` = c("6,800", "Digoxin vs Placebo", "1991–1995", "Double-blind, placebo-controlled", "37 Months (mean)", "USA - 302 Centres", "All-cause mortality")
 )
 
 
@@ -114,8 +116,8 @@ table_body.vlines.color = "#84003d",
 
 column_labels.border.bottom.color = "#84003d",
 
-data_row.padding = px(16), 
-column_labels.padding = px(14)
+data_row.padding = px(13), 
+column_labels.padding = px(10)
 
 ) %>% tab_style(
 style = cell_borders(sides = "right", color = "#84003d", weight = px(2)),
@@ -135,12 +137,12 @@ locations = cells_column_labels(columns = "Characteristic")
 ) %>%
 
 tab_style(
-style = cell_text(size = px(18), color = "black"),
+style = cell_text(size = px(22), color = "black"),
 locations = cells_body(everything())
 ) %>%
 
 tab_style(
-style = cell_text(size = px(20), color = "black", weight = "bold"),
+style = cell_text(size = px(22), color = "black", weight = "bold"),
 locations = cells_column_labels(everything())
 )
 
@@ -161,31 +163,19 @@ locations = cells_column_labels(everything())
 # Early Results
 
 
-```{r fig-descriptive_table_gusto, echo = F, message = FALSE, warning = FALSE, out.width='80%'}
+```{r fig-table1, fig.cap="Key subgroups and their characteristics for DIG and GUSTO. MI - Myocardial Infarction, NYHA - New York Heart Association", echo = F, message = FALSE, warning = FALSE, out.width='100%', fig.align = "center"}
+#Gusto table (Create table - Make gt - Change styling)
 
-gusto_prep <- readRDS("gusto_prep.rds")
 
-gusto_prep %>%
-  select(age, miloc, sex) %>%
-  tbl_summary(
-    statistic = list(
-      age ~ "{mean} ({sd})",
-      all_categorical() ~ "{n} ({p}%)"
-    ),
-    missing = "no"
-  ) %>%
-  bold_labels() %>%
-  modify_caption("**Overall (N = {N})**") %>%
-  as_gt()
-
+knitr::include_graphics("combined.png")
 
 
 ```
 
+To evaluate how our effects stratified by baseline risk compare with effects observed in traditional subgroups, we generated the following forest plots for the DIG and GUSTO trials.
 
 
-
-```{r DIG-fig-forest, echo=FALSE, message = FALSE, warning = FALSE, fig.cap="DIG- Trial, Forest plot of treatment heterogeneity", out.width="100%", fig.align="center"}
+```{r DIG-fig-forest, echo=FALSE, message = FALSE, warning = FALSE, fig.cap="DIG- Trial, Forest plot of treatment heterogeneity. Points represent odds ratios and horizontal lines indicate 95% confidence intervals; the vertical line denotes no effect (OR = 1).", out.width="100%", fig.align="center"}
 
 res <- readRDS("dig_forest_baseline_risk_model.rds")
 
@@ -197,20 +187,18 @@ forest(res, xlim=c(-1.2,0.8),
        alim=c(log(0.2), log(2)),
        atransf=exp,
        adj=1,
-       cex=.9, ylim=c(0,22),
+       cex=.95, ylim=c(0,22),
        rows=c(1:2, (4:5)-.5, 6:7, 10:13, 15),
-       xlab="", mlab="", psize=1, lwd=1.5, addfit=FALSE,
+       xlab="", mlab="", psize=1.8, lwd=2, addfit=FALSE,
        col="#84003d",
        shade=FALSE)
 
-text(-1.2, 18, "DIG Trial", font=2, adj=0, cex=.9)
-text(0.8,  18, "OR [95% CI]", font=2, adj=1, cex=.9)
+text(-1.2, 18, "DIG Trial", font=2, adj=0, cex=1)
+text(0.8,  18, "OR [95% CI]", font=2, adj=1, cex=1)
 
 ```
 
-DIG trial forest plot showing treatment-effect heterogeneity across baseline risk strata and key prognostic subgroups (ejection fraction, age, NYHA class, and risk quartiles). Points represent odds ratios and horizontal lines indicate 95% confidence intervals; the vertical line denotes no effect (OR = 1).
-
-```{r fig-forest, echo=FALSE, message = FALSE, warning = FALSE, fig.cap="Forest plot of treatment heterogeneity", out.width="100%", fig.align="center"}
+```{r fig-forest, echo=FALSE, message = FALSE, warning = FALSE, fig.cap="Forest plot of treatment heterogeneity. Points represent odds ratios and horizontal lines indicate 95% confidence intervals; the vertical line denotes no effect (OR = 1).", out.width="100%", fig.align="center"}
 
 # loading saved rds
 pack <- readRDS("gusto_forest_pack.rds")
@@ -228,26 +216,22 @@ forest(res,
        alim=c(log(0.2), log(2)), 
        atransf=exp,
        adj=1,
-       cex=.9, ylim=c(0, 22),
+       cex=.95, ylim=c(0, 22),
        rows=c(1:2, (4:5)-.5, 6:7, 10:13, 15),
-       xlab="", mlab="", psize=1, lwd = 1.5, addfit=F,
-       col = "#84003d",
+       xlab="", mlab="", psize=1.8, lwd = 2, addfit=F,
+       col = "#84003d", 
        shade = F)
 
-# Right-side OR header (pulled left)
-text(.8, 18, "OR [95% CI]", font=2, adj=1, cex=.9)
+text(.8, 18, "OR [95% CI]", font=2, adj=1, cex=1)
 
 
-# Left-side title (pulled right)
-text(-1.2, 18, "GUSTO-I trial", font=2, adj=0, cex=.9)
+text(-1.2, 18, "GUSTO-I trial", font=2, adj=0, cex=1)
 
 
 ```
 
 
-Above is a Forest Plot which display the PATH (risk-based) subgroups alongside traditional subgroups (Age, Sex, Location of MI). Low risk according to the linear predictor (lp<-2.36) implies low benefit (<1%); higher risk, higher benefit (>2%).
-
-```{r fig-proportional, echo=FALSE, message = FALSE, warning= FALSE, fig.cap="Absolute treatment benefit increases with baseline risk", out.width="100%", fig.align="center"}
+```{r fig-proportional, echo=FALSE, message = FALSE, warning= FALSE, fig.cap="Absolute treatment benefit increases with baseline risk (GUSTO). The solid maroon curve shows the expected absolute risk reduction under a proportional treatment effect model, illustrating increasing benefit with higher baseline risk. Blue points show observed absolute risk reductions within risk-based subgroups, with 95% confidence intervals.", out.width="100%", fig.align="center"}
 
 pack2 <- readRDS("gusto_benefit_pack.rds")
 
@@ -283,21 +267,18 @@ legend=c("Expected with proportional effect", "Grouped patients"))
 
 
 ```
-
-The solid maroon curve shows the expected absolute risk reduction under a proportional treatment effect model, illustrating increasing benefit with higher baseline risk. Blue points show observed absolute risk reductions within risk-based subgroups, with 95% confidence intervals.
-
-
 #### 
 
 # Next Steps
 
-We plan to conduct further analysis on the International Stroke Trial (IST) [^5] and the National Lung screening Trial (NLST) [^6], to evaluate the generalizability of PATH across domains (Table 2). We also plan to implement a machine-learning approach using causal forests for patient risk prediction. We will use the `grf` package for this.
+We will conduct further analyses on the International Stroke Trial (IST) [^5] and the National Lung screening Trial (NLST) [^6], to evaluate the applicability of PATH across domains. We also plan to implement a machine-learning approach using causal forests for patient risk prediction. We will use the `grf` package for this.
 
 ```{r, echo = F, message = FALSE, warning = FALSE}
+
 trial_summary2 <- data.frame(
 Characteristic = c("Patients (n)", "Treatments", "Years ran", "Design", "Follow-up", "Location", "Primary outcome"),
-`IST` = c(19435, "Factorial (± Heparin ± Aspirin)", "1991–1996", "Open-Label", "14 days (early outcomes); 6 months (main)", "International - 36 Countries", "14-day and 6 month mortality"),
-`NLST` = c(53254, "CT screening vs. chest radiography", "2002-2009", "Randomized controlled trial", "Median 6.5 years", "USA - 33 centres", "Lung-cancer mortality")
+`IST` = c("19,435", "Factorial (± Heparin ± Aspirin)", "1991–1996", "Open-Label", "14 days (early outcomes); 6 months (main)", "International - 36 Countries", "14-day and 6 month mortality"),
+`NLST` = c("53,254", "CT screening vs. chest radiography", "2002-2009", "Randomized controlled trial", "Median 6.5 years", "USA - 33 centres", "Lung-cancer mortality")
 )
 
 
@@ -325,9 +306,8 @@ table_body.vlines.color = "#84003d",
 
 column_labels.border.bottom.color = "#84003d",
 
-
-data_row.padding = px(16), 
-column_labels.padding = px(14)
+data_row.padding = px(13), 
+column_labels.padding = px(10)
 
 ) %>% tab_style(
 style = cell_borders(sides = "right", color = "#84003d", weight = px(2)),
@@ -345,31 +325,23 @@ style = cell_borders(sides = "right", color = "#84003d", weight = px(2)),
 locations = cells_column_labels(columns = "Characteristic")
 ) %>%
 
-
 tab_style(
-style = cell_text(size = px(18), color = "black"),
+style = cell_text(size = px(22), color = "black"),
 locations = cells_body(everything())
 ) %>%
 
 tab_style(
-style = cell_text(size = px(20), color = "black", weight = "bold"),
+style = cell_text(size = px(22), color = "black", weight = "bold"),
 locations = cells_column_labels(everything())
 )
 
-
-
-
-
-
 ```
-
 [^5]: Sandercock et al., 2011, doi: 10.1186/1745-6215-12-101
 [^6]: The National Lung Screening Trial Research Team, 2011, doi: 10.1056/NEJMoa1102873
 
 # GitHub
 
 The code and datasets for this project can be viewed at our GitHub repository here: <https://github.com/tomdelany04/PATH-Master/>
-
 
 # References
 
