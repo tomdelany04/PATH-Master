@@ -51,7 +51,7 @@ div.footnotes {
 
 • Relying on average trial effects ignores that patients differ in demographics, disease severity, and behaviors - termed patient Heterogeneity (HTE) [^1], crucially, these factors may modify the effectiveness of treatment.
 
-• Traditional subgroup analyses (one variable at a time) have low power, high false positives, and aren’t truly patient-centred.
+• Traditional subgroup analyses (one variable at a time) are frequently underpowered, suffer from high rates of false poitives and miss complex, multivariate treatment response patterns
 
 • Predictive Approaches to Treatment effect Heterogeneity (PATH) model risk and treatment effects to estimate individual patient outcomes across treatments [^2].
 
@@ -65,7 +65,7 @@ div.footnotes {
 3.  Assess the clinical relevance and reporting implications of PATH analyses
 
 # Data Sources
-Analyses are based on published clinical trial data from the GUSTO-I trial (GUSTO) [^3] and the Digitalis Investigation Group trial (DIG) [^4]. 
+Analyses are based on published clinical trial data from the GUSTO-I trial (GUSTO) [^3] and the Digitalis Investigation Group trial (DIG) [^4]. The Characteristics of each trial are described below.
 
 [^3]: The GUSTO investigators, 1993, doi: 10.1056/NEJM199309023291001
 [^4]: The Digitalis Investigation Group, Feb. 1997, doi: 10.1056/NEJM199702203360801
@@ -306,7 +306,7 @@ table_body.vlines.color = "#84003d",
 
 column_labels.border.bottom.color = "#84003d",
 
-data_row.padding = px(13), 
+data_row.padding = px(10), 
 column_labels.padding = px(10)
 
 ) %>% tab_style(
