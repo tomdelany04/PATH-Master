@@ -37,9 +37,10 @@ tab1
 
 gusto_prep <- gusto_raw %>%
   filter(tx %in% c("SK","tPA")) %>%
+  filter(miloc != "Other") %>%
   transmute(
     age = age,
-    miloc = as.factor(miloc),
+    miloc = factor(miloc),
     sex = as.factor(sex),
     cohort = factor("GUSTO")
   )
@@ -497,5 +498,70 @@ legend("topleft",
                 "Grouped patients"))
 
 
+############################################################### - poster
+#Tables for characteristics
+
+#Gusto table (Create table - Make gt - Change styling)
+gusto_prep <- readRDS("gusto_prep.rds")
+
+tbl_gusto <- gusto_prep %>% select(age, miloc, sex) %>% tbl_summary() %>% modify_header(label = "**Variable**") %>% bold_labels()
+
+gt_tbl_gusto <- tbl_gusto %>% as_gt() %>% tab_header(title = md("**GUSTO**")) %>%
+  tab_options(
+    table.border.top.color = "#84003d",
+    table.border.bottom.color = "#84003d",
+    column_labels.border.bottom.color = "#84003d",
+    table_body.border.top.color = "#84003d",
+    table_body.border.bottom.color = "#84003d",
+    row_group.border.top.color = "#84003d",
+    row_group.border.bottom.color = "#84003d"
+  ) %>%
+  tab_style(
+    style = cell_text(size = px(18), color = "black"),
+    locations = cells_body(everything())
+  ) %>%
+
+  tab_style(
+    style = cell_text(size = px(20), color = "black", weight = "bold"),
+    locations = cells_column_labels(everything())
+  )
+
+#DIG table (Create table - Make gt - Change styling)
+
+dig_prep <- readRDS("dig_prep.rds")
+
+tbl_dig <- dig_prep %>% tbl_summary(include = c(AGE, EJF_PER, Classification), missing ="no") %>% modify_header(label = "**Variable**") %>% bold_labels()
+
+gt_tbl_dig <- tbl_dig %>% as_gt() %>% tab_header(title = md("**DIG**")) %>%
+  tab_options(
+    table.border.top.color = "#84003d",
+    table.border.bottom.color = "#84003d",
+    column_labels.border.bottom.color = "#84003d",
+    table_body.border.top.color = "#84003d",
+    table_body.border.bottom.color = "#84003d",
+    row_group.border.top.color = "#84003d",
+    row_group.border.bottom.color = "#84003d"
+  ) %>%
+  tab_style(
+    style = cell_text(size = px(18), color = "black"),
+    locations = cells_body(everything())
+  ) %>%
+
+  tab_style(
+    style = cell_text(size = px(20), color = "black", weight = "bold"),
+    locations = cells_column_labels(everything())
+  )
+
+unique(gusto_prep$miloc)
+gt_tbl_dig
+gt_tbl_gusto
+
+library(magick)
 
 
+img1 <- image_read("DIG_TBL_gt.png")
+img2 <- image_read("Gusto_tbl_gt.png")
+
+
+combined <- image_append(c(img1, img2), stack = FALSE)
+image_write(combined, "combined.png")
