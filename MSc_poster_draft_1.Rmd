@@ -65,7 +65,7 @@ div.footnotes {
 3.  Assess the clinical relevance and reporting implications of PATH analyses
 
 # Data Sources
-Analyses are based on published clinical trial data from the GUSTO-I trial [^3] and the Digitalis Investigation Group trial [^4]. 
+Analyses are based on published clinical trial data from the GUSTO-I trial (GUSTO) [^3] and the Digitalis Investigation Group trial (DIG) [^4]. 
 
 [^3]: The GUSTO investigators, 1993, doi: 10.1056/NEJM199309023291001
 [^4]: The Digitalis Investigation Group, Feb. 1997, doi: 10.1056/NEJM199702203360801
@@ -85,8 +85,8 @@ library(gt)
 ```{r, echo = F, message = FALSE, warning = FALSE}
 trial_summary <- data.frame(
 Characteristic = c("Patients (n)", "Treatments", "Years ran", "Design", "Follow-up", "Location", "Primary outcome"),
-`GUSTO` = c(41021, "Accelerated tPA vs streptokinase (± heparin)", "1989–1993", "Open-Label", "30 days", "15 Countries", "30-day mortality"),
-`DIG` = c(6800, "Digoxin vs placebo", "1991–1995", "Double-blind, placebo-controlled", "37 Months (mean)", "USA", "All-cause mortality")
+`GUSTO` = c(41021, "Accelerated tPA vs Streptokinase (± heparin)", "1989–1993", "Open-Label", "30 days", "International - 15 Countries", "30-day mortality"),
+`DIG` = c(6800, "Digoxin vs Placebo", "1991–1995", "Double-blind, placebo-controlled", "37 Months (mean)", "USA - 302 Centres", "All-cause mortality")
 )
 
 
@@ -295,15 +295,66 @@ The solid maroon curve shows the expected absolute risk reduction under a propor
 
 # Next Steps
 
-We plan to conduct further analysis on the International Stroke Trial[^5] and the National Lung screening Trial [^6], to evaluate the generalizability of predictive approaches to treatment-effect heterogeneity across different clinical domain. We also plan to implement a machine-learning approach using causal forests for patient risk prediction [^7].
+We plan to conduct further analysis on the International Stroke Trial (IST) [^5] and the National Lung screening Trial (NLST) [^6], to evaluate the generalizability of PATH across different clinical domains (Table 2). We also plan to implement a machine-learning approach using causal forests for patient risk prediction. We will use the `grf` package for this.
+
+```{r, echo = F, message = FALSE, warning = FALSE}
+trial_summary <- data.frame(
+Characteristic = c("Patients (n)", "Treatments", "Years ran", "Design", "Follow-up", "Location", "Primary outcome"),
+`IST` = c(19435, "Factorial (± Heparin ± Aspirin)", "1991–1996", "Open-Label", "14 days (early outcomes); 6 months (main)", "International - 36 Countries", "14-day and 6 month mortality"),
+`NLST` = c(53254, "CT screening vs. chest radiography", "2002-2009", "Randomized controlled trial", "Median 6.5 years", "USA - 33 centres", "Lung-cancer mortality")
+)
+
+
+trial_summary %>%
+gt() %>%
+tab_caption("Overview of IST and NLST trials") %>%
+  
+tab_options(
+  
+table.border.top.color = "#84003d",
+table.border.bottom.color = "#84003d",
+table.border.left.color = "#84003d",
+table.border.right.color = "#84003d",
+
+
+
+table_body.hlines.color = "#84003d",
+table_body.vlines.color = "#84003d",
+
+column_labels.border.bottom.color = "#84003d",
+
+
+data_row.padding = px(16), 
+column_labels.padding = px(14)
+
+) %>% tab_style(
+style = cell_borders(sides = "right", color = "#84003d", weight = px(2)),
+locations = cells_body(columns = "IST")
+) %>%
+tab_style(
+style = cell_borders(sides = "right", color = "#84003d", weight = px(2)),
+locations = cells_column_labels(columns = "IST")
+) %>%
+
+tab_style(
+style = cell_text(size = px(18), color = "black"),
+locations = cells_body(everything())
+) %>%
+
+tab_style(
+style = cell_text(size = px(20), color = "black", weight = "bold"),
+locations = cells_column_labels(everything())
+)
+
+
+
+
+
+
+```
 
 [^5]: Sandercock et al., 2011, doi: 10.1186/1745-6215-12-101
 [^6]: The National Lung Screening Trial Research Team, 2011, doi: 10.1056/NEJMoa1102873
-[^7]: Jawadekar et al., 2023, doi: 10.1093/aje/kwad043
-
-We will use the `grf` package for this.
-
-
 
 # GitHub
 
