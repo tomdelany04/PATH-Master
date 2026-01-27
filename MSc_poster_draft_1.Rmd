@@ -165,35 +165,18 @@ locations = cells_column_labels(everything())
 
 gusto_prep <- readRDS("gusto_prep.rds")
 
-
-gusto_tab1_overall <- table1(~ age + miloc + sex, data = gusto_prep)
-gusto_tab1_overall
-
-dig <- read.csv("DIG.csv")   
-dig_raw <- dig                                   
-
-dig.df <- dig %>%
-  select(TRTMT, AGE, EJF_PER, FUNCTCLS, DEATH, SYSBP, HEARTRTE, PREVMI) %>%
-  mutate(
-    TRTMT = factor(TRTMT, levels = c(0, 1), labels = c("Placebo", "Digoxin")),
-    DEATH = factor(DEATH, levels = c(0, 1), labels = c("Alive", "Dead")),
-    DEATHn = as.integer(DEATH == "Dead"),
-    Digoxin = as.integer(TRTMT == "Digoxin"),
-    Classification = factor(
-      FUNCTCLS, levels = c(1, 2, 3, 4),
-      labels = c("NYHA_1", "NYHA_2", "NYHA_3", "NYHA_4")
+gusto_prep %>%
+  select(age, miloc, sex) %>%
+  tbl_summary(
+    statistic = list(
+      age ~ "{mean} ({sd})",
+      all_categorical() ~ "{n} ({p}%)"
     ),
-    Ejection_Fraction = EJF_PER,
-    sysbp_maxed = pmin(SYSBP, 120)
-  )
-
-# Early results
-dig_tab1 <- table1(
-  ~ AGE + Ejection_Fraction + Classification,
-  data = dig.df, digits = 2
-)
-
-dig_tab1
+    missing = "no"
+  ) %>%
+  bold_labels() %>%
+  modify_caption("**Overall (N = {N})**") %>%
+  as_gt()
 
 
 
@@ -311,14 +294,14 @@ The solid maroon curve shows the expected absolute risk reduction under a propor
 We plan to conduct further analysis on the International Stroke Trial (IST) [^5] and the National Lung screening Trial (NLST) [^6], to evaluate the generalizability of PATH across domains (Table 2). We also plan to implement a machine-learning approach using causal forests for patient risk prediction. We will use the `grf` package for this.
 
 ```{r, echo = F, message = FALSE, warning = FALSE}
-trial_summary <- data.frame(
+trial_summary2 <- data.frame(
 Characteristic = c("Patients (n)", "Treatments", "Years ran", "Design", "Follow-up", "Location", "Primary outcome"),
 `IST` = c(19435, "Factorial (± Heparin ± Aspirin)", "1991–1996", "Open-Label", "14 days (early outcomes); 6 months (main)", "International - 36 Countries", "14-day and 6 month mortality"),
 `NLST` = c(53254, "CT screening vs. chest radiography", "2002-2009", "Randomized controlled trial", "Median 6.5 years", "USA - 33 centres", "Lung-cancer mortality")
 )
 
 
-trial_summary %>%
+trial_summary2 %>%
 gt() %>%
 tab_header("Overview of IST and NLST trials") %>% 
   
