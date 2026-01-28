@@ -266,6 +266,54 @@ legend=c("Expected with proportional effect", "Grouped patients"))
 
 
 ```
+
+
+```{r fig-proportional, echo=FALSE, message = FALSE, warning= FALSE, fig.cap="Absolute treatment benefit by baseline risk. The dashed maroon line represents the expected absolute benefit under a proportional treatment effect model, assuming a constant relative effect across baseline risk. Blue points show observed absolute risk differences within baseline-risk strata, with vertical bars indicating 95% confidence intervals.The histogram along the x-axis displays the distribution of baseline risk in the study population.", out.width="100%", fig.align="center"}
+
+library(Hmisc)      
+library(DescTools)  
+
+par(mar=c(5,5,2,2))
+par(fg="#84003d")
+plot(x = xp, y = p1exp,
+     type = "l", lty = 1, lwd = 3, col = "maroon",
+     xlim = c(0.15, 0.8), ylim = c(min(-0.01, min(ci_low, na.rm=TRUE)), 0.25),
+     xlab = "Baseline risk", ylab = "Benefit by Digoxin",
+     cex.lab = 1.2, las = 1, bty = "l")
+
+# zero line
+abline(h=0, col = "grey", lwd = 1)
+
+lines(xp, p1exp, lty=2, lwd=3, col = "maroon")
+
+
+# spike histogram along x-axis
+histSpike(baseline_risk_dist, add = TRUE, side = 1, nint = 300, frac = 0.15, col= "maroon")
+
+# grouped patients (quartiles): x = placebo risk in quartile, y = ARR
+points(x = as.numeric(rate0), y = as.numeric(ratediff),
+       pch = 1, cex = 1.5, lwd = 2, col = "blue")
+
+# CI bars
+arrows(x0 = as.numeric(rate0), x1 = as.numeric(rate0),
+       y0 = as.numeric(ci_low), y1 = as.numeric(ci_up),
+       angle = 90, code = 3, len = 0.08, col = "blue")
+
+
+legend("topleft",
+       lty = c(1, NA), pch = c(NA, 1),
+       lwd = c(3, 2), bty = "n",
+       col = c("maroon", "blue"), cex = 1.1,
+       legend = c("Expected with proportional effect", "Grouped patients"))
+
+
+# Save for poster use
+saveRDS(res, file = "dig_baseline_Vs_risk_plot.rds")
+
+
+```
+
+
 #### 
 
 # Next Steps
