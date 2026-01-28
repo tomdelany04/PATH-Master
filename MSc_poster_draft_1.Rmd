@@ -59,11 +59,10 @@ div.footnotes {
 [^2]: Willke et al. 2012, doi: 10.1186/1471-2288-12-185
 
 ### Objectives:
-
 1.  Implement and evaluate predictive HTE models across multiple clinical datasets
 2.  Assess the clinical relevance and reporting implications of PATH analyses
 
-# Data Sources
+# Our Trials
 Analyses are based on published clinical trial data from the GUSTO-I trial (GUSTO) [^3] and the Digitalis Investigation Group trial (DIG) [^4]. The Characteristics of each trial are described below.
 
 [^3]: The GUSTO investigators, 1993, doi: 10.1056/NEJM199309023291001
@@ -114,8 +113,8 @@ table_body.vlines.color = "#84003d",
 
 column_labels.border.bottom.color = "#84003d",
 
-data_row.padding = px(11), 
-column_labels.padding = px(10)
+data_row.padding = px(12), 
+column_labels.padding = px(11)
 
 ) %>% tab_style(
 style = cell_borders(sides = "right", color = "#84003d", weight = px(2)),
@@ -160,7 +159,6 @@ locations = cells_column_labels(everything())
 
 # Early Results
 
-
 ```{r fig-table1, fig.cap="Key subgroups and their characteristics for DIG and GUSTO. MI - Myocardial Infarction, NYHA - New York Heart Association, EJF_PER - Ejection fraction (percent)", echo = F, message = FALSE, warning = FALSE, out.width='100%', fig.align = "center"}
 #Gusto and DIG tables (Create table - Make gt - Change styling - combine and output as PNG)
 
@@ -169,15 +167,15 @@ knitr::include_graphics("combined.png")
 
 
 ```
+### PATH Compatible Forest Plots
 
 To evaluate how our effects stratified by baseline risk compare with effects observed in traditional subgroups, we generated the following forest plots for the DIG and GUSTO trials.
 
-
-```{r DIG-fig-forest, echo=FALSE, message = FALSE, warning = FALSE, fig.cap="DIG- Trial, Forest plot of treatment heterogeneity. Points represent odds ratios and horizontal lines indicate 95% confidence intervals; the vertical line denotes no effect (OR = 1).", out.width="100%", fig.align="center"}
+```{r DIG-fig-forest, echo=FALSE, message = FALSE, warning = FALSE, fig.cap="DIG Trial, Forest plot of treatment heterogeneity. Points represent odds ratios and horizontal lines indicate 95% confidence intervals.", out.width="100%", fig.align="center"}
 
 res <- readRDS("dig_forest_baseline_risk_model.rds")
 
-par(mar=c(2.5,4,1,2))
+par(mar=c(2.5,4,2,2))
 par(fg="#84003d")
 
 forest(res, xlim=c(-1.2,0.8),
@@ -196,7 +194,8 @@ text(0.8,  18, "OR [95% CI]", font=2, adj=1, cex=1)
 
 ```
 
-```{r fig-forest, echo=FALSE, message = FALSE, warning = FALSE, fig.cap="Forest plot of treatment heterogeneity. Points represent odds ratios and horizontal lines indicate 95% confidence intervals; the vertical line denotes no effect (OR = 1).", out.width="100%", fig.align="center"}
+
+```{r fig-forest, echo=FALSE, message = FALSE, warning = FALSE, fig.cap="GUSTO Trial. Forest plot of treatment heterogeneity. Points represent odds ratios and horizontal lines indicate 95% confidence intervals; the vertical line denotes no effect (OR = 1).", out.width="100%", fig.align="center"}
 
 # loading saved rds
 pack <- readRDS("gusto_forest_pack.rds")
@@ -204,7 +203,7 @@ pack <- readRDS("gusto_forest_pack.rds")
 data.subgroups <- pack$data_subgroups
 res <- pack$res
 
-par(mar=c(2.5,4,1,2))
+par(mar=c(2.5,4,6,2))
 par(fg="#84003d")
 
 
@@ -227,14 +226,19 @@ text(-1.2, 18, "GUSTO-I trial", font=2, adj=0, cex=1)
 
 
 ```
+### Absolute Benefit of Treatment by Baseline Risk
+• Absolute treatment benefit from a main-effects model **increases with baseline risk;** the solid maroon curve shows expected risk reduction under a proportional treatment effect assumption.
 
+• Proportional-effect and **spline-smoothed** (dashed red curve) approaches yield similar estimates of treatment benefit, indicating increasing absolute benefit with higher baseline risk.
 
-```{r fig-proportional, echo=FALSE, message = FALSE, warning= FALSE, fig.cap="Absolute treatment benefit increases with baseline risk (GUSTO). The solid maroon curve shows the expected absolute risk reduction under a proportional treatment effect model, illustrating increasing benefit with higher baseline risk. Blue points show observed absolute risk reductions within risk-based subgroups, with 95% confidence intervals.", out.width="100%", fig.align="center"}
+• The histogram at the bottom of the plot shows substantial **heterogeneity in baseline risk**, concentrated at low risk values.
+
+```{r fig-proportional, echo=FALSE, message = FALSE, warning= FALSE, fig.cap="Absolute treatment benefit increases with baseline risk across estimates in the GUSTO trial.", out.width="100%", fig.align="center"}
 
 pack2 <- readRDS("gusto_benefit_pack.rds")
 
 
-par(mar=c(4,4,1,2))
+par(mar=c(6,4,1,2))
 par(fg="#84003d")
 
 
@@ -266,7 +270,6 @@ legend=c("Expected with proportional effect","Spline Smoothing, 2df", "Grouped p
 
 
 ```
-
 
 #### 
 
