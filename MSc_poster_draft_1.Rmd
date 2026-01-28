@@ -49,11 +49,11 @@ div.footnotes {
 
 <!-- You can add references by inserting the following ^[reference details here] -->
 
-• Relying on average trial effects ignores that patients differ in demographics, disease severity, and behaviors - termed patient Heterogeneity (HTE) [^1], crucially, these factors may modify the effectiveness of treatment.
+• Clinical trials typically report average treatment effects This assumes homgenous patient response and ignores patients differences in demographics, disease severity, and behaviors - termed patient **Heterogeneity (HTE)** [^1], crucially, these factors may modify the effectiveness of treatment.
 
-• Traditional subgroup analyses (one variable at a time) are frequently underpowered, suffer from high rates of false poitives and miss complex, multivariate treatment response patterns
+• Traditional **subgroup analyses** attempt to address HTE by examining one variable at a time (e.g Male vs Female). However, these analyses are frequently underpowered, suffer from high rates of false positives and miss multivariate treatment response patterns.
 
-• Predictive Approaches to Treatment effect Heterogeneity (PATH) model risk and treatment effects to estimate individual patient outcomes across treatments [^2].
+• **Predictive Approaches to Treatment effect Heterogeneity (PATH)** shift the focus to individualized prediction, modelling risk and treatment effects across individuals [^2].
 
 [^1]: Kent et al. 2020, doi: 10.7326/M18-3668
 [^2]: Willke et al. 2012, doi: 10.1186/1471-2288-12-185
@@ -61,8 +61,7 @@ div.footnotes {
 ### Objectives:
 
 1.  Implement and evaluate predictive HTE models across multiple clinical datasets
-2.  Compare risk-based and effects-based approaches in practice
-3.  Assess the clinical relevance and reporting implications of PATH analyses
+2.  Assess the clinical relevance and reporting implications of PATH analyses
 
 # Data Sources
 Analyses are based on published clinical trial data from the GUSTO-I trial (GUSTO) [^3] and the Digitalis Investigation Group trial (DIG) [^4]. The Characteristics of each trial are described below.
@@ -116,7 +115,7 @@ table_body.vlines.color = "#84003d",
 
 column_labels.border.bottom.color = "#84003d",
 
-data_row.padding = px(13), 
+data_row.padding = px(11), 
 column_labels.padding = px(10)
 
 ) %>% tab_style(
@@ -179,7 +178,7 @@ To evaluate how our effects stratified by baseline risk compare with effects obs
 
 res <- readRDS("dig_forest_baseline_risk_model.rds")
 
-par(mar=c(4,4,1,2))
+par(mar=c(2.5,4,1,2))
 par(fg="#84003d")
 
 forest(res, xlim=c(-1.2,0.8),
@@ -206,7 +205,7 @@ pack <- readRDS("gusto_forest_pack.rds")
 data.subgroups <- pack$data_subgroups
 res <- pack$res
 
-par(mar=c(4,4,1,2))
+par(mar=c(2.5,4,1,2))
 par(fg="#84003d")
 
 
@@ -261,7 +260,7 @@ angle=90, code=3, len=.1, col="blue")
 
 
 legend("topleft",
-lty=c(2, NA), pch=c(NA, 1), lwd=c(3, 2),
+lty=c(1, NA), pch=c(NA, 1), lwd=c(3, 2),
 bty="n", col=c("#84003d", "blue"), cex=1.2,
 legend=c("Expected with proportional effect", "Grouped patients"))
 
