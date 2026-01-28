@@ -446,7 +446,7 @@ legend("topleft", lty=c(1,2,3,1), pch=c(NA,NA,NA,NA), lwd=c(4,3,2,3), bty='n',
                 "Loess"))
 
 
-g <- 4  # quarters
+g <- 4
 
 plot(x=xp, y=p1exp, type='l', lty=1, lwd=4,
      xlim=c(0,.35), ylim=c(-0.007,.05),
