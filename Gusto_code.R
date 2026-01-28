@@ -402,10 +402,11 @@ legend("topleft", lty=c(2,NA), pch=c(NA,1), lwd=c(3,2), bty='n', col = c("maroon
 benefit_pack <- list(
   xp = xp,
   p1exp = p1exp,
-  lp_no_tx = as.numeric(lp.no.tx),   # force numeric now
+  lp_no_tx = as.numeric(lp.no.tx),
   rate0 = as.numeric(rate0),
   ratediff = as.numeric(ratediff),
-  CI = as.matrix(CI)
+  CI = as.matrix(CI),
+  p2 = p2
 )
 
 saveRDS(benefit_pack, "gusto_benefit_pack.rds")
@@ -504,7 +505,8 @@ legend("topleft",
 #Gusto table (Create table - Make gt - Change styling)
 gusto_prep <- readRDS("gusto_prep.rds")
 
-tbl_gusto <- gusto_prep %>% select(age, miloc, sex) %>% tbl_summary() %>% modify_header(label = "**Variable**") %>% bold_labels()
+tbl_gusto <- gusto_prep %>% select(age, miloc, sex) %>% tbl_summary() %>%
+  modify_header(label = "**Variable**") %>% bold_labels()
 
 gt_tbl_gusto <- tbl_gusto %>% as_gt() %>% tab_header(title = md("**GUSTO**")) %>%
   tab_options(
@@ -530,7 +532,8 @@ gt_tbl_gusto <- tbl_gusto %>% as_gt() %>% tab_header(title = md("**GUSTO**")) %>
 
 dig_prep <- readRDS("dig_prep.rds")
 
-tbl_dig <- dig_prep %>% tbl_summary(include = c(AGE, EJF_PER, Classification), missing ="no") %>% modify_header(label = "**Variable**") %>% bold_labels()
+tbl_dig <- dig_prep %>% tbl_summary(include = c(AGE, EJF_PER, Classification), missing ="no") %>%
+  modify_header(label = "**Variable**") %>% bold_labels()
 
 gt_tbl_dig <- tbl_dig %>% as_gt() %>% tab_header(title = md("**DIG**")) %>%
   tab_options(
