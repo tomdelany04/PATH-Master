@@ -1,0 +1,35 @@
+---
+title: "MLApproaches"
+author: "Tom Delany"
+date: "2026-02-17"
+output: html_document
+---
+
+Machine learning approaches have also been assessed under the PATH framework...
+
+Xu et al. (2024). 
+
+This study compared different methods for generating risk-based subgroups for heterogeneity of treatment effect (HTE) analysis in a randomized clinical trial (ASPREE). Comparison was done between:
+
+1. A semi-parametric Cox proportional hazards model (extant risk model)
+
+2. A decision tree
+
+3. A random forest
+
+Similarly to our loigistic regression model, each model was used to:
+
+1. Predict baseline outcome risk,
+
+2. Partition participants into risk-based subgroups,
+
+3. Estimate treatment effects within those subgroups.
+
+Cox model was the only one to show significant HTE on the absolute scale.
+
+It would be interesting to see how this model may perform in risk based subgrouping against the established framework.
+
+```{r}
+knitr::include_graphics("Random forest flow.png")
+```
+
