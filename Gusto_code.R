@@ -568,3 +568,63 @@ img2 <- image_read("Gusto_tbl_gt.png")
 
 combined <- image_append(c(img1, img2), stack = FALSE)
 image_write(combined, "combined.png")
+
+
+############################### Causal approach
+
+library(grf)
+
+# Outcome must be numeric 0/1
+Y <- as.numeric(gusto$day30 == "Yes")
+
+# Treatment must be numeric 0/1
+W <- ifelse(gusto$tx == "tPA", 1, 0)
+
+
+# Covariate matrix (NO outcome, NO treatment)
+X <- model.matrix(
+  ~ age + Killip + sysbp + pulse + pmi + miloc + sex,
+  data = gusto
+)[, -1]  # remove intercept
+
+
+
+
+
+
+cf <- causal_forest(
+  X = X,
+  Y = Y,
+  W = W,
+  num.trees = 2000,
+  min.node.size = 50,
+  seed = 123
+)
+
+
+tau_hat <- predict(cf)$predictions
+
+
+
+baseline_risk <- plogis(gusto$lp)
+
+
+
+library(ggplot2)
+
+df_plot <- data.frame(
+  baseline_risk = baseline_risk,
+  tau_hat = tau_hat
+)
+
+ggplot(df_plot, aes(x = baseline_risk, y = tau_hat)) +
+  geom_point(alpha = 0.3) +
+  geom_smooth(method = "loess", se = FALSE, col = "red") +
+  labs(x = "Baseline Risk",
+       y = "Predicted Absolute Benefit (tPA)")
+
+
+
+
+
+

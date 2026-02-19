@@ -21,15 +21,38 @@ Similarly to our loigistic regression model, each model was used to:
 
 1. Predict baseline outcome risk,
 
-2. Partition participants into risk-based subgroups,
+2. Partition participants into risk-based subgroups, (Quintiles for RF)
 
 3. Estimate treatment effects within those subgroups.
 
 Cox model was the only one to show significant HTE on the absolute scale.
 
-It would be interesting to see how this model may perform in risk based subgrouping against the established framework.
+It would be interesting to see how this model may perform in risk based subgrouping against the established framework. Random Forest appears to be the best option, could use quintiles and deciles or quartiles like in previous approach.
+
+In line with PATH, quartiles could be plotted in terms of relative risk and absolute treatment effect.
+
+
 
 ```{r}
 knitr::include_graphics("Random forest flow.png")
 ```
+Plan:
+
+Build a prognostic model for outcome (death in gusto-1 and DIG)
+
+Generate predicted risk for each participant
+
+Divide into quantiles (quartiles, deciles, etc.)
+
+Estimate treatment effect within each risk stratum
+
+Compare effects across strata
+
+
+For Thesis:
+
+This will be used as a sensitivity analysis, we can essentially follow the same workflow (fit model to stratify based on prognostic variables - split into quartiles/deciles - plot relatively and absolutely). Quantify similarity using visualisations, potentially overlayed.
+
+
+NB. Check proportional effect as we did in logistic, follow same workflow. 
 
