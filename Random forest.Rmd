@@ -56,3 +56,34 @@ This will be used as a sensitivity analysis, we can essentially follow the same 
 
 NB. Check proportional effect as we did in logistic, follow same workflow. 
 
+
+
+Simao et al., 2021
+The method converts patient clinical variables → predicted survival probabilities → simple risk categories.
+
+Variable pre-selection using Cox regression <- Survival Random Forest (SRF) modeling <- Conversion of predictions into discrete risk groups
+
+Random Survival Forest. randomForestSRC. Data split:
+
+80% training
+
+20% testing 
+
+Number of trees tested: 50, 100, 200, 500, 1000
+
+Parameters tuned:
+
+mtry (number of variables per split)
+
+nodesize (minimum terminal node size)
+
+Compute survival probability at a specific time horizon
+
+In this paper: 60 months
+
+Method for us.
+
+Clinical Workflow:
+
+
+
