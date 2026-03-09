@@ -205,6 +205,6 @@ text(c(-4.5,-2.5), 19,
 
 
 
-########
-
+######## Code for the (Loess, proprtional, spline curve)
+xp <- seq(0.002, .35, by=0.001)
 
