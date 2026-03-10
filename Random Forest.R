@@ -241,7 +241,7 @@ lines(x=xp, y=l,  type='l', lty=1, lwd=3, col="black")
 # horizontal line
 lines(x=c(0,.5), y=c(0,0))
 # distribution of predicted
-histSpike(rf_risk_base, add=T, side=1, nint=300, frac=.1)
+histSpike(rf_risk_base, add=T, side=1, nint=300, frac=.15)
 
 points(x=rate_sk, y=ratediff, pch=1, cex=2, lwd=2, col="blue")
 arrows(x0=rate_sk, x1=rate_sk, y0=CI[,2], y1=CI[,3], angle=90, code=3,len=.1, col="blue")
