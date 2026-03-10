@@ -5,7 +5,12 @@ gusto_raw <- gusto   # always keep this untouched
 library(Hmisc)
 
 library(dplyr)
+library(table1)
+library(ranger)
+library(metafor)
 
+
+###### Relabelling
 gusto <- gusto_raw %>% filter(tx %in% c("SK","tPA")) %>%
   select(day30, tx, age, Killip, sysbp, pulse, pmi, miloc, sex) %>% mutate(
     day30 = factor(day30, levels = c(0, 1), labels = c("No", "Yes")), across(c(tx, Killip, pmi, miloc, sex), as.factor))
@@ -14,8 +19,6 @@ gusto$tpa <- ifelse(gusto$tx == "tPA", 1, 0)
 head(gusto)
 
 
-
-library(table1)
 
 label(gusto$age)    <- "Age (years)"
 label(gusto$Killip) <- "Killip class"
@@ -28,18 +31,11 @@ label(gusto$day30)  <- "30-day mortality"
 label(gusto$tx)     <- "Treatment"
 
 gusto$day30 <- factor(gusto$day30, levels = c("No","Yes"))
+
 ###################################################################
 ############################################ Random Forest Approach
 
 
-
-
-
-table(gusto$day30, useNA = "ifany")
-
-
-
-library(ranger)
 
 rf_fit0 <- ranger(
   day30 ~ age + Killip + sysbp + pulse + pmi + miloc + sex, #Random forests already model nonlinear relationships automatically. No need for Splines
@@ -48,163 +44,82 @@ rf_fit0 <- ranger(
   num.trees = 1000,
   seed = 88
 )
+########################################################################################################################
+rf_risk_base <- rf_fit0$predictions[, "Yes"] #Vector containing baseline mortality of death for each patient, predictions are "out of bag"
 
-rf_risk_base <- rf_fit0$predictions[, "Yes"]
+gusto$rf_groups0 <- cut2(rf_risk_base, g = 4) #Cutting the predictions into quartiles
 
-gusto$rf_groups0 <- cut2(rf_risk_base, g = 4)
-gusto$rf_groups0 <- factor(gusto$rf_groups0, ordered = TRUE)
+gusto$rf_groups0 <- factor(gusto$rf_groups0, ordered = TRUE) # Ensuring these are ordered
 
-groups_rf <- gusto$rf_groups0
+groups_rf <- gusto$rf_groups0 #Convenient storing of grouped variable
 
+#splitting risk groups by teatment arm
 group0_rf <- groups_rf[gusto$tpa == 0]
 group1_rf <- groups_rf[gusto$tpa == 1]
 
-gusto$day30n <- as.integer(gusto$day30 == "Yes")
-#Mortality rates per RF risk group
-rate0 <- prop.table(table(group0_rf, gusto$day30[gusto$tpa==0]),1 )[,"Yes"]
-rate1 <- prop.table(table(group1_rf, gusto$day30[gusto$tpa==1]),1 )[,"Yes"]
-ratediff <- rate0-rate1 # benefit of tPA by group
+#########################################################################################################################
 
+#Data Extraction for building forest plot
+#Mortality rates per RF risk group
+rate_sk <- prop.table(table(group0_rf, gusto$day30[gusto$tpa==0]),1 )[,"Yes"] #P(death | SK , RF risk quartile)
+rate_tpa <- prop.table(table(group1_rf, gusto$day30[gusto$tpa==1]),1 )[,"Yes"] #P(death | tPA , RF risk quartile)
+
+ratediff <- rate_sk - rate_tpa # benefit of tPA by group
+
+tab0 <- table(group0_rf, gusto$day30[gusto$tpa==0])
+tab1 <- table(group1_rf, gusto$day30[gusto$tpa==1])
 
 #Event counts for forest plot
-events1   <- table(group0_rf, gusto$day30[gusto$tpa==0])[,2]
-nevents1  <- table(group0_rf, gusto$day30[gusto$tpa==0])[,1]
 
-events2   <- table(group1_rf, gusto$day30[gusto$tpa==1])[,2]
-nevents2  <- table(group1_rf, gusto$day30[gusto$tpa==1])[,1]
+events1 <- tab0[,"Yes"]#Deaths in SK
+nevents1 <- tab0[,"No"]#Survivors is SK
 
-n1 <- events1 + nevents1
-n2 <- events2 + nevents2
+events2 <- tab1[,"Yes"]#Deaths in tPA
+nevents2 <- tab1[,"No"]#survivors in tPA
 
-gusto$day30n <- as.integer(gusto$day30 == "Yes")
+n1 <- events1 + nevents1 #Total patients for group SK
+n2 <- events2 + nevents2 #Total Patients for group tPA
 
-#Build subgroup dataset
-data.subgroups <- as.data.frame(matrix(nrow=(4+6+1), ncol=10))
+#######################################################################################
 
-colnames(data.subgroups) <- c(
-  "tevent", "tnoevent",
-  "cevent", "cnoevent",
-  "name", "type",
-  "tn", "pt",
-  "cn", "pc"
+
+#Dataframe for event counts
+rf_df <- data.frame(
+  subgroup = paste("RF Quartile", 1:4),
+  event_tpa = events2,
+  n_tpa     = n2,
+  event_sk  = events1,
+  n_sk      = n1
 )
 
-#Overall results
-data.subgroups[11,1:4] <- table(gusto$tpa, gusto$day30)[4:1]
+rf_df
 
 
-#RF risk groups
-data.subgroups[10:7,1:4] <- cbind(events2, nevents2, events1, nevents1)
-
-
-#Classical subgroups
-#sex
-data.subgroups[5,1:4] <- table(1-gusto$day30n,1-gusto$tpa, gusto$sex)[1:4]
-data.subgroups[6,1:4] <- table(1-gusto$day30n,1-gusto$tpa, gusto$sex)[5:8]
-
-#age
-data.subgroups[3,1:4] <- table(1-gusto$day30n,1-gusto$tpa, gusto$age>=75)[1:4]
-data.subgroups[4,1:4] <- table(1-gusto$day30n,1-gusto$tpa, gusto$age>=75)[5:8]
-
-
-#MI location
-data.subgroups[1,1:4] <- table(1-gusto$day30n,1-gusto$tpa, gusto$miloc=="Anterior")[1:4]
-data.subgroups[2,1:4] <- table(1-gusto$day30n,1-gusto$tpa, gusto$miloc=="Anterior")[5:8]
-
-#Labelling for Forest plot
-data.subgroups[11,5]   <- "Overall"
-data.subgroups[10:7,5] <- paste("RF Risk Quartile",1:4)
-
-data.subgroups[5:6,5]  <- c("Male sex","Female sex")
-data.subgroups[3:4,5]  <- c("Age <75","Age>=75")
-data.subgroups[1:2,5]  <- c("Other MI","Anterior")
-
-
-#subgroup type
-data.subgroups[11,6]   <- ""
-data.subgroups[10:7,6] <- rep("RF Risk-based subgroups",4)
-
-data.subgroups[1:6,6] <- c(
-  rep("Location",2),
-  rep("Age",2),
-  rep("Sex",2)
+#Metabin object is good for calculation of common effect and random effects estimates (e.g OR)
+rf_meta <- metabin(
+  event.e = event_tpa,
+  n.e     = n_tpa,
+  event.c = event_sk,
+  n.c     = n_sk,
+  studlab = subgroup,
+  data    = rf_df,
+  sm      = "OR",
+  method  = "Inverse",
+  incr    = 0.5,
+  random = FALSE
 )
 
-
-#Mortality %
-
-data.subgroups[,7] <- data.subgroups[,1] + data.subgroups[,2]
-
-data.subgroups[,8] <- paste(
-  round(100*data.subgroups[,1] / data.subgroups[,7] , 1),
-  "%",
-  sep=""
-)
-
-data.subgroups[,9] <- data.subgroups[,3] + data.subgroups[,4]
-
-data.subgroups[,10] <- paste(
-  round(100*data.subgroups[,3] / data.subgroups[,9] , 1),
-  "%",
-  sep=""
-)
-
-
-#FIT FOREST
-library(metafor)
-
-res <- rma(
-  ai = tevent,
-  bi = tnoevent,
-  ci = cevent,
-  di = cnoevent,
-  data = data.subgroups,
-  measure = "OR",
-  slab = name,
-  method = "ML"
-)
-
-
-#Forest Plot
-
-par(fg="maroon")
-
+#Basic Forest plot for random forest quartiles, no heterogeneity stats included
 forest(
-  res,
-  xlim=c(-8, 2.5),
-  at=log(c(0.5, 1)),
-  alim=c(log(0.2), log(2)),
-  atransf=exp,
-  ilab=cbind(data.subgroups$tn,
-             data.subgroups$pt,
-             data.subgroups$cn,
-             data.subgroups$pc),
-  ilab.xpos=c(-5,-4,-3,-2),
-  adj=1,
-  cex=.9,
-  ylim=c(0, 24),
-  rows=c(1:2, (4:5)-.5, 6:7, 10:13, 15),
-  xlab="",
-  mlab="",
-  psize=1,
-  lwd=1.5,
-  addfit=FALSE,
-  col="maroon",
-  shade=FALSE
+  rf_meta,
+  layout = "RevMan5",
+  leftcols = c("studlab","event.e","n.e","event.c","n.c"),
+  leftlabs = c("Subgroup","tPA events","tPA n","SK events","SK n"),
+  rightlabs = c("OR","95% CI"),
+  xlab = "Odds Ratio (tPA vs SK)",
+  col.diamond = "maroon",
+  col.square  = "maroon",
+  overall.hetstat = FALSE
 )
 
-text(c(-5,-4,-3,-2, 2.2), 18,
-     c("n", "%mort", "n", "%mort", "OR [95% CI]"),
-     font=2, adj=1, cex=.9)
-
-text(-8, 18, "GUSTO-I trial", font=2, adj=0, cex=.9)
-
-text(c(-4.5,-2.5), 19,
-     c("tPA", "SK"),
-     font=2, adj=1)
-
-
-
-######## Code for the (Loess, proprtional, spline curve)
-
-
+######################################################################################
