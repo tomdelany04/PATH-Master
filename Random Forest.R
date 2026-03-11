@@ -5,7 +5,6 @@ gusto_raw <- gusto   # always keep this untouched
 head(gusto_raw)
 
 library(Hmisc)
-
 library(dplyr)
 library(table1)
 library(ranger)
@@ -53,10 +52,8 @@ rf_fit0 <- ranger(
 rf_risk_base <- rf_fit0$predictions[, "Yes"] #Vector containing baseline mortality of death for each patient, predictions are "out of bag"
 
 gusto$rf_groups0 <- cut2(rf_risk_base, g = 4) #Cutting the predictions into quartiles
-gusto$rf_groups1 <- cut2(rf_risk_base, g = 10) #For deciles at the end
 
 gusto$rf_groups0 <- factor(gusto$rf_groups0, ordered = TRUE) # Ensuring these are ordered
-gusto$rf_groups1 <- factor(gusto$rf_groups1, ordered = TRUE)
 
 
 groups_rf <- gusto$rf_groups0 #Convenient storing of grouped variable
@@ -135,7 +132,13 @@ forest(
 #Absolute benefit Table - same as FHarrel, just using gt object, will spruce up for a final report
 library(DescTools)
 library(gt)
-CI      <- BinomDiffCI(x1 = events1, n1 = n1, x2 = events2, n2 = n2, method = "scorecc")
+CI      <-
+  BinomDiffCI(
+    x1 = events1,
+    n1 = n1,
+    x2 = events2,
+    n2 = n2,
+    method = "scorecc")
 
 colnames(CI) <- c("Absolute difference", "Lower CI", "Upper CI")
 rownames(CI) <- names(events1)
