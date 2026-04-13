@@ -1,0 +1,247 @@
+---
+title: "Predictive Approaches to Treatment Effect Heterogeneity"
+author:
+  - Tom Delany & Misgana Ojamo
+subtitle: |
+  Supervisor: Dr. Neil O'Leary,
+  School of Mathematical and Statistical Sciences, University of Galway
+format: 
+  revealjs: 
+    transition: slide
+    transition-speed: slow
+    footer: "[GitHub](https://github.com/tomdelany04/PATH-Master)"
+    logo: "images/University_Of_Galway_Logo.png"
+    slide-number: true
+editor: visual
+---
+
+## Agenda
+
+-   Introduction to the PATH statement
+-   Outline of Studies and Datasets
+-   Methodology
+-   Results
+-   Discussion and Conclusion
+
+::: {style="margin-top: 4rem; padding: 0.6rem 1rem; border: 1px solid #84003d; border-radius: 10px; display: inline-block; background: #ADD8E6; font-size: 0.8em;"}
+<ul style="margin: 0; padding-left: 1.2em;">
+
+<li>This slidedeck was built in ![RStudio logo](images/clipboard-3280506532.png){alt="R logo" height="1.2em" style="vertical-align: middle;"} using ![Quarto logo](images/quarto.png){alt="Quarto logo" height="1.2em" style="vertical-align: middle;"}</li>
+
+<li>Our Github is linked in The Footer ![Github logo](images/GitHub_Invertocat_Black.png){alt="Quarto logo" height="1.2em" style="vertical-align: middle;"}</li>
+
+</ul>
+:::
+
+## The PATH Statement - [Kent et al., 2019](https://pmc.ncbi.nlm.nih.gov/articles/PMC7750907/){style="color: blue;"}
+
+The goal of the PATH statement is to improve reporting of predictive approaches to treatment heterogeneity.
+
+::: {style="margin-top: 2rem; padding: 0.8rem 1.1rem; border: 1px solid #84003d; border-radius: 10px; display: inline-block; background: #ADD8E6; font-size: 0.8em;"}
+<ul style="margin: 0; padding-left: 1.2em;">
+<li>Treatment effects vary meaningfully across patients with different baseline risks.</li>
+<li>Traditional one-variable subgroups often miss important, clinically relevant differences.</li>
+<li>PATH combines patient characteristics to estimate more individualized treatment benefit.</li>
+</ul>
+:::
+
+## Our Studies and Datasets
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(gt)
+
+trial_summary <- data.frame(
+  Characteristic = c("Goal", "Patients (n)", "Years ran", "Design", "Follow-up"),
+  IST = c(
+    "Aspirin and heparin in acute ischaemic stroke",
+    "19,435",
+    "1991-1996",
+    "Open-label factorial RCT",
+    "14 days and 6 months"
+  ),
+  DIG = c(
+    "Digoxin for mortality and hospitalization in heart failure",
+    "6,800",
+    "1991-1995",
+    "Double-blind placebo-controlled RCT",
+    "Mean 37 months"
+  ),
+  GUSTO = c(
+    "Thrombolytic strategies in acute myocardial infarction",
+    "41,021",
+    "1990-1993",
+    "Open-label RCT",
+    "30 days"
+  )
+)
+
+trial_summary %>%
+  gt() %>%
+  cols_label(
+    Characteristic = "Characteristic",
+    IST = md("[International Stroke Trial](https://pubmed.ncbi.nlm.nih.gov/?term=9174558)"),
+    DIG = md("[DIG Trial](https://pubmed.ncbi.nlm.nih.gov/9036306/)"),
+    GUSTO = md("[GUSTO-I Trial](https://pubmed.ncbi.nlm.nih.gov/8204123/)")
+  ) %>%
+  tab_options(
+    table.border.top.color = "#84003d",
+    table.border.bottom.color = "#84003d",
+    table.border.left.color = "#84003d",
+    table.border.right.color = "#84003d",
+    table.border.top.width = px(2),
+    table.border.bottom.width = px(2),
+    table.border.left.width = px(2),
+    table.border.right.width = px(2),
+    table_body.hlines.color = "#84003d",
+    table_body.vlines.color = "#84003d",
+    column_labels.border.bottom.color = "#84003d",
+    data_row.padding = px(12),
+    column_labels.padding = px(10)
+  ) %>%
+  tab_style(
+    style = cell_borders(sides = "right", color = "#84003d", weight = px(2)),
+    locations = cells_body(columns = c("Characteristic", "IST", "DIG"))
+  ) %>%
+  tab_style(
+    style = cell_borders(sides = "right", color = "#84003d", weight = px(2)),
+    locations = cells_column_labels(columns = c("Characteristic", "IST", "DIG"))
+  ) %>%
+  tab_style(
+    style = cell_text(size = px(22), color = "black"),
+    locations = cells_body(everything())
+  ) %>%
+  tab_style(
+    style = cell_text(size = px(23), color = "black", weight = "bold"),
+    locations = cells_column_labels(everything())
+  )
+```
+
+::: {style="margin-top: 1.5rem; padding: 0.6rem 1rem; border: 1px solid #84003d; border-radius: 10px; display: inline-block; background: #ADD8E6; font-size: 0.8em;"}
+All three trials were cardiovascular, used binary outcomes, and were conducted in the early to mid-1990s.
+:::
+
+
+## Methodology
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(DiagrammeR)
+library(htmltools)
+
+div(
+  grViz(
+    "digraph {
+
+    graph [layout = dot, rankdir = LR, splines = ortho, nodesep = 0.9, ranksep = 0.2]
+    node  [fontname = Helvetica, fontsize = 10, style = filled, fillcolor = white, color = gray35]
+    edge  [color = gray30, arrowsize = 0.6]
+
+    IST    [label = 'IST', shape = cylinder, fillcolor = 'azure']
+    GUSTO  [label = 'GUSTO-1', shape = cylinder, fillcolor = 'azure']
+    DIG    [label = 'DIG', shape = cylinder, fillcolor = 'azure']
+
+    clean   [label = 'Data cleaning']
+    feature [label = 'Feature selection']
+    rf      [label = 'Random Forest']
+    logit   [label = 'Logistic Regression']
+    quart   [label = 'Risk Quartiles']
+
+    rel     [label = 'Forest Plot', shape = doubleoctagon, fillcolor = 'lightsalmon']
+    abs     [label = 'Absolute Benefit Plot', shape = doubleoctagon, fillcolor = 'lightsalmon']
+    classical [label = 'Classical\\nsubgroups', shape = box, fillcolor = 'mistyrose']
+
+    IST   -> clean
+    GUSTO -> clean
+    DIG   -> clean
+
+    clean   -> feature
+    feature -> rf
+    feature -> logit
+
+    rf    -> quart
+    logit -> quart
+
+    quart -> rel
+    quart -> abs
+
+    classical -> rel [style = dashed, color = firebrick, fontcolor = firebrick]
+  }"
+  )
+)
+```
+
+
+
+
+
+
+## Relative Effects
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.width=11, fig.height=6.5}
+library(Hmisc)
+library(meta)
+
+IST_df <- read.csv("IST_corrected.csv")
+
+IST_df$aspirin <- ifelse(IST_df$RXASP == "Y", 1, 0)
+IST_df$death14 <- factor(IST_df$ID14, levels = c(0, 1), labels = c("No", "Yes"))
+
+IST_df$SEX <- as.factor(IST_df$SEX)
+IST_df$RCONSC <- as.factor(IST_df$RCONSC)
+IST_df$RATRIAL <- as.factor(IST_df$RATRIAL)
+IST_df$RSLEEP <- as.factor(IST_df$RSLEEP)
+IST_df$RCT <- as.factor(IST_df$RCT)
+IST_df$RVISINF <- as.factor(IST_df$RVISINF)
+
+rf_fit_IST <- ranger::ranger(
+  death14 ~ AGE + SEX + RCONSC + RSBP + RATRIAL + RDELAY +
+    RSLEEP + RCT + RVISINF + RDEF1 + RDEF2 + RDEF3 + RDEF4 + RDEF5,
+  data = IST_df,
+  probability = TRUE,
+  num.trees = 1000,
+  seed = 88
+)
+
+IST_risk_base <- rf_fit_IST$predictions[, "Yes"]
+IST_df$IST_rf_groups0 <- cut2(IST_risk_base, g = 4)
+IST_df$IST_rf_groups0 <- factor(IST_df$IST_rf_groups0, ordered = TRUE)
+
+group_control_rf <- IST_df$IST_rf_groups0[IST_df$aspirin == 0]
+group_aspirin_rf <- IST_df$IST_rf_groups0[IST_df$aspirin == 1]
+
+control_tab <- table(group_control_rf, IST_df$death14[IST_df$aspirin == 0])
+aspirin_tab <- table(group_aspirin_rf, IST_df$death14[IST_df$aspirin == 1])
+
+rf_df <- data.frame(
+  subgroup = c("Lowest risk", "Low risk", "Moderate risk", "Highest risk"),
+  event_aspirin = aspirin_tab[, "Yes"],
+  n_aspirin = rowSums(aspirin_tab),
+  event_control = control_tab[, "Yes"],
+  n_control = rowSums(control_tab)
+)
+
+rf_meta <- metabin(
+  event.e = event_aspirin,
+  n.e = n_aspirin,
+  event.c = event_control,
+  n.c = n_control,
+  studlab = subgroup,
+  data = rf_df,
+  sm = "OR",
+  method = "Inverse",
+  incr = 0.5,
+  random = FALSE
+)
+
+forest(
+  rf_meta,
+  layout = "RevMan5",
+  leftcols = c("studlab", "event.e", "n.e", "event.c", "n.c"),
+  leftlabs = c("Quartile", "Aspirin events", "Aspirin n", "Control events", "Control n"),
+  rightlabs = c("OR", "95% CI"),
+  xlab = "Odds ratio for 14-day mortality (aspirin vs control)",
+  col.diamond = "#84003d",
+  col.square = "#84003d",
+  overall = FALSE,
+  overall.hetstat = FALSE
+)
+```
