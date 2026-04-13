@@ -35,10 +35,54 @@ label(IST_df$death14) <- "14-day mortality"
 ################################################################################################################
 #Logistic Approach
 
+#Base variable Selection - The list of all included variables is as follows: age, sex, level of consciousness at presentation,
+#presence of wake-up stroke,
+# underlying atrial fibrillation, visible infarction on computed tomography, heparinization within 24 h, aspirin administration within
+# 3 days, systolic blood pressure, presence of deficits (including face, upper and lower extremities, dysphasia,
+#hemianopsia, visuospatial disorder, and other neurological deficits), and aspirin or heparin administration at
+#presentation. Age and systolic blood pressure were continuous variables; sex and level of consciousness were
+#categorical; all other variables were binomial.
+
+#########################
+
+table1(~death14|aspirin, data= IST_df)
+
+
+library(broom)
+
+mod_IST <- glm(death14 ~ aspirin, data = IST_df, family = binomial) #Perform logistic regression
 
 
 
+or_tbl <- tidy(mod_IST, exponentiate = TRUE, conf.int = TRUE) #odds ratio table
 
+
+
+or_clean <- or_tbl %>% #or_tbl will include standard error, statistic,
+  select(Odds_Ratio = estimate,
+         Lower_CI  = conf.low,
+         Upper_CI  = conf.high,
+         p.value
+  )
+
+or_clean
+
+
+###Log model recoding
+motor_deficit = ifelse(RDEF2 == "Y" | RDEF3 == "Y", 1, 0)
+consc_bin = ifelse(RCONSC == "F", 0, 1)
+afib = ifelse(RATRIAL == "Y", 1, 0)
+ct_infarct = ifelse(RVISINF == "Y", 1, 0)
+
+#Adjusted based on
+
+sysbp_maxed = with(gusto,pmin(sysbp, 120))
+
+model <- glm(
+  FDEAD ~ AGE + consc_bin + ct_infarct + motor_deficit + afib,
+  data = ist_data,
+  family = binomial(link = "logit")
+)
 
 
 

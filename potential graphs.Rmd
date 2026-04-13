@@ -11,7 +11,7 @@ knitr::include_graphics("Random forest flow.PNG")
 
 
 ```{r}
-# Create a flow chart to describe my ML workflow -------------------------------
+#a flow chart to describe PATH workflow -------------------------------
 library(DiagrammeR)
 
 PATH_workflow <- grViz(
@@ -60,3 +60,16 @@ PATH_workflow <- grViz(
 
 PATH_workflow
 ```
+
+
+
+MC simulation under NUll etc...
+
+
+y~trt*(risk)
+
+y~trt + risk
+
+
+is there evidence of treatment baseline interaction
+
