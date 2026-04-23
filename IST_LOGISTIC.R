@@ -9,6 +9,9 @@ library(table1)
 library(ranger)
 library(meta)
 library(gt)
+library(DescTools)
+library(gt)
+
 
 IST_df$aspirin <- ifelse(IST_df$RXASP == "Y", 1, 0)
 IST_df$death14 <- factor(IST_df$ID14, levels = c(0, 1), labels = c("No", "Yes"))
@@ -101,6 +104,7 @@ groups_logit <- IST_df$IST_logit_groups
 group_control <- groups_logit[IST_df$aspirin == 0]
 group_aspirin <- groups_logit[IST_df$aspirin == 1]
 
+
 ############################################################
 # Event rates per group
 
@@ -113,7 +117,6 @@ rate_aspirin <- prop.table(
 )[, "Yes"]
 
 ratediff <- rate_control - rate_aspirin
-
 ############################################################
 # Counts for meta-analysis
 
@@ -258,3 +261,201 @@ ggplot(IST_df, aes(x = IST_risk_base)) +
   geom_histogram(bins = 15) +
   xlim(0, 0.4) +
   labs(x = "Predicted baseline risk", y = "Count")
+
+############################################################
+# Spline regression plot:
+library(splines)
+model1 <- glm(
+  death14 ~ aspirin + lp,
+  data = IST_df,
+  family = binomial
+)
+
+#spline approach
+knots <- quantile(IST_df$lp, probs = c(0.25, 0.5, 0.75))
+
+model2 <- glm(
+  death14 ~ aspirin + ns(lp, df = 3) + aspirin:lp,
+  data = IST_df,
+  family = binomial
+)
+
+#predictions for proportional
+xp <- seq(0.002, 0.5, by = 0.001)
+logxp0 <- log(xp / (1 - xp))
+
+p1exp <- plogis(logxp0) - plogis(logxp0 + coef(model1)[2])
+
+#Predictions for spline
+quantiles <- quantile(IST_df$lp, probs = c(0.01, 0.99))
+
+xp2 <- seq(quantiles[1], quantiles[2], length.out = 500)
+
+newdata_control <- data.frame(lp = xp2, aspirin = 0)
+newdata_treated <- data.frame(lp = xp2, aspirin = 1)
+
+p_control <- predict(model2, newdata = newdata_control, type = "response")
+p_treated <- predict(model2, newdata = newdata_treated, type = "response")
+
+p2exp <- p_control - p_treated
+
+
+
+
+plot(
+  x = xp,
+  y = p1exp,
+  type = "l",
+  lty = 2,
+  lwd = 3,
+  xlim = c(0, 0.35),
+  ylim = c(-0.01, 0.04),
+  col = "red",
+  xlab = "Baseline risk",
+  ylab = "Benefit by aspirin",
+  las = 1,
+  bty = "l"
+)
+
+lines(
+  x = plogis(xp2),
+  y = p2exp,
+  col = "darkgreen",
+  lwd = 3
+)
+
+lines(x = c(0, 0.4), y = c(0, 0))
+
+# Distribution of predicted baseline risk (logistic)
+histSpike(IST_risk_base, add = TRUE, side = 1, nint = 300, frac = 0.15)
+
+# Grouped results
+points(x = rate_control, y = ratediff, pch = 1, cex = 2, lwd = 2, col = "blue")
+arrows(
+  x0 = rate_control,
+  x1 = rate_control,
+  y0 = CI[, 2],
+  y1 = CI[, 3],
+  angle = 90,
+  code = 3,
+  len = 0.1,
+  col = "blue"
+)
+
+legend(
+  "topleft",
+  lty = c(2, 1, NA),
+  pch = c(NA, NA, 1),
+  lwd = c(3, 3, 2),
+  bty = "n",
+  col = c("red", "darkgreen", "blue"),
+  legend = c(
+    "Proportional effect",
+    "Spline model",
+    "Grouped patients"
+  )
+)
+
+
+range(IST_risk_base)
+
+
+
+
+#########################################
+#cleaner plot
+library(ggplot2)
+library(microshades)
+
+#Data prep
+curve_df <- data.frame(risk = xp, prop = p1exp)
+spline_df <- data.frame(risk = plogis(xp2), spline = p2exp)
+
+group_df <- data.frame(
+  risk = rate_control,
+  benefit = ratediff,
+  lower = CI[,2],
+  upper = CI[,3]
+)
+
+hist_df <- data.frame(risk = IST_risk_base)
+
+# plot
+ggplot() +
+
+  # baseline risk distribution (scaled density)
+  geom_density(
+    data = hist_df,
+    aes(x = risk, y = ..scaled.. * 0.015),
+    fill = "grey80",
+    color = NA,
+    alpha = 0.2
+  ) +
+
+  # proportional model
+  geom_line(
+    data = curve_df,
+    aes(x = risk, y = prop),
+    linetype = "dashed",
+    linewidth = 1.7,
+    colour = "#F09163"
+  ) +
+
+  # spline model
+  geom_line(
+    data = spline_df,
+    aes(x = risk, y = spline),
+    linewidth = 1.7,
+    color = "#4292C6"
+  ) +
+
+  # grouped estimates
+  geom_point(
+    data = group_df,
+    aes(x = risk, y = benefit),
+    size = 3,
+    color = "#238B45"
+  ) +
+
+  geom_errorbar(
+    data = group_df,
+    aes(x = risk, ymin = lower, ymax = upper),
+    width = 0.005,
+    alpha = 0.2
+  ) +
+
+  # zero line
+  geom_hline(yintercept = 0, linetype = "dotted") +
+
+  coord_cartesian(xlim = c(0, 0.5), ylim = c(-0.02, 0.035)) +
+
+  labs(
+    x = "Baseline risk",
+    y = "Benefit by aspirin (absolute risk difference)"
+  ) +
+
+  theme_classic(base_size = 13) +
+  theme(
+    axis.ticks = element_blank(),
+    axis.line = element_line(color = "grey60", linewidth = 0.5),
+  ) +
+
+  annotate(
+    "text",
+    x = 0.4,
+    y = 0.016,
+    label = "Proportional effect",
+    color = "#F09163",
+    hjust = 0,
+    size = 6
+  ) +
+
+  annotate(
+    "text",
+    x = 0.3,
+    y = 0.0085,
+    label = "Spline (df = 3)",
+    color = "#4292C6",
+    hjust = 0,
+    size = 6
+  )
