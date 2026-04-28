@@ -1,0 +1,164 @@
+---
+title: Predictive Approaches to Treatment Effect Heterogeneity
+authors:
+  - name: Tom Delany
+    thanks: Use footnote for providing further information about author (webpage, alternative address)---*not* for acknowledging funding agencies. Optional.
+    department: Department of Mathematical and Statistical Sciences
+    affiliation: University of Galway
+    location: Galway, Ireland
+    email: d.tom2@universityofgalway.ie
+  - name: Misgana Ojamo
+    department: Department of Mathematical and Statistical Sciences
+    affiliation: University of Galway
+    location: Galway, Ireland
+    email: M.Ojamo1@universityofgalway.ie
+abstract: |
+  Enter the text of your abstract here.
+keywords:
+  - blah
+  - blee
+  - bloo
+  - these are optional and can be removed
+bibliography: MSc -Thesis.bib
+biblio-style: unsrt
+output: rticles::arxiv_article
+header-includes:
+  - \providecommand{\pandocbounded}[1]{#1}
+  - \usepackage[HTML]{xcolor}
+---
+
+# Introduction
+## Clinical Motivation
+The majority of treatment decisions made by regulatory bodies, payers, physicians and other stakeholders is based on data pertaining to average treatment effects @willkeConceptsTheoryEvidence2012. Randomised-controlled trials remain the gold-standard for the determination of casual effects. Reliance on average effects from small cohorts of selected participants in clinical trial is not always representative of the effects in an individual patient. This nonrandom variance in the magnitude and direction of treatment effects between individuals is referred to as the heterogeneity of treatment effect.
+
+This is not a contemporary observation and is one that was identified long before formal statistical approaches to model this heterogeneity were deployed @albertAssessingTreatmentEffect2005. Currently, subgroup analyses are the most common method of exploring treatment-effect heterogeneity in clinical trials. The approach involves dividing trial participants into groups defined by a particular characteristic such as Sex or Age. Subgroup analyses are simple to implement and easily interpretable to key stakeholders, however, they can suffer from a number of limitations. Well-established limitations include high rates of false positives and negatives and their inability to inform individual treatment decisions. These analyses generally consider one factor at a time and therefore cannot account for the fact that patients have multiple characteristics that jointly influence treatment response @kentPredictiveApproachesTreatment2020. Recently there has been increased interest in multivariate models for treatment effect heterogeneity. 
+
+## Predictive Approaches to Treatment Effect Heterogeneity
+
+Predictive approaches to treatment effect heterogeneity (PATH) are methods of increasing importance in precision medicine, designed to determine the reason for different responses in patients to the same treatment. To achieve this, risk- and effect-based models are constructed, aiming to provide a patient's expected outcome at the individual level with versus without treatment. These models incorporate all relevant patient attributes simultaneously, allowing for a comprehensive characterization of inter-individual differences in treatment effect.
+
+## Methods to employ PATH
+
+There are two approaches to predictive HTE analysis: risk-based modelling and effects-based modelling. Risk-based modelling involves constructing a multivariable model that predicts individual baseline risk, after which treatment effects are examined across strata of predicted risk. Effects-based modelling, in contrast, involves the direct estimation of individual treatment effects and is often performed using regression models, though more recently nonparametric machine-learning algorithms have been applied. At the time of the release of the PATH statement in 2020, risk-based modelling was the more substantiated of the two approaches, while effects-based models were viewed as promising—particularly in larger datasets. In recent years, there has been growing interest in reducing model overfitting in effects-based models. Overfitting occurs when a model begins to describe random error rather than true relationships between variables, substantially reducing its generalizability. The following section will discuss both risk-based and effects-based approaches in more detail, outlining their use cases, limitations, and how future developments may guide their clinical deployment.
+
+## Risk-Based
+
+Risk-based approaches stratify patients according to their baseline risk of the primary trial outcome. Stratification is typically performed using an existing or an in-house multivariable prediction model, from which estimates of relative and absolute treatment effects are computed across prespecified risk strata. This approach is practical and clinically important because a patient’s baseline risk of experiencing a bad outcome without treatment determines the absolute benefit they can gain from therapy. Since absolute benefit, defined as the difference in risk between receiving and not receiving treatment, is mathematically tied to baseline risk, stratifying patients often reveals meaningful variations in benefit. For example, a patient at very low risk may gain little absolute benefit, and if the treatment carries even a small risk of harm, the trade-off may be unfavourable.
+
+## Effect-Models
+
+Effects-based models involve the construction of a regression model directly on randomized controlled trial data, where individual treatment effects are estimated using multivariate regression that includes treatment, covariate, and interaction terms. Non-parametric machine learning approaches have also been used to examine individual treatment effects, including reward-based Q-learning techniques. This approach develops models directly on trial data to predict treatment effects by including terms for factors that might change the relative effectiveness of the treatment. While promising, these models can be complex and are vulnerable to statistical issues such as overfitting, where results appear strong in the analysed data but do not predict accurately in new patients.
+
+## Clinical Relevance of PATH
+
+Enables precision medicine and personalized treatment.
+
+## PATH Reporting
+
+Standardized reporting guidance (PATH statement).
+
+## Context of Datasets
+
+```{r, echo = FALSE}
+library(gt)
+
+trial_summary <- data.frame(
+  Characteristic = c("Goal", "Patients (n)", "Years ran", "Design", "Follow-up"),
+  IST = c(
+    "Aspirin and heparin in acute ischaemic stroke",
+    "19,435",
+    "1991-1996",
+    "Open-label factorial RCT",
+    "14 days and 6 months"
+  ),
+  DIG = c(
+    "Digoxin for mortality and hospitalization in heart failure",
+    "6,800",
+    "1991-1995",
+    "Double-blind placebo-controlled RCT",
+    "37 months (Mean)"
+  ),
+  GUSTO = c(
+    "Thrombolytic strategies in acute myocardial infarction",
+    "41,021",
+    "1990-1993",
+    "Open-label RCT",
+    "30 days"
+  ),
+  VITAL = c(
+    "Vitamin D3 & Omega-3 for cancer/CVD prevention",
+    "25,871",
+    "2011-2017",
+    "Placebo-Controlled Randomized Trial, Factorial (2 by 2)",
+    "5.3 years (Median)"
+  )
+)
+
+trial_summary %>%
+  gt() %>%
+  cols_label(
+    Characteristic = "Characteristic",
+    IST = md("[International Stroke Trial](https://pubmed.ncbi.nlm.nih.gov/?term=9174558)"),
+    DIG = md("[DIG Trial](https://pubmed.ncbi.nlm.nih.gov/9036306/)"),
+    GUSTO = md("[GUSTO-I Trial](https://pubmed.ncbi.nlm.nih.gov/8204123/)"),
+    VITAL = md("[VITAL](https://www.nejm.org/doi/pdf/10.1056/NEJMoa1809944)")
+  ) %>%
+  cols_width(
+    Characteristic ~ px(120),
+    everything() ~ px(140)
+  ) %>%
+  tab_options(
+    table.width = px(700),
+    table.font.size = px(10)
+  )
+```
+
+
+### International Stroke Trial
+
+The international stroke trial was an open label randomised trial of 19,435 patients assigned to 4 arms (aspirin, subcutaneous heparin, both and no intervention). The primary outcome found no significant reduction in deaths at 14 days, with the only difference in cause of death being an increased number of deaths from haemorrhagic stroke and extracranial bleeding.
+
+## Model Types to be Used
+
+- This can be edited throughout project, depending on which models we employ.
+- Risk model for GUSTO dataset
+
+## Hypothesis
+
+## Aims
+
+## Objectives
+
+# Methods
+
+```{r, echo = FALSE}
+#a flow chart to describe PATH workflow -------------------------------
+library(DiagrammeR)
+PATH_Workflow <- readRDS("C:/Users/tomde/Desktop/MSc Thesis-Git/PATH-Master/PATH_Workflow.rds")
+PATH_Workflow
+```
+
+
+
+
+# Results
+
+## Trial Characteristics
+
+## Relative Treatment Effects
+
+
+
+
+## Absolute Treatment Effects
+
+
+
+```{r, echo = FALSE, warning = FALSE}
+library(ggplot2)
+aspirin_plot <- readRDS("C:/Users/tomde/Desktop/MSc Thesis-Git/PATH-Master/aspirin_plot.rds")
+aspirin_plot
+```
+
+
+# References
