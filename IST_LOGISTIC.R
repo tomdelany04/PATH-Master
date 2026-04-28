@@ -386,7 +386,7 @@ ggplot() +
   # baseline risk distribution (scaled density)
   geom_density(
     data = hist_df,
-    aes(x = risk, y = ..scaled.. * 0.015),
+    aes(x = risk, y = after_stat(scaled) * 0.015),
     fill = "grey80",
     color = NA,
     alpha = 0.2
@@ -458,4 +458,9 @@ ggplot() +
     color = "#4292C6",
     hjust = 0,
     size = 6
+  ) +
+
+  labs(
+    title = "Absolute Benefit of Aspirin Across Baseline Risk"
   )
+
