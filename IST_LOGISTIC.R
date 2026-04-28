@@ -128,6 +128,21 @@ aspirin_tab <- table(group_aspirin, IST_df$death14[IST_df$aspirin == 1])
 aspirin_events <- aspirin_tab[, "Yes"]
 aspirin_n <- rowSums(aspirin_tab)
 
+
+
+###################################################################
+# Classic subgroups for relative
+IST_df$age_group <- cut(
+  IST_df$AGE,
+  breaks = c(0, 65, 75, 120),
+  labels = c("<65", "65–75", "75+")
+)
+
+IST_df$sex <- factor(IST_df$SEX)
+
+IST_df$afib_group <- factor(IST_df$afib, labels = c("No AF", "AF"))
+
+
 ############################################################
 # Forest plot inputs
 
@@ -381,7 +396,7 @@ group_df <- data.frame(
 hist_df <- data.frame(risk = IST_risk_base)
 
 # plot
-ggplot() +
+aspirin_plot <- ggplot() +
 
   # baseline risk distribution (scaled density)
   geom_density(
@@ -464,3 +479,7 @@ ggplot() +
     title = "Absolute Benefit of Aspirin Across Baseline Risk"
   )
 
+aspirin_plot
+
+
+saveRDS(aspirin_plot, "aspirin_plot.rds")
