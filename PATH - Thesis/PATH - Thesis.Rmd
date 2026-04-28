@@ -147,6 +147,23 @@ PATH_Workflow
 
 ## Relative Treatment Effects
 
+```{r, echo = FALSE, warning = FALSE}
+library(meta)
+logit_meta <- readRDS("C:/Users/tomde/Desktop/MSc Thesis-Git/PATH-Master/logit_meta.rds")
+
+forest(
+  logit_meta,
+  layout = "RevMan5",
+  leftcols = c("studlab", "event.e", "n.e", "event.c", "n.c"),
+  leftlabs = c("Subgroup", "Aspirin events", "Aspirin n", "Control events", "Control n"),
+  rightlabs = c("OR", "95% CI"),
+  xlab = "Odds Ratio (aspirin vs control)",
+  col.diamond = "maroon",
+  col.square = "maroon",
+  overall.hetstat = FALSE
+)
+
+```
 
 
 
