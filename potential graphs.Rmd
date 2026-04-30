@@ -25,6 +25,7 @@ PATH_workflow <- grViz(
     IST    [label = 'IST', shape = cylinder, fillcolor = 'azure']
     GUSTO  [label = 'GUSTO-1', shape = cylinder, fillcolor = 'azure']
     DIG    [label = 'DIG', shape = cylinder, fillcolor = 'azure']
+    VITAL  [label = 'VITAL', shape = cylinder, fillcolor = 'azure']
 
     # Core workflow
     clean   [label = 'Data cleaning']
@@ -43,6 +44,7 @@ PATH_workflow <- grViz(
     IST   -> clean
     GUSTO -> clean
     DIG   -> clean
+    VITAL -> clean
 
     clean   -> feature
     feature -> rf
@@ -59,6 +61,9 @@ PATH_workflow <- grViz(
 )
 
 PATH_workflow
+
+
+saveRDS(PATH_workflow, "PATH_workflow.rds")
 ```
 
 

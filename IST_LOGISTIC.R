@@ -179,6 +179,8 @@ forest(
   overall.hetstat = FALSE
 )
 
+saveRDS(logit_meta, "logit_meta.rds")
+
 ############################################################
 # Absolute benefit with CI
 
