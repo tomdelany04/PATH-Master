@@ -12,6 +12,7 @@ library(survival)
 library(survminer)
 
 
+
 #Data load
 vital <- read_sas("VITAL_trial_NEJM_2022.sas7bdat")
 names(vital)
