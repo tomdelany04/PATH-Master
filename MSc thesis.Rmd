@@ -16,6 +16,7 @@ theme_gtsummary_journal(journal = "jama")
 
 ###Introduction
 ##Currently a draft containing some background information from reading. There are some subheadings with no text, these are just planned sections of our final introduction.
+
 **Clinical Motivation and Heterogeneity of Treatment Effect**
 Currently, the majority of treatment decisions made by regulatory bodies, payers, physicians and other stakeholders is based on data pertaining to average treatment effects @Willke2012. Randomised-controlled trials remain the gold-standard for the determination of casual effects. Reliance on average effects from small cohorts of selected participants in clinical trial is not always representative of the effects in an individual patient. This nonrandom variance in the magnitude and direction of treatment effects between individuals is referred to as the heterogeneity of treatment effect.
 

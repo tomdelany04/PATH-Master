@@ -245,3 +245,8 @@ forest(
   overall.hetstat = FALSE
 )
 ```
+
+
+
+## GGIRAF ![ggiraph logo](images/ggraph.png){alt="Quarto logo" height="1.2em"
+
