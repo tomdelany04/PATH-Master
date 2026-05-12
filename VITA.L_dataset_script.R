@@ -19,18 +19,21 @@ names(vital)
 # view(vital)
 dim(vital)
 
-#Data preparation
+# Data preparation
 vital.hte <- vital %>%
-  select(randyrs, cvdeath,fishoilactive, ageyr, bmi, sex, htnmed, diabetes, currsmk, parhxmi) %>% 
+  select(randyrs,cvdeath,vitdactive,fishoilactive, ageyr, bmi, sex, htnmed, diabetes, currsmk, parhxmi) %>% 
   drop_na() %>% 
   mutate( 
     time = as.numeric(randyrs),
     age = as.numeric(ageyr),
     bmi = as.numeric(bmi),
     death = cvdeath,
-    fishoilonly = factor(fishoilactive,
-                         levels = c(0,1),
-                         labels = c("Placebo", "Active Omega-3")),
+    vitd = factor(vitdactive,
+                  levels = c(0,1),
+                  labels = c("Placebo", "Active Vit-D")),
+    fishoil = factor(fishoilactive,
+                     levels = c(0,1),
+                     labels = c("Placebo", "Active Omega-3")),
     sex = factor(sex,
                  levels = c(1,2),
                  labels = c("Male", "Female")),
@@ -46,7 +49,6 @@ vital.hte <- vital %>%
     familyHist = factor(parhxmi,
                         levels = c(0,1),
                         labels = c("Former", "Current")))
-
 View(vital.hte)
 
 
@@ -58,6 +60,124 @@ vital_tab
 # Descriptive table
 vital_tab2 <- table1(~age + bmi + sex + htnmed + currsmk + diabetes + familyHist, data =vital.hte,  digits =2)
 vital_tab2
+
+# Event rates by treatment group
+vital.hte %>%
+  group_by(vitd, fishoil) %>%
+  summarise(
+    n = n(),
+    events = sum(death),
+    event_rate = mean(death),
+    .groups = "drop"
+  ) %>% 
+  print()
+
+# Proportional hazards assumption 
+ph.test <- cox.zph(cox.vital.hte)
+print(ph.test)
+
+# create age and BMI strata
+vital.hte <- vital.hte %>%
+  mutate(
+    age.categ = ifelse(age >= 70, "Age >= 70", "Age < 70"),
+    bmi.categ = ifelse(bmi >= 30, "Obese(BMI>=30)", "Non-obese")
+  )
+
+# Unadjusted factorial analysis with cox proportional hazards model
+cox.vital.hte <- coxph(Surv(time,death) ~ vitd * fishoil, data = vital.hte)
+summary(cox.vital.hte)
+tidy(cox.vital.hte, conf.int = T, exponentiate=T)
+
+# Adjusted factorial analysis with cox proportional hazards model
+cox.vitd.fact <- coxph(Surv(time,death) ~ vitd + strata(age) + strata(bmi) + sex + htnmed + diabetes + currsmk + familyHist, data = vital.hte)
+summary(cox.vitd.fact)
+tidy(cox.vitd.fact, conf.int = T, exponentiate=T)
+
+
+# Vitamin D and Omega-3 group compared to Double Placebo
+vital.both1 <- vital.hte %>% 
+  filter(
+    (vitd == "Placebo" & fishoil == "Placebo")|
+      (vitd == "Active Vit-D" & fishoil == "Active Omega-3")
+  ) %>% 
+  mutate(
+    treatment1 = factor(
+      ifelse(vitd == "Active Vit-D" & fishoil == "Active Omega-3", "vitd_with_omega3", "Double_placebo"),
+      levels = c("Double_placebo", "vitd_with_omega3")
+    )
+  )
+
+table(vital.both1$treatment1)
+
+# Fit cox model for vitD and Omega-3 group compared to Double Placebo group
+cox.both1 <- coxph(Surv(time,death) ~ treatment1 + strata(age) + strata(bmi) + sex + htnmed + diabetes + currsmk + familyHist,data = vital.both1)
+summary(cox.both1)
+tidy(cox.both1, conf.int = T, exponentiate=T)
+
+
+# Vitamin D and Omega-3 group compared to Omega-3 and Placebo group
+vital.both2 <- vital.hte %>% 
+  filter(
+    (vitd == "Placebo" & fishoil == "Active Omega-3")|
+      (vitd == "Active Vit-D" & fishoil == "Active Omega-3")
+  ) %>% 
+  mutate(
+    treatment2 = factor(
+      ifelse(vitd == "Active Vit-D" & fishoil == "Active Omega-3", "vitd_with_omega3", "Placebo_vitd_active_omega3"),
+      levels = c("Placebo_vitd_active_omega3", "vitd_with_omega3")
+    )
+  )
+
+table(vital.both2$treatment2)
+
+# Fit cox model for vitD and Omega-3 group compared to Omega-3 and Placebo group
+cox.both2 <- coxph(Surv(time,death) ~ treatment2 + strata(age) + strata(bmi) + sex + htnmed + diabetes + currsmk + familyHist, data = vital.both2)
+summary(cox.both2)
+tidy(cox.both2, conf.int = T, exponentiate=T)
+
+
+
+
+#****PATH approach********
+
+# Fit a Cox proportional hazards model with out treatment 
+# doi: 10.7326/M18-3668
+cox.vital.baseline <- coxph(Surv(time,death) ~ strata(age) + strata(bmi)+ sex + htnmed + currsmk + diabetes + familyHist, 
+                            data = (vital.hte))
+summary(cox.vital.baseline)
+
+#linear predictor; predict baseline risk; Individual with cox model
+vital.hte$lp <- predict(cox.vital.baseline, newdata= vital.hte, type = "lp")
+
+# # Centering risk for interpretability
+vital.hte$risk.center.cox <- vital.hte$lp - mean(vital.hte$lp, na.rm = T)
+
+# Baseline risk stratification: Dividing patients into four equal sized risk groups 
+risk.quarter <- quantile(vital.hte$risk.center.cox, probs = c(0,0.25, 0.50, 0.75,1), na.rm = T) 
+vital.hte <- vital.hte %>%
+  mutate(risk = ntile(risk.center.cox,4),
+         risk = factor(risk,
+                       levels= c(1,2,3,4),
+                       labels = c("Q(low)", "Q2","Q3", "Q4(High)")))
+
+# fit Cox model with interaction between vitamin D and risk quarter
+cox.vital.vitd <- coxph(Surv(time,death) ~ vitd * risk, data = vital.hte)
+summary(cox.vital.vitd)
+
+
+# fit cox model with interaction between Omega-3 and risk quarter
+cox.vital.omega3 <- coxph(Surv(time,death) ~ fishoil * risk, data = vital.hte)
+summary(cox.vital.omega3)
+
+# fit cox model with interaction between vitamin D, Omega-3 and risk quarter
+cox.vital.interaction <- coxph(Surv(time, death)~ vitd* fishoil * risk, data = vital.hte)
+# summary(cox.interaction.hte)
+
+
+
+
+
+
 
 #Fit logistic regression without the treatment
 glm.baseline.risk.vital <- glm(death ~ age + bmi + sex + htnmed + currsmk + familyHist,
@@ -76,7 +196,7 @@ hist(vital.hte$risk, main="Baseline Risk Distribution", xlab="Linear Predictor")
 vital.hte$risk.center <- vital.hte$risk - mean(vital.hte$risk, na.rm = T)
 
 # Testing Treatment interaction with risk
-vital.hte.inter <- glm(death ~ treatment * risk.center, 
+vital.hte.inter <- glm(death ~ fishoilonly * risk.center, 
                        data = vital.hte, family = binomial())
 summary(vital.hte.inter) # Interaction term is not significant(P = 0.249)
 
@@ -587,6 +707,69 @@ ggplot(cox.results2,
   theme_minimal()
 
 
+
+# Factorial design analysis 
+# Data preparation
+vital.hte <- vital %>%
+  select(randyrs,cvdeath,vitdactive,fishoilactive, ageyr, bmi, sex, htnmed, diabetes, currsmk, parhxmi) %>% 
+  drop_na() %>% 
+  mutate( 
+    time = as.numeric(randyrs),
+    age = as.numeric(ageyr),
+    bmi = as.numeric(bmi),
+    death = cvdeath,
+    vitd = factor(vitdactive,
+                  levels = c(0,1),
+                  labels = c("Placebo", "Active Vit-D")),
+    fishoil = factor(fishoilactive,
+                     levels = c(0,1),
+                     labels = c("Placebo", "Active Omega-3")),
+    sex = factor(sex,
+                 levels = c(1,2),
+                 labels = c("Male", "Female")),
+    htnmed = factor(htnmed,
+                    levels = c(0,1),
+                    labels = c("No", "Yes")),
+    diabetes = factor(diabetes,
+                      levels = c(0,1),
+                      labels = c("No", "Yes")),
+    currsmk = factor(currsmk, 
+                     levels = c(0,1),
+                     labels = c("Former", "Current")),
+    familyHist = factor(parhxmi,
+                        levels = c(0,1),
+                        labels = c("Former", "Current")))
+
+# Unadjusted factorial analysis with cox proportional hazards model
+cox.vital.hte <- coxph(Surv(time,death) ~ vitd * fishoil, data = vital.hte)
+summary(cox.vital.hte)
+tidy(cox.vital.hte, conf.int = T, exponentiate=T)
+
+# Adjusted factorial analysis with cox proportional hazards model
+cox.vital.hte <- coxph(Surv(time,death) ~ vitd * fishoil + age + bmi + sex + htnmed + diabetes + currsmk + familyHist , 
+                       data = vital.hte,
+                       ties = "breslow")
+summary(cox.vital.hte)
+tidy(cox.vital.hte, conf.int = T, exponentiate=T)
+
+# Fitting Cox proportional hazards model without treatment and risk quarters for risk modeling 
+cox.vital.baseline <- coxph(Surv(time,death) ~ age + bmi + sex + htnmed + currsmk + diabetes + familyHist, data = vital.hte)
+summary(cox.vital.baseline)
+
+#linear predictor; predict baseline risk; Individual with cox model
+vital.hte$risk.cox <- predict(cox.vital.baseline, type = "lp")
+
+# # Centering risk for interpretability
+vital.hte$risk.center.cox <- vital.hte$risk.cox - mean(vital.hte$risk.cox, na.rm = T)
+
+# Baseline risk stratification 
+# Dividing patients into four equal sized risk groups 
+risk.quarter <- quantile(vital.hte$risk.center.cox, probs = c(0,0.25, 0.50, 0.75,1), na.rm = T) 
+vital.hte <- vital.hte %>%
+  mutate(risk = ntile(risk.center.cox,4),
+         risk = factor(risk,
+                       levels= c(1,2,3,4),
+                       labels = c("Q(low)", "Q2","Q3", "Q4(High)")))
 
 
 
