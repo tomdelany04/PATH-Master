@@ -398,18 +398,18 @@ legend("topleft", lty=c(2,NA), pch=c(NA,1), lwd=c(3,2), bty='n', col = c("maroon
        legend=c("Expected with proportional effect", "Grouped patients"))
 
 #######################################################
-#for poster
-benefit_pack <- list(
-  xp = xp,
-  p1exp = p1exp,
-  lp_no_tx = as.numeric(lp.no.tx),
-  rate0 = as.numeric(rate0),
-  ratediff = as.numeric(ratediff),
-  CI = as.matrix(CI),
-  p2 = p2
-)
-
-saveRDS(benefit_pack, "gusto_benefit_pack.rds")
+# # #for poster
+# # benefit_pack <- list(
+# #   xp = xp,
+# #   p1exp = p1exp,
+# #   lp_no_tx = as.numeric(lp.no.tx),
+# #   rate0 = as.numeric(rate0),
+# #   ratediff = as.numeric(ratediff),
+# #   CI = as.matrix(CI),
+# #   p2 = p2
+# # )
+#
+# saveRDS(benefit_pack, "gusto_benefit_pack.rds")
 ####################################################
 
 #Relaxation of the proportional effect
@@ -506,9 +506,9 @@ legend("topleft",
 gusto_prep <- readRDS("gusto_prep.rds")
 
 tbl_gusto <- gusto_prep %>% select(age, miloc, sex) %>% tbl_summary() %>%
-  modify_header(label = "**Variable**") %>% bold_labels()
+  modify_header(label = "**Variable**")
 
-gt_tbl_gusto <- tbl_gusto %>% as_gt() %>% tab_header(title = md("**GUSTO**")) %>%
+gt_tbl_gusto <- tbl_gusto %>% gt() %>% tab_header(title = md("**GUSTO**")) %>%
   tab_options(
     table.border.top.color = "#84003d",
     table.border.bottom.color = "#84003d",
@@ -570,8 +570,185 @@ combined <- image_append(c(img1, img2), stack = FALSE)
 image_write(combined, "combined.png")
 
 
+############################################################
+# Clean ggplot version
+############################################################
 
+library(ggplot2)
+library(microshades)
 
+############################################################
+# Data prep
+############################################################
 
+curve_df <- data.frame(
+  risk = xp,
+  prop = p1exp
+)
 
+spline_df <- data.frame(
+  risk = xp,
+  spline = p2
+)
 
+group_df <- data.frame(
+  risk = rate0,
+  benefit = ratediff,
+  lower = CI[,2],
+  upper = CI[,3]
+)
+
+hist_df <- data.frame(
+  risk = plogis(lp.no.tx)
+)
+
+############################################################
+# Plot
+############################################################
+
+gusto_plot <- ggplot() +
+
+  ##########################################################
+# Baseline risk distribution
+##########################################################
+
+geom_density(
+  data = hist_df,
+  aes(
+    x = risk,
+    y = after_stat(scaled) * 0.015
+  ),
+  fill = "grey80",
+  color = NA,
+  alpha = 0.4
+) +
+
+  ##########################################################
+# Proportional model
+##########################################################
+
+geom_line(
+  data = curve_df,
+  aes(
+    x = risk,
+    y = prop
+  ),
+  linetype = "dashed",
+  linewidth = 1.7,
+  colour = "#F09163"
+) +
+
+  ##########################################################
+# Spline model
+##########################################################
+
+geom_line(
+  data = spline_df,
+  aes(
+    x = risk,
+    y = spline
+  ),
+  linewidth = 1.7,
+  color = "#4292C6"
+) +
+
+  ##########################################################
+# Grouped estimates
+##########################################################
+
+geom_point(
+  data = group_df,
+  aes(
+    x = risk,
+    y = benefit
+  ),
+  size = 3,
+  color = "#238B45"
+) +
+
+  geom_errorbar(
+    data = group_df,
+    aes(
+      x = risk,
+      ymin = lower,
+      ymax = upper
+    ),
+    width = 0.005,
+    alpha = 0.2
+  ) +
+
+  ##########################################################
+# Zero line
+##########################################################
+
+geom_hline(
+  yintercept = 0,
+  linetype = "dotted"
+) +
+
+  ##########################################################
+# Axes
+##########################################################
+
+coord_cartesian(
+  xlim = c(0, 0.5),
+  ylim = c(-0.02, 0.05)
+) +
+
+  ##########################################################
+# Labels
+##########################################################
+
+labs(
+  x = "Baseline risk",
+  y = "Benefit by tPA (absolute risk difference)",
+  title = "Absolute Benefit of tPA Across Baseline Risk"
+) +
+
+  ##########################################################
+# Theme
+##########################################################
+
+theme_classic(base_size = 13) +
+
+  theme(
+    axis.ticks = element_blank(),
+    axis.line = element_line(
+      color = "grey60",
+      linewidth = 0.5
+    )
+  ) +
+
+  ##########################################################
+# Annotations
+##########################################################
+
+annotate(
+  "text",
+  x = 0.4,
+  y = 0.040,
+  label = "Proportional effect",
+  color = "#F09163",
+  hjust = 0,
+  size = 6
+) +
+
+  annotate(
+    "text",
+    x = 0.28,
+    y = 0.029,
+    label = "Spline (df = 3)",
+    color = "#4292C6",
+    hjust = 0,
+    size = 6
+  )
+gusto_plot
+
+############################################################
+# Save plot object
+############################################################
+
+saveRDS(
+  gusto_plot,
+  "gusto_plot.rds"
+)

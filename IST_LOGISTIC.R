@@ -13,10 +13,10 @@ library(DescTools)
 library(gt)
 
 
+
 IST_df$aspirin <- ifelse(IST_df$RXASP == "Y", 1, 0)
 IST_df$death14 <- factor(IST_df$ID14, levels = c(0, 1), labels = c("No", "Yes"))
 IST_df$death14n <- as.integer(IST_df$death14 == "Yes")
-
 
 table1(~death14|aspirin, data= IST_df)
 
@@ -24,7 +24,6 @@ table1(~death14|aspirin, data= IST_df)
 library(broom)
 
 mod_IST <- glm(death14 ~ aspirin, data = IST_df, family = binomial) #Perform logistic regression
-
 
 
 or_tbl <- tidy(mod_IST, exponentiate = TRUE, conf.int = TRUE) #odds ratio table
@@ -54,13 +53,14 @@ IST_df$ct_infarct <- ifelse(IST_df$RVISINF == "Y", 1, 0)
 
 
 
-#Adjusted based on HWANGBO et al., 2022
-
+#Adjusted based on Thompson et al., 2015
 model <- glm(
   death14 ~ AGE + consc + ct_infarct + motor + afib,
   family = binomial(),
   data = IST_df
 )
+
+
 
 
 summary(model)
@@ -105,6 +105,9 @@ group_control <- groups_logit[IST_df$aspirin == 0]
 group_aspirin <- groups_logit[IST_df$aspirin == 1]
 
 
+
+
+
 ############################################################
 # Event rates per group
 
@@ -130,48 +133,156 @@ aspirin_n <- rowSums(aspirin_tab)
 
 
 
-###################################################################
-# Classic subgroups for relative
-IST_df$age_group <- cut(
-  IST_df$AGE,
-  breaks = c(0, 65, 75, 120),
-  labels = c("<65", "65–75", "75+")
-)
-
-IST_df$sex <- factor(IST_df$SEX)
-
-IST_df$afib_group <- factor(IST_df$afib, labels = c("No AF", "AF"))
 
 
 ############################################################
-# Forest plot inputs
+# Forest plot inputs (need dfs for quartiles, classics and overall _ then bind)
+overall_df <- data.frame(
+  subgroup = "Overall",
 
-logit_df <- data.frame(
-  subgroup = paste("Logit Quartile", 1:4),
+  event_aspirin =
+    sum(IST_df$death14 == "Yes" & IST_df$aspirin == 1),
+
+  n_aspirin =
+    sum(IST_df$aspirin == 1),
+
+  event_control =
+    sum(IST_df$death14 == "Yes" & IST_df$aspirin == 0),
+
+  n_control =
+    sum(IST_df$aspirin == 0)
+)
+
+quartile_df <- data.frame(
+  subgroup = c("Lowest risk",
+                   "Low risk",
+                   "Moderate risk",
+                   "Highest risk"),
   event_aspirin = aspirin_events,
   n_aspirin = aspirin_n,
   event_control = control_events,
   n_control = control_n
 )
 
-logit_meta <- metabin(
-  event.e = event_aspirin,
-  n.e     = n_aspirin,
-  event.c = control_events,
-  n.c     = control_n,
-  studlab = subgroup,
-  data    = logit_df,
-  sm      = "OR",
-  method  = "Inverse",
-  incr    = 0.5,
-  random  = FALSE
+# CLASSICS
+
+IST_df$age_group <- cut(
+  IST_df$AGE,
+  breaks = c(0, 65, 75, 120),
+  labels = c("<65", "65–75", "75+")
 )
 
-forest(
-  logit_meta,
+age_df <- IST_df %>%
+  group_by(age_group) %>%
+  summarise(
+
+    event_aspirin =
+      sum(death14 == "Yes" & aspirin == 1),
+
+    n_aspirin =
+      sum(aspirin == 1),
+
+    event_control =
+      sum(death14 == "Yes" & aspirin == 0),
+
+    n_control =
+      sum(aspirin == 0)
+
+  ) %>%
+  rename(subgroup = age_group)
+
+IST_df$consc_group <- factor(
+  IST_df$consc,
+  levels = c(0,1),
+  labels = c("Alert", "Drowsy/coma")
+)
+
+
+consc_df <- IST_df %>%
+  group_by(consc_group) %>%
+  summarise(
+
+    event_aspirin =
+      sum(death14 == "Yes" & aspirin == 1),
+
+    n_aspirin =
+      sum(aspirin == 1),
+
+    event_control =
+      sum(death14 == "Yes" & aspirin == 0),
+
+    n_control =
+      sum(aspirin == 0)
+
+  ) %>%
+  rename(subgroup = consc_group)
+
+
+IST_df$afib_group <- factor(IST_df$afib, labels = c("No AF", "AF"))
+
+afib_df <- IST_df %>%
+  group_by(afib_group) %>%
+  summarise(
+
+    event_aspirin =
+      sum(death14 == "Yes" & aspirin == 1),
+
+    n_aspirin =
+      sum(aspirin == 1),
+
+    event_control =
+      sum(death14 == "Yes" & aspirin == 0),
+
+    n_control =
+      sum(aspirin == 0)
+
+  ) %>%
+  rename(subgroup = afib_group)
+
+
+#Bind into one df
+
+forest_df <- bind_rows(
+  overall_df,
+  quartile_df,
+  age_df,
+  consc_df,
+  afib_df
+)
+
+
+###################################
+# Plot for forest
+IST_meta_all <- metabin(
+  event.e = event_aspirin,
+  n.e     = n_aspirin,
+  event.c = event_control,
+  n.c     = n_control,
+  studlab = subgroup,
+  data = forest_df,
+  sm = "OR",
+  method = "Inverse",
+  incr = 0.5,
+  random = FALSE
+)
+
+IST_forest_all <- forest(
+  IST_meta_all,
   layout = "RevMan5",
-  leftcols = c("studlab", "event.e", "n.e", "event.c", "n.c"),
-  leftlabs = c("Subgroup", "Aspirin events", "Aspirin n", "Control events", "Control n"),
+  leftcols = c(
+    "studlab",
+    "event.e",
+    "n.e",
+    "event.c",
+    "n.c"
+  ),
+  leftlabs = c(
+    "Subgroup",
+    "Aspirin events",
+    "Aspirin n",
+    "Control events",
+    "Control n"
+  ),
   rightlabs = c("OR", "95% CI"),
   xlab = "Odds Ratio (aspirin vs control)",
   col.diamond = "maroon",
@@ -179,7 +290,8 @@ forest(
   overall.hetstat = FALSE
 )
 
-saveRDS(logit_meta, "logit_meta.rds")
+IST_forest_all
+
 
 ############################################################
 # Absolute benefit with CI
@@ -378,7 +490,6 @@ range(IST_risk_base)
 
 
 
-
 #########################################
 #cleaner plot
 library(ggplot2)
@@ -485,3 +596,16 @@ aspirin_plot
 
 
 saveRDS(aspirin_plot, "aspirin_plot.rds")
+
+
+
+
+
+
+
+
+
+
+
+
+
