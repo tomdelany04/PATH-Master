@@ -70,6 +70,117 @@ saveRDS(PATH_workflow, "PATH_workflow.rds")
 
 MC simulation under NUll etc...
 
+```{r}
+library(DiagrammeR)
+
+MC_workflow <- grViz(
+  "digraph {
+
+    graph [layout = dot, rankdir = LR,
+           splines = ortho,
+           nodesep = 1.2,
+           ranksep = 0.5]
+
+    node  [fontname = Helvetica,
+           fontsize = 11,
+           style = filled,
+           fillcolor = white,
+           color = gray35]
+
+    edge  [color = gray30,
+           arrowsize = 0.7]
+
+    # Simulation setup
+    covar   [label = 'Generate Covariates\\n(X1, X2, X3)',
+             shape = box,
+             fillcolor = 'azure']
+
+    trt     [label = 'Randomize Treatment\\n(Z ~ Bernoulli(0.5))',
+             shape = box,
+             fillcolor = 'azure']
+
+    # Truth mechanisms
+    null    [label = 'NULL Truth\\n(Constant treatment effect)',
+             shape = box,
+             fillcolor = 'honeydew']
+
+    het     [label = 'HTE Truth\\n(Treatment × X1 interaction)',
+             shape = box,
+             fillcolor = 'mistyrose']
+
+    # Outcome generation
+    outcome [label = 'Generate Binary Outcome',
+             shape = box]
+
+    # PATH workflow
+    risk    [label = 'Fit Prognostic\\nRisk Model',
+             shape = box]
+
+    predict [label = 'Predict Baseline Risk',
+             shape = box]
+
+    quart   [label = 'Create Risk Quartiles',
+             shape = box]
+
+    subgroup [label = 'Estimate Quartile\\nTreatment Effects',
+              shape = box]
+
+    forest  [label = 'Forest Plot',
+             shape = doubleoctagon,
+             fillcolor = 'lightsalmon']
+
+    abs     [label = 'Absolute Benefit Plot',
+             shape = doubleoctagon,
+             fillcolor = 'lightsalmon']
+
+    interaction [label = 'Interaction Test',
+                 shape = box,
+                 fillcolor = 'lavender']
+
+    # MC repetition
+    repeat  [label = 'Repeat B Times\\n(Monte Carlo Simulation)',
+             shape = ellipse,
+             fillcolor = 'khaki']
+
+    summary [label = 'Summarize:\\nFalse positives\\nPower\\nBias\\nVariability',
+             shape = doubleoctagon,
+             fillcolor = 'lightblue']
+
+    # Flow
+    covar -> trt
+
+    trt -> null
+    trt -> het
+
+    null -> outcome
+    het  -> outcome
+
+    outcome -> risk
+    risk -> predict
+    predict -> quart
+    quart -> subgroup
+
+    subgroup -> forest
+    subgroup -> abs
+    subgroup -> interaction
+
+    forest -> repeat
+    abs -> repeat
+    interaction -> repeat
+
+    repeat -> summary
+  }"
+)
+
+MC_workflow
+
+saveRDS(MC_workflow, "MC_workflow.rds")
+```
+
+
+
+
+
 
 y~trt*(risk)
 

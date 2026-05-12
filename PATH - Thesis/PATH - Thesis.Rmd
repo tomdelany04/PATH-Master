@@ -131,6 +131,13 @@ The international stroke trial was an open label randomised trial of 19,435 pati
 
 # Methods
 
+
+
+
+
+
+
+
 ```{r, echo = FALSE}
 #a flow chart to describe PATH workflow -------------------------------
 library(DiagrammeR)
@@ -139,6 +146,47 @@ PATH_Workflow
 ```
 
 
+
+
+## Monte Carlo simulations for examining 
+
+### Data Generating Process
+
+
+
+$$
+X_1, X_2, X_3 \sim N(0,1)
+$$
+
+$$
+\text{logit}\big(P(Z_i = 1)\big)
+=
+-0.2
++0.3X_{1,i}
+-0.2X_{2,i}
++0.1X_{3,i}
+$$
+
+$$
+\text{logit}\big(P(Y_i = 1)\big)
+=
+-2
+-0.5Z_i
++0.8X_{1,i}
++0.6X_{2,i}
++0.5X_{3,i}
+$$
+
+$$
+\text{logit}\big(P(Y_i = 1)\big)
+=
+-2
+-0.5Z_i
++0.8X_{1,i}
++0.6X_{2,i}
++0.5X_{3,i}
+-0.7(Z_iX_{1,i})
+$$
 
 
 # Results
@@ -176,6 +224,10 @@ library(ggplot2)
 aspirin_plot <- readRDS("C:/Users/tomde/Desktop/MSc Thesis-Git/PATH-Master/aspirin_plot.rds")
 aspirin_plot
 ```
+# Discussion
+
+## Regulatory Implications
+
 
 
 # References
