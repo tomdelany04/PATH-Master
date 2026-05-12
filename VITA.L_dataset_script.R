@@ -12,6 +12,7 @@ library(survival)
 library(survminer)
 
 
+
 #Data load
 vital <- read_sas("VITAL_trial_NEJM_2022.sas7bdat")
 names(vital)
@@ -51,7 +52,12 @@ vital.hte <- vital %>%
 View(vital.hte)
 
 
-# Descriptive table for variables
+# Descriptive statistics 
+# crude 2x2 table
+vital_tab <- table(vital.hte$death, vital.hte$fishoilonly)
+vital_tab
+
+# Descriptive table
 vital_tab2 <- table1(~age + bmi + sex + htnmed + currsmk + diabetes + familyHist, data =vital.hte,  digits =2)
 vital_tab2
 
@@ -66,38 +72,30 @@ vital.hte %>%
   ) %>% 
   print()
 
+# Proportional hazards assumption 
+ph.test <- cox.zph(cox.vital.hte)
+print(ph.test)
 
-#**Factorial analysis**
+# create age and BMI strata
+vital.hte <- vital.hte %>%
+  mutate(
+    age.categ = ifelse(age >= 70, "Age >= 70", "Age < 70"),
+    bmi.categ = ifelse(bmi >= 30, "Obese(BMI>=30)", "Non-obese")
+  )
+
 # Unadjusted factorial analysis with cox proportional hazards model
 cox.vital.hte <- coxph(Surv(time,death) ~ vitd * fishoil, data = vital.hte)
 summary(cox.vital.hte)
 tidy(cox.vital.hte, conf.int = T, exponentiate=T)
 
 # Adjusted factorial analysis with cox proportional hazards model
-cox.vitd.fact1 <- coxph(Surv(time,death) ~ vitd + age + bmi + sex + htnmed + diabetes + currsmk + familyHist, data = vital.hte)
-
-summary(cox.vitd.fact1)
-tidy(cox.vitd.fact1, conf.int = T, exponentiate=T)
-
-# Proportional hazards assumption 
-ph.test <- cox.zph(cox.vitd.fact1)
-print(ph.test)
-
-# create age and BMI strata to align with proportional hazard assumption 
-vital.hte2 <- vital.hte %>%
-  mutate(
-    age.categ = ifelse(age >= 70, "Age >= 70", "Age < 70"),
-    bmi.categ = ifelse(bmi >= 30, "Obese(BMI>=30)", "Non-obese")
-  )
-
-# Adjusted factorial analysis with cox proportional hazards model
-cox.vitd.fact <- coxph(Surv(time,death) ~ vitd + strata(age.categ) + strata(bmi.categ) + sex + htnmed + diabetes + currsmk + familyHist, data = vital.hte2)
-
+cox.vitd.fact <- coxph(Surv(time,death) ~ vitd + strata(age) + strata(bmi) + sex + htnmed + diabetes + currsmk + familyHist, data = vital.hte)
 summary(cox.vitd.fact)
 tidy(cox.vitd.fact, conf.int = T, exponentiate=T)
 
+
 # Vitamin D and Omega-3 group compared to Double Placebo
-vital.both1 <- vital.hte2 %>% 
+vital.both1 <- vital.hte %>% 
   filter(
     (vitd == "Placebo" & fishoil == "Placebo")|
       (vitd == "Active Vit-D" & fishoil == "Active Omega-3")
@@ -111,13 +109,14 @@ vital.both1 <- vital.hte2 %>%
 
 table(vital.both1$treatment1)
 
-# Fit cox 
-cox.both1 <- coxph(Surv(time,death) ~ treatment1 + strata(age.categ) + strata(bmi.categ) + sex + htnmed + diabetes + currsmk + familyHist,data = vital.both1)
+# Fit cox model for vitD and Omega-3 group compared to Double Placebo group
+cox.both1 <- coxph(Surv(time,death) ~ treatment1 + strata(age) + strata(bmi) + sex + htnmed + diabetes + currsmk + familyHist,data = vital.both1)
 summary(cox.both1)
 tidy(cox.both1, conf.int = T, exponentiate=T)
 
+
 # Vitamin D and Omega-3 group compared to Omega-3 and Placebo group
-vital.both2 <- vital.hte2 %>% 
+vital.both2 <- vital.hte %>% 
   filter(
     (vitd == "Placebo" & fishoil == "Active Omega-3")|
       (vitd == "Active Vit-D" & fishoil == "Active Omega-3")
@@ -127,13 +126,16 @@ vital.both2 <- vital.hte2 %>%
       ifelse(vitd == "Active Vit-D" & fishoil == "Active Omega-3", "vitd_with_omega3", "Placebo_vitd_active_omega3"),
       levels = c("Placebo_vitd_active_omega3", "vitd_with_omega3")
     )
-  ) 
+  )
+
 table(vital.both2$treatment2)
 
-# Fit cox
-cox.both2 <- coxph(Surv(time,death) ~ treatment2 + strata(age.categ) + strata(bmi.categ) + sex + htnmed + diabetes + currsmk + familyHist, data = vital.both2)
+# Fit cox model for vitD and Omega-3 group compared to Omega-3 and Placebo group
+cox.both2 <- coxph(Surv(time,death) ~ treatment2 + strata(age) + strata(bmi) + sex + htnmed + diabetes + currsmk + familyHist, data = vital.both2)
 summary(cox.both2)
 tidy(cox.both2, conf.int = T, exponentiate=T)
+
+
 
 
 #****PATH approach********
@@ -171,77 +173,12 @@ summary(cox.vital.omega3)
 cox.vital.interaction <- coxph(Surv(time, death)~ vitd* fishoil * risk, data = vital.hte)
 # summary(cox.interaction.hte)
 
-# Baseline risk stratification 
-# Dividing patients into four equal sized risk groups 
-risk.quarter <- quantile(vital.hte$risk.center.cox, probs = c(0,0.25, 0.50, 0.75,1), na.rm = T) 
-vital.hte <- vital.hte %>%
-  mutate(risk = ntile(risk.center.cox,4),
-         risk = factor(risk,
-                       levels= c(1,2,3,4),
-                       labels = c("Q(low)", "Q2","Q3", "Q4(High)")))
 
-# event rates by risk quarter
-vital.hte %>%
-  group_by(risk) %>%
-  summarise(
-    n = n(),
-    events = sum(death),
-    event_rate = mean(death),
-    .groups = "drop"
-  ) %>%
-  print()
+library(marginaleffects)
+library(ggplot2)
+library(plotly)
 
-
-# Recreating vital.both1 to add risk column
-vital.both1 <- vital.hte %>% 
-  filter(
-    (vitd == "Placebo" & fishoil == "Placebo")|
-      (vitd == "Active Vit-D" & fishoil == "Active Omega-3")
-  ) %>% 
-  mutate(
-    treatment1 = factor(
-      ifelse(vitd == "Active Vit-D" & fishoil == "Active Omega-3", "vitd_with_omega3", "Double_placebo"),
-      levels = c("Double_placebo", "vitd_with_omega3")
-    )
-  )
-
-table(vital.both1$risk)
-# Interaction between treatment1 and risk quarter
-cox.both1.risk <- coxph(Surv(time,death) ~ treatment1 * risk, data = vital.both1, ties = "breslow")
-
-# Recreating vital.both2 to add risk column
-# Vitamin D and Omega-3 group compared to Omega-3 and Placebo group
-vital.both2 <- vital.hte %>% 
-  filter(
-    (vitd == "Placebo" & fishoil == "Active Omega-3")|
-      (vitd == "Active Vit-D" & fishoil == "Active Omega-3")
-  ) %>% 
-  mutate(
-    treatment2 = factor(
-      ifelse(vitd == "Active Vit-D" & fishoil == "Active Omega-3", "vitd_with_omega3", "Placebo_vitd_active_omega3"),
-      levels = c("Placebo_vitd_active_omega3", "vitd_with_omega3")
-    )
-  ) 
-
-table(vital.both2$risk)
-
-
-#Interaction between treatment2 and risk quarter 
-cox.both2.risk <- coxph(Surv(time,death) ~ treatment2 * risk, data = vital.both2)
-# summary(cox.both2.risk)
-
-
-# Individual variables
-vital.subgroup <- vital.both1 %>% 
-  mutate(
-    age.categ = ifelse(age >= 70, "Age >= 70", "Age < 70"),
-    bmi.categ = ifelse(bmi >= 30, "Obese(BMI>=30)", "Non-obese(BMI < 30)")
-  )
-subgroup.variables <- c( "age.categ", "bmi.categ")
-
-
-#**Marginal Effect*
-# Overall Hazard ratio
+# Overall Hazard lnratioavg
 overall.risk <- avg_comparisons(
   cox.both1.risk,
   variables = "treatment1",
@@ -252,7 +189,7 @@ overall.risk <- avg_comparisons(
   mutate(subgroup = "Overall") %>% 
   select(subgroup, estimate, conf.low, conf.high)
 
-# Hazard ratio by Risk Quarter
+# Hazard lnratioavg by Risk Quarter
 hr.by.risk <- avg_comparisons(
   cox.both1.risk,
   variables = "treatment1",
@@ -263,7 +200,7 @@ hr.by.risk <- avg_comparisons(
   as_tibble() %>% 
   select(subgroup = risk, estimate, conf.low, conf.high)
 
-#Subgroup Hazard ratio by Age and BMI
+#Subgroup Hazard lnratioavg by Age and BMI
 # Age >= 70
 hr.by.age <- avg_comparisons(
   cox.both1.risk,
@@ -313,7 +250,11 @@ hr.by.bmi2 <- avg_comparisons(
   select(subgroup, estimate, conf.low, conf.high)
 
 
-#**Forest Plot HTE**
+
+
+
+# Forest plot
+
 vital.plot.HTE <- bind_rows(overall.risk,
                             hr.by.risk, 
                             hr.by.age, 
@@ -331,7 +272,7 @@ p1 <- ggplot(vital.plot.HTE,
   geom_point(size = 3, color = "maroon") +
   scale_x_log10() + 
   labs(title = "Forest Plot of Treatment Heterogeneity ",
-       x = "Hazard lnratioavg (95% CI)",
+       x = "Hazard ratio (95% CI)",
        y = "Risk") +
   theme_minimal() 
 
