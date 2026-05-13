@@ -182,74 +182,14 @@ div(
 
 ## Relative Effects
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.width=11, fig.height=6.5}
-library(Hmisc)
-library(meta)
-
-IST_df <- read.csv("IST_corrected.csv")
-
-IST_df$aspirin <- ifelse(IST_df$RXASP == "Y", 1, 0)
-IST_df$death14 <- factor(IST_df$ID14, levels = c(0, 1), labels = c("No", "Yes"))
-
-IST_df$SEX <- as.factor(IST_df$SEX)
-IST_df$RCONSC <- as.factor(IST_df$RCONSC)
-IST_df$RATRIAL <- as.factor(IST_df$RATRIAL)
-IST_df$RSLEEP <- as.factor(IST_df$RSLEEP)
-IST_df$RCT <- as.factor(IST_df$RCT)
-IST_df$RVISINF <- as.factor(IST_df$RVISINF)
-
-rf_fit_IST <- ranger::ranger(
-  death14 ~ AGE + SEX + RCONSC + RSBP + RATRIAL + RDELAY +
-    RSLEEP + RCT + RVISINF + RDEF1 + RDEF2 + RDEF3 + RDEF4 + RDEF5,
-  data = IST_df,
-  probability = TRUE,
-  num.trees = 1000,
-  seed = 88
-)
-
-IST_risk_base <- rf_fit_IST$predictions[, "Yes"]
-IST_df$IST_rf_groups0 <- cut2(IST_risk_base, g = 4)
-IST_df$IST_rf_groups0 <- factor(IST_df$IST_rf_groups0, ordered = TRUE)
-
-group_control_rf <- IST_df$IST_rf_groups0[IST_df$aspirin == 0]
-group_aspirin_rf <- IST_df$IST_rf_groups0[IST_df$aspirin == 1]
-
-control_tab <- table(group_control_rf, IST_df$death14[IST_df$aspirin == 0])
-aspirin_tab <- table(group_aspirin_rf, IST_df$death14[IST_df$aspirin == 1])
-
-rf_df <- data.frame(
-  subgroup = c("Lowest risk", "Low risk", "Moderate risk", "Highest risk"),
-  event_aspirin = aspirin_tab[, "Yes"],
-  n_aspirin = rowSums(aspirin_tab),
-  event_control = control_tab[, "Yes"],
-  n_control = rowSums(control_tab)
-)
-
-rf_meta <- metabin(
-  event.e = event_aspirin,
-  n.e = n_aspirin,
-  event.c = event_control,
-  n.c = n_control,
-  studlab = subgroup,
-  data = rf_df,
-  sm = "OR",
-  method = "Inverse",
-  incr = 0.5,
-  random = FALSE
-)
-
-forest(
-  rf_meta,
-  layout = "RevMan5",
-  leftcols = c("studlab", "event.e", "n.e", "event.c", "n.c"),
-  leftlabs = c("Quartile", "Aspirin events", "Aspirin n", "Control events", "Control n"),
-  rightlabs = c("OR", "95% CI"),
-  xlab = "Odds ratio for 14-day mortality (aspirin vs control)",
-  col.diamond = "#84003d",
-  col.square = "#84003d",
-  overall = FALSE,
-  overall.hetstat = FALSE
-)
+```{r}
+knitr::include_graphics("gusto_pres_forest.png")
 ```
 
+<<<<<<< HEAD
 ## GGIRAF ![ggiraph logo](images/ggraph.png){alt="Quarto logo" height="1.2em"
+=======
+
+
+
+>>>>>>> 9eebeefa5766fd16947669b56cb67462d40bfce3

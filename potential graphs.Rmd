@@ -179,6 +179,29 @@ saveRDS(MC_workflow, "MC_workflow.rds")
 
 
 
+```{r}
+aspirin_plot <- readRDS("aspirin_plot.rds")
+
+gusto_plot <- readRDS("gusto_plot.rds")
+
+aspirin_plot <- aspirin_plot +
+  labs(title = NULL)
+
+gusto_plot <- gusto_plot +
+  labs(title = NULL)
+
+
+```
+
+
+```{r}
+library(patchwork)
+
+
+combined_plot <- aspirin_plot | gusto_plot
+
+combined_plot
+```
 
 
 

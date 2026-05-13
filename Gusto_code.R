@@ -174,7 +174,11 @@ model_no_tx <- glm(
   family = binomial
 )
 
-gusto$lp <- predict(model_no_tx, type = "link")
+gusto$lp <- predict(
+  model1,
+  newdata = transform(gusto, tpa = 0),
+  type = "link"
+)
 
 model_lp_int <- glm(
   day30 ~ tx * lp,
@@ -265,76 +269,6 @@ data.subgroups[,10] <- paste(round(100*data.subgroups[,3] / data.subgroups[,9] ,
 
 # Show the data
 kable(as.data.frame((data.subgroups))) %>% kable_styling(full_width=F, position = "left")
-
-library(metafor)
-par(mar=c(4,4,1,2))
-### fit random-effects model (use slab argument to define "study" labels)
-
-##the following is for the poster only, used to export the neccessary rds file to create the forest
-###################################################################################################
-res <- rma(ai=tevent, bi=tnoevent, ci=cevent, di=cnoevent, data=data.subgroups, measure="OR",
-           slab=name, method="ML")
-forest_pack <- list(
-  data_subgroups = data.subgroups,
-  res = res,
-
-  plot_settings = list(
-    par_mar = c(4,4,1,2),
-    fg = "maroon",
-
-    forest_args = list(
-      xlim = c(-8, 2.5),
-      at = log(c(0.5, 1)),
-      alim = c(log(0.2), log(2)),
-      atransf = exp,
-      ilab_xpos = c(-5,-4,-3,-2),
-      adj = 1,
-      cex = .9,
-      ylim = c(0, 24),
-      rows = c(1:2, (4:5)-.5, 6:7, 10:13, 15),
-      xlab = "",
-      mlab = "",
-      psize = 1,
-      lwd = 1.5,
-      addfit = FALSE,
-      col = "maroon",
-      shade = FALSE
-    ),
-
-    header = list(
-      col_positions = c(-5,-4,-3,-2, 2.2),
-      row = 18,
-      labels = c("n", "%mort", "n", "%mort", "OR    [95% CI]"),
-      trial_title = "GUSTO-I trial",
-      trial_title_x = -8,
-      group_labels = c("tPA", "SK"),
-      group_label_x = c(-4.5, -2.5),
-      group_label_row = 19
-    )
-  )
-)
-
-saveRDS(forest_pack, "gusto_forest_pack.rds")
-####################################################################################
-
-### set up forest plot (with 2x2 table counts added); rows argument is used
-### to specify exactly in which rows the outcomes will be plotted)
-par(fg="maroon")
-forest(res, xlim=c(-8, 2.5), at=log(c(0.5, 1)), alim=c(log(0.2), log(2)), atransf=exp,
-       ilab=cbind(data.subgroups$tn, data.subgroups$pt, data.subgroups$cn, data.subgroups$pc),
-       ilab.xpos=c(-5,-4,-3,-2), adj=1,
-       cex=.9, ylim=c(0, 24),
-       rows=c(1:2, (4:5)-.5, 6:7, 10:13, 15),
-       xlab="", mlab="", psize=1, lwd = 1.5, addfit=F,
-       col = "maroon",
-       shade = F)
-# lines(x=c(-.15, -.15), y=c(0, 17)) ## could add a reference line of the overall treatment effect
-
-text(c(-5,-4,-3,-2, 2.2), 18, c("n", "%mort", "n", "%mort", "OR    [95% CI]"),
-     font=2, adj=1, cex=.9)
-text(-8, 18, c("GUSTO-I trial"), font=2, adj=0, cex=.9)
-text(c(-4.5,-2.5),  19, c("tPA", "SK"), font=2, adj=1)
-
 
 
 # function for adjustment
@@ -500,75 +434,6 @@ legend("topleft",
 
 
 ############################################################### - poster
-#Tables for characteristics
-
-#Gusto table (Create table - Make gt - Change styling)
-gusto_prep <- readRDS("gusto_prep.rds")
-
-tbl_gusto <- gusto_prep %>% select(age, miloc, sex) %>% tbl_summary() %>%
-  modify_header(label = "**Variable**")
-
-gt_tbl_gusto <- tbl_gusto %>% gt() %>% tab_header(title = md("**GUSTO**")) %>%
-  tab_options(
-    table.border.top.color = "#84003d",
-    table.border.bottom.color = "#84003d",
-    column_labels.border.bottom.color = "#84003d",
-    table_body.border.top.color = "#84003d",
-    table_body.border.bottom.color = "#84003d",
-    row_group.border.top.color = "#84003d",
-    row_group.border.bottom.color = "#84003d"
-  ) %>%
-  tab_style(
-    style = cell_text(size = px(18), color = "black"),
-    locations = cells_body(everything())
-  ) %>%
-
-  tab_style(
-    style = cell_text(size = px(20), color = "black", weight = "bold"),
-    locations = cells_column_labels(everything())
-  )
-
-#DIG table (Create table - Make gt - Change styling)
-
-dig_prep <- readRDS("dig_prep.rds")
-
-tbl_dig <- dig_prep %>% tbl_summary(include = c(AGE, EJF_PER, Classification), missing ="no") %>%
-  modify_header(label = "**Variable**") %>% bold_labels()
-
-gt_tbl_dig <- tbl_dig %>% as_gt() %>% tab_header(title = md("**DIG**")) %>%
-  tab_options(
-    table.border.top.color = "#84003d",
-    table.border.bottom.color = "#84003d",
-    column_labels.border.bottom.color = "#84003d",
-    table_body.border.top.color = "#84003d",
-    table_body.border.bottom.color = "#84003d",
-    row_group.border.top.color = "#84003d",
-    row_group.border.bottom.color = "#84003d"
-  ) %>%
-  tab_style(
-    style = cell_text(size = px(18), color = "black"),
-    locations = cells_body(everything())
-  ) %>%
-
-  tab_style(
-    style = cell_text(size = px(20), color = "black", weight = "bold"),
-    locations = cells_column_labels(everything())
-  )
-
-unique(gusto_prep$miloc)
-gt_tbl_dig
-gt_tbl_gusto
-
-library(magick)
-
-
-img1 <- image_read("DIG_TBL_gt.png")
-img2 <- image_read("Gusto_tbl_gt.png")
-
-
-combined <- image_append(c(img1, img2), stack = FALSE)
-image_write(combined, "combined.png")
-
 
 ############################################################
 # Clean ggplot version
@@ -752,3 +617,304 @@ saveRDS(
   gusto_plot,
   "gusto_plot.rds"
 )
+
+
+############################################################
+# Forest plot for report
+############################################################
+
+gusto$age_group <- factor(
+  gusto$age >= 75,
+  levels = c(FALSE, TRUE),
+  labels = c("<75", "75+")
+)
+
+gusto$sex_group <- factor(gusto$sex)
+
+gusto$mi_group <- factor(
+  gusto$miloc == "Anterior",
+  levels = c(FALSE, TRUE),
+  labels = c("Other MI", "Anterior")
+)
+
+############################################################
+# Overall
+############################################################
+
+overall_df <- data.frame(
+
+  subgroup = "Overall",
+
+  event_tpa =
+    sum(gusto$day30 == "Yes" & gusto$tpa == 1),
+
+  n_tpa =
+    sum(gusto$tpa == 1),
+
+  event_sk =
+    sum(gusto$day30 == "Yes" & gusto$tpa == 0),
+
+  n_sk =
+    sum(gusto$tpa == 0)
+)
+
+############################################################
+# Risk quartiles
+############################################################
+
+quartile_df <- data.frame(
+
+  subgroup = c(
+    "Lowest risk",
+    "Low risk",
+    "Moderate risk",
+    "Highest risk"
+  ),
+
+  event_tpa = events2,
+  n_tpa = n2,
+
+  event_sk = events1,
+  n_sk = n1
+)
+
+############################################################
+# Age
+############################################################
+
+age_df <- gusto %>%
+  group_by(age_group) %>%
+  summarise(
+
+    event_tpa =
+      sum(day30 == "Yes" & tpa == 1),
+
+    n_tpa =
+      sum(tpa == 1),
+
+    event_sk =
+      sum(day30 == "Yes" & tpa == 0),
+
+    n_sk =
+      sum(tpa == 0)
+
+  ) %>%
+  rename(subgroup = age_group)
+
+############################################################
+# Sex
+############################################################
+
+sex_df <- gusto %>%
+  group_by(sex_group) %>%
+  summarise(
+
+    event_tpa =
+      sum(day30 == "Yes" & tpa == 1),
+
+    n_tpa =
+      sum(tpa == 1),
+
+    event_sk =
+      sum(day30 == "Yes" & tpa == 0),
+
+    n_sk =
+      sum(tpa == 0)
+
+  ) %>%
+  rename(subgroup = sex_group)
+
+############################################################
+# MI location
+############################################################
+
+mi_df <- gusto %>%
+  group_by(mi_group) %>%
+  summarise(
+
+    event_tpa =
+      sum(day30 == "Yes" & tpa == 1),
+
+    n_tpa =
+      sum(tpa == 1),
+
+    event_sk =
+      sum(day30 == "Yes" & tpa == 0),
+
+    n_sk =
+      sum(tpa == 0)
+
+  ) %>%
+  rename(subgroup = mi_group)
+
+############################################################
+# Combine
+############################################################
+
+forest_df <- bind_rows(
+
+  mi_df,
+  age_df,
+  sex_df,
+  quartile_df,
+  overall_df
+)
+
+############################################################
+# Metafor object
+############################################################
+par(fg = "black")
+library(metafor)
+
+res <- rma(
+
+  ai = event_tpa,
+  bi = n_tpa - event_tpa,
+
+  ci = event_sk,
+  di = n_sk - event_sk,
+
+  data = forest_df,
+
+  measure = "OR",
+
+  slab = subgroup,
+
+  method = "ML"
+)
+
+############################################################
+# Plot
+############################################################
+
+png(
+  "gusto_report_forest.png",
+  width = 1800,
+  height = 1200,
+  res = 220
+)
+
+par(mar = c(4,4,1,2))
+
+forest(
+
+  res,
+
+  xlim = c(-8, 2.5),
+
+  at = log(c(0.5, 1)),
+
+  alim = c(log(0.2), log(2)),
+
+  atransf = exp,
+
+  ilab = cbind(
+    forest_df$n_tpa,
+    forest_df$event_tpa,
+    forest_df$n_sk,
+    forest_df$event_sk
+  ),
+
+  ilab.xpos = c(-5,-4,-3,-2),
+
+  slab = forest_df$subgroup,
+
+  rows = c(1:2, 4:5, 7:8, 10:13, 15),
+
+  xlab = "Odds Ratio",
+
+  mlab = "",
+
+  psize = 1.2,
+
+  lwd = 1.5,
+
+  col = "maroon",
+
+  cex = 0.9
+)
+
+############################################################
+# Subgroup headers
+############################################################
+
+text(-8, 14, "Baseline risk (quartiles)", pos = 4, font = 2)
+
+text(-8, 9, "Sex", pos = 4, font = 2)
+
+text(-8, 6, "Age", pos = 4, font = 2)
+
+text(-8, 3, "MI location", pos = 4, font = 2)
+
+############################################################
+# Column headers
+############################################################
+
+text(
+
+  c(-5,-4,-3,-2, 3),
+
+  17,
+
+  c(
+    "tPA",
+    "Events",
+    "SK",
+    "Events",
+    "OR [95% CI]"
+  ),
+
+  font = 2
+)
+
+text(-8, 18, "GUSTO-I trial", pos = 4, font = 2)
+
+dev.off()
+###################################
+# For final Presentation (modified to only have Labels, OR and plot)
+
+png(
+  "gusto_pres_forest.png",
+  width = 1800,
+  height = 1200,
+  res = 220
+)
+
+par(mar = c(4,4,1,2))
+
+gusto_pres_forest <- forest(
+  res,
+  xlim = c(-1.5, 1.5),
+  at = log(c(0.5, 1, 2)),
+  alim = c(log(0.2), log(2.5)),
+  atransf = exp,
+  slab = forest_df$subgroup,
+  rows = c(1:2, 4:5, 7:8, 10:13, 15),
+  xlab = "Odds Ratio",
+  mlab = "",
+  psize = 1.4,
+  lwd = 1.8,
+  col = "red",
+  cex = 1
+)
+
+############################################################
+# Subgroup headers
+############################################################
+
+text(-1.5, 14, "Baseline risk (quartiles)", pos = 4, font = 2)
+
+text(-1.5, 9, "Sex", pos = 4, font = 2)
+
+text(-1.5, 6, "Age", pos = 4, font = 2)
+
+text(-1.5, 3, "MI location", pos = 4, font = 2)
+
+############################################################
+# Title
+############################################################
+
+text(-0.4, 17, "GUSTO-I trial", pos = 4, font = 2)
+
+dev.off()
+

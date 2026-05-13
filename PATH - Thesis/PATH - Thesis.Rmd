@@ -139,10 +139,8 @@ The international stroke trial was an open label randomised trial of 19,435 pati
 
 
 ```{r, echo = FALSE}
-#a flow chart to describe PATH workflow -------------------------------
-library(DiagrammeR)
-PATH_Workflow <- readRDS("C:/Users/tomde/Desktop/MSc Thesis-Git/PATH-Master/PATH_Workflow.rds")
-PATH_Workflow
+#a flow chart to describe PATH workflow ------------------------------
+knitr::include_graphics("PATH_workflow_io.png")
 ```
 
 
@@ -152,11 +150,12 @@ PATH_Workflow
 
 ### Data Generating Process
 
-
+For each individual (n = 5000), 3 baseline covariates from independant normal distributions were generated.
 
 $$
 X_1, X_2, X_3 \sim N(0,1)
 $$
+
 
 $$
 \text{logit}\big(P(Z_i = 1)\big)
@@ -195,23 +194,6 @@ $$
 
 ## Relative Treatment Effects
 
-```{r, echo = FALSE, warning = FALSE}
-library(meta)
-logit_meta <- readRDS("C:/Users/tomde/Desktop/MSc Thesis-Git/PATH-Master/logit_meta.rds")
-
-forest(
-  logit_meta,
-  layout = "RevMan5",
-  leftcols = c("studlab", "event.e", "n.e", "event.c", "n.c"),
-  leftlabs = c("Subgroup", "Aspirin events", "Aspirin n", "Control events", "Control n"),
-  rightlabs = c("OR", "95% CI"),
-  xlab = "Odds Ratio (aspirin vs control)",
-  col.diamond = "maroon",
-  col.square = "maroon",
-  overall.hetstat = FALSE
-)
-
-```
 
 
 

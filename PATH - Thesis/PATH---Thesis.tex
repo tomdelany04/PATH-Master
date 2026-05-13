@@ -253,11 +253,49 @@ bleeding.
 
 \section{Methods}\label{methods}
 
-\begin{verbatim}
-## file:///C:/Users/tomde/AppData/Local/Temp/RtmpuoSAZX/file39e865a02ec4/widget39e873b12e89.html screenshot completed
-\end{verbatim}
+\includegraphics[width=17.44in]{PATH_workflow_io}
 
-\pandocbounded{\includegraphics[keepaspectratio]{PATH---Thesis_files/figure-latex/unnamed-chunk-2-1.pdf}}
+\subsection{Monte Carlo simulations for
+examining}\label{monte-carlo-simulations-for-examining}
+
+\subsubsection{Data Generating Process}\label{data-generating-process}
+
+For each individual (n = 5000), 3 baseline covariates from independant
+normal distributions were generated.
+
+\[
+X_1, X_2, X_3 \sim N(0,1)
+\]
+
+\[
+\text{logit}\big(P(Z_i = 1)\big)
+=
+-0.2
++0.3X_{1,i}
+-0.2X_{2,i}
++0.1X_{3,i}
+\]
+
+\[
+\text{logit}\big(P(Y_i = 1)\big)
+=
+-2
+-0.5Z_i
++0.8X_{1,i}
++0.6X_{2,i}
++0.5X_{3,i}
+\]
+
+\[
+\text{logit}\big(P(Y_i = 1)\big)
+=
+-2
+-0.5Z_i
++0.8X_{1,i}
++0.6X_{2,i}
++0.5X_{3,i}
+-0.7(Z_iX_{1,i})
+\]
 
 \section{Results}\label{results}
 
@@ -266,21 +304,13 @@ bleeding.
 \subsection{Relative Treatment
 Effects}\label{relative-treatment-effects}
 
-\begin{verbatim}
-## Loading required package: metadat
-\end{verbatim}
-
-\begin{verbatim}
-## Loading 'meta' package (version 8.2-1).
-## Type 'help(meta)' for a brief overview.
-\end{verbatim}
-
-\pandocbounded{\includegraphics[keepaspectratio]{PATH---Thesis_files/figure-latex/unnamed-chunk-3-1.pdf}}
-
 \subsection{Absolute Treatment
 Effects}\label{absolute-treatment-effects}
 
 \pandocbounded{\includegraphics[keepaspectratio]{PATH---Thesis_files/figure-latex/unnamed-chunk-4-1.pdf}}
+\# Discussion
+
+\subsection{Regulatory Implications}\label{regulatory-implications}
 
 \section*{References}\label{references}
 \addcontentsline{toc}{section}{References}
