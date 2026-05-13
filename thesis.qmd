@@ -39,9 +39,13 @@ The goal of the PATH statement is to improve reporting of predictive approaches 
 
 ::: {style="margin-top: 2rem; padding: 0.8rem 1.1rem; border: 1px solid #84003d; border-radius: 10px; display: inline-block; background: #ADD8E6; font-size: 0.8em;"}
 <ul style="margin: 0; padding-left: 1.2em;">
+
 <li>Treatment effects vary meaningfully across patients with different baseline risks.</li>
+
 <li>Traditional one-variable subgroups often miss important, clinically relevant differences.</li>
+
 <li>PATH combines patient characteristics to estimate more individualized treatment benefit.</li>
+
 </ul>
 :::
 
@@ -72,6 +76,13 @@ trial_summary <- data.frame(
     "1990-1993",
     "Open-label RCT",
     "30 days"
+  ),
+  VITAL = c(
+    "Marine omega-3 fatty acid, Vitamin D3, both or double-placebo in death from cardiovascular causes",
+    "25,435",
+    "",
+    "a 2×2 factorial randomized controlled trial",
+    "5 years"
   )
 )
 
@@ -81,7 +92,8 @@ trial_summary %>%
     Characteristic = "Characteristic",
     IST = md("[International Stroke Trial](https://pubmed.ncbi.nlm.nih.gov/?term=9174558)"),
     DIG = md("[DIG Trial](https://pubmed.ncbi.nlm.nih.gov/9036306/)"),
-    GUSTO = md("[GUSTO-I Trial](https://pubmed.ncbi.nlm.nih.gov/8204123/)")
+    GUSTO = md("[GUSTO-I Trial](https://pubmed.ncbi.nlm.nih.gov/8204123/)"),
+    VITAL = md("[VITamin D and OmegA-3 TriaL (VITAL)](https://www.nature.com/articles/s41430-022-01244-w)")
   ) %>%
   tab_options(
     table.border.top.color = "#84003d",
@@ -100,11 +112,11 @@ trial_summary %>%
   ) %>%
   tab_style(
     style = cell_borders(sides = "right", color = "#84003d", weight = px(2)),
-    locations = cells_body(columns = c("Characteristic", "IST", "DIG"))
+    locations = cells_body(columns = c("Characteristic", "IST", "DIG", "GUSTO"))
   ) %>%
   tab_style(
     style = cell_borders(sides = "right", color = "#84003d", weight = px(2)),
-    locations = cells_column_labels(columns = c("Characteristic", "IST", "DIG"))
+    locations = cells_column_labels(columns = c("Characteristic", "IST", "DIG", "GUSTO"))
   ) %>%
   tab_style(
     style = cell_text(size = px(22), color = "black"),
@@ -119,7 +131,6 @@ trial_summary %>%
 ::: {style="margin-top: 1.5rem; padding: 0.6rem 1rem; border: 1px solid #84003d; border-radius: 10px; display: inline-block; background: #ADD8E6; font-size: 0.8em;"}
 All three trials were cardiovascular, used binary outcomes, and were conducted in the early to mid-1990s.
 :::
-
 
 ## Methodology
 
@@ -168,11 +179,6 @@ div(
   )
 )
 ```
-
-
-
-
-
 
 ## Relative Effects
 
@@ -246,7 +252,4 @@ forest(
 )
 ```
 
-
-
 ## GGIRAF ![ggiraph logo](images/ggraph.png){alt="Quarto logo" height="1.2em"
-
