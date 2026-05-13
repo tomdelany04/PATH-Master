@@ -243,56 +243,99 @@ afib_df <- IST_df %>%
 #Bind into one df
 
 forest_df <- bind_rows(
-  overall_df,
-  quartile_df,
+  afib_df,
   age_df,
   consc_df,
-  afib_df
+  quartile_df,
+  overall_df
 )
 
 
 ###################################
 # Plot for forest
-IST_meta_all <- metabin(
-  event.e = event_aspirin,
-  n.e     = n_aspirin,
-  event.c = event_control,
-  n.c     = n_control,
-  studlab = subgroup,
+library(metafor)
+
+res <- rma(
+  ai = event_aspirin,
+  bi = n_aspirin - event_aspirin,
+  ci = event_control,
+  di = n_control - event_control,
   data = forest_df,
-  sm = "OR",
-  method = "Inverse",
-  incr = 0.5,
-  random = FALSE
+  measure = "OR",
+  slab = subgroup,
+  method = "ML"
 )
 
-IST_forest_all <- forest(
-  IST_meta_all,
-  layout = "RevMan5",
-  leftcols = c(
-    "studlab",
-    "event.e",
-    "n.e",
-    "event.c",
-    "n.c"
+par(mar = c(4,4,1,2))
+
+forest(
+
+  res,
+
+  xlim = c(-8, 2.5),
+
+  at = log(c(0.5, 1, 1.5)),
+
+  alim = c(log(0.2), log(2)),
+
+  atransf = exp,
+
+  ilab = cbind(
+    forest_df$n_aspirin,
+    forest_df$event_aspirin,
+    forest_df$n_control,
+    forest_df$event_control
   ),
-  leftlabs = c(
-    "Subgroup",
-    "Aspirin events",
-    "Aspirin n",
-    "Control events",
-    "Control n"
-  ),
-  rightlabs = c("OR", "95% CI"),
-  xlab = "Odds Ratio (aspirin vs control)",
-  col.diamond = "maroon",
-  col.square = "maroon",
-  overall.hetstat = FALSE
+
+  ilab.xpos = c(-5,-4,-3,-2),
+
+  slab = forest_df$subgroup,
+
+  rows = c(1:2, 4:6, 8:9, 11:14, 16),
+
+  xlab = "Odds Ratio",
+
+  mlab = "",
+
+  psize = 1.2,
+
+  lwd = 1.5,
+
+  col = "maroon",
+
+  cex = 0.9
 )
 
-IST_forest_all
+
+############################################################
+# Subgroup headers
+
+text(-8, 15, "Baseline risk (quartiles)", pos = 4, font = 2)
+
+text(-8, 10, "Age", pos = 4, font = 2)
+
+text(-8, 7, "Consciousness", pos = 4, font = 2)
+
+text(-8, 3, "Atrial fibrillation", pos = 4, font = 2)
 
 
+############################################################
+# Column headers
+
+text(
+  c(-5,-4,-3,-2,3),
+  18,
+  c(
+    "Aspirin",
+    "Events",
+    "Control",
+    "Events",
+    "OR [95% CI]"
+  ),
+  font = 2
+)
+
+text(-8, 19, "IST trial", pos = 4, font = 2)
 ############################################################
 # Absolute benefit with CI
 
