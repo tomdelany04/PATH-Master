@@ -129,67 +129,84 @@ trial_summary %>%
 ```
 
 ::: {style="margin-top: 1.5rem; padding: 0.6rem 1rem; border: 1px solid #84003d; border-radius: 10px; display: inline-block; background: #ADD8E6; font-size: 0.8em;"}
-All three trials were cardiovascular, used binary outcomes, and were conducted in the early to mid-1990s.
+
 :::
 
-## Methodology
+## Path Workflow
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-library(DiagrammeR)
-library(htmltools)
-
-div(
-  grViz(
-    "digraph {
-
-    graph [layout = dot, rankdir = LR, splines = ortho, nodesep = 0.9, ranksep = 0.2]
-    node  [fontname = Helvetica, fontsize = 10, style = filled, fillcolor = white, color = gray35]
-    edge  [color = gray30, arrowsize = 0.6]
-
-    IST    [label = 'IST', shape = cylinder, fillcolor = 'azure']
-    GUSTO  [label = 'GUSTO-1', shape = cylinder, fillcolor = 'azure']
-    DIG    [label = 'DIG', shape = cylinder, fillcolor = 'azure']
-
-    clean   [label = 'Data cleaning']
-    feature [label = 'Feature selection']
-    rf      [label = 'Random Forest']
-    logit   [label = 'Logistic Regression']
-    quart   [label = 'Risk Quartiles']
-
-    rel     [label = 'Forest Plot', shape = doubleoctagon, fillcolor = 'lightsalmon']
-    abs     [label = 'Absolute Benefit Plot', shape = doubleoctagon, fillcolor = 'lightsalmon']
-    classical [label = 'Classical\\nsubgroups', shape = box, fillcolor = 'mistyrose']
-
-    IST   -> clean
-    GUSTO -> clean
-    DIG   -> clean
-
-    clean   -> feature
-    feature -> rf
-    feature -> logit
-
-    rf    -> quart
-    logit -> quart
-
-    quart -> rel
-    quart -> abs
-
-    classical -> rel [style = dashed, color = firebrick, fontcolor = firebrick]
-  }"
-  )
-)
+knitr::include_graphics("PATH_workflow_io.png")
 ```
 
-## Relative Effects
+## Simulation Experiment Methodology
 
-```{r}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+knitr::include_graphics("MCworkflow.png")
+```
+
+
+
+
+## Relative Effect Illustration
+
+::: {.columns}
+::: {.column width="60%"}
+
+::: {style="margin-top: 0.1rem; width: 98%;"}
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width='100%'}
 knitr::include_graphics("gusto_pres_forest.png")
 ```
 
-<<<<<<< HEAD
-## GGIRAF ![ggiraph logo](images/ggraph.png){alt="Quarto logo" height="1.2em"
-=======
+:::
+
+:::
+
+::: {.column .fragment width="40%" data-fragment-index="1"}
+
+::: {style="margin-top: 0.1rem; width: 98%; padding: 0.9rem 1rem; border: 1px solid #84003d; border-radius: 10px; background: #f7f7f7; font-size: 0.78em;"}
+
+```{r}
+#| echo: true
+#| eval: false
+#| code-line-numbers: "|1-5|7|9-13|"
+gusto$lp <- predict(
+  model1,
+  newdata = transform(gusto, tpa = 0),
+  type = "link"
+)
+
+groups <- cut2(gusto$lp, g = 4)
+
+data.subgroups[10:7, 5] <- paste("Quarter", 1:4)
+data.subgroups[10:7, 6] <- "Risk-based subgroups"
+data.subgroups[10:7, 1:4] <- cbind(
+  events2, nevents2, events1, nevents1
+)
+```
+
+:::
+
+:::
+
+:::
 
 
 
->>>>>>> 9eebeefa5766fd16947669b56cb67462d40bfce3
+
+
+## Relative Effect Results
+
+
+- Panel of 4 forest plots?
+
+
+## Absolute treatment effect
+
+```{r}
+Gusto_plot <- readRDS("gusto_plot.rds")
+Gusto_plot
+```
+
+
+

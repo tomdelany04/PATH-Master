@@ -481,7 +481,7 @@ geom_density(
   data = hist_df,
   aes(
     x = risk,
-    y = after_stat(scaled) * 0.015
+    y = ..scaled.. * 0.015
   ),
   fill = "grey80",
   color = NA,

@@ -69,24 +69,14 @@ or_clean
 
 
 ###Log model recoding
-motor_deficit = ifelse(RDEF2 == "Y" | RDEF3 == "Y", 1, 0)
-consc_bin = ifelse(RCONSC == "F", 0, 1)
-afib = ifelse(RATRIAL == "Y", 1, 0)
-ct_infarct = ifelse(RVISINF == "Y", 1, 0)
+motor_deficit = ifelse(IST_df$RDEF2 == "Y" | IST_df$RDEF3 == "Y", 1, 0)
+consc_bin = ifelse(IST_df$RCONSC == "F", 0, 1)
+afib = ifelse(IST_df$RATRIAL == "Y", 1, 0)
+ct_infarct = ifelse(IST_df$RVISINF == "Y", 1, 0)
 
-#Adjusted based on
+#Adjusted based on Thompson et al 2015
 
-sysbp_maxed = with(gusto,pmin(sysbp, 120))
-
-model <- glm(
-  FDEAD ~ AGE + consc_bin + ct_infarct + motor_deficit + afib,
-  data = ist_data,
-  family = binomial(link = "logit")
-)
-
-
-
-
+# Done in logistic R script
 
 ###################################################################
 ############################################ Random Forest Approach
@@ -210,23 +200,13 @@ result_df %>% gt()
 # Plot under a proportional treatment effect assumption
 library(splines)
 
-model1 <- glm( ##Model not tuned at all.
-  death14 ~
-    aspirin +
+model1 <- glm(
+  death14 ~ aspirin +
     AGE +
-    SEX +
-    RCONSC +
-    RSBP +
-    RATRIAL +
-    RDELAY +
-    RSLEEP +
-    RCT +
-    RVISINF +
-    RDEF1 +
-    RDEF2 +
-    RDEF3 +
-    RDEF4 +
-    RDEF5,
+    consc_bin +
+    ct_infarct +
+    motor_deficit +
+    afib,
   data = IST_df,
   family = binomial
 )
@@ -262,8 +242,21 @@ lines(x = c(0, 0.5), y = c(0, 0))
 histSpike(IST_risk_base, add = TRUE, side = 1, nint = 300, frac = 0.15)
 
 # Grouped absolute risk differences by RF quartile with confidence intervals
-points(x = rate_control, y = ratediff, pch = 1, cex = 2, lwd = 2, col = "blue")
-arrows(x0 = rate_control, x1 = rate_control, y0 = CI[, 2], y1 = CI[, 3], angle = 90, code = 3, len = 0.1, col = "blue")
+quartile_mean_risk <- tapply(
+  IST_risk_base,
+  IST_df$IST_rf_groups0,
+  mean
+)
+
+points(
+  x = quartile_mean_risk,
+  y = ratediff,
+  pch = 1,
+  cex = 2,
+  lwd = 2,
+  col = "blue"
+)
+arrows(x0 = quartile_mean_risk, x1 = quartile_mean_risk, y0 = CI[, 2], y1 = CI[, 3], angle = 90, code = 3, len = 0.1, col = "blue")
 
 legend(
   "topleft",
@@ -279,3 +272,311 @@ legend(
   )
 )
 
+
+############################################
+# Forest plot for PATH approach, aligns with Logistic R script (Full plot for report)
+# Only change was rf_quartile dataframe from rf groups
+
+
+IST_df$consc <- ifelse(IST_df$RCONSC == "F", 0, 1)
+
+IST_df$afib <- ifelse(IST_df$RATRIAL == "Y", 1, 0)
+
+############################################################
+# Forest plot inputs (need dfs for quartiles, classics and overall _ then bind)
+overall_df <- data.frame(
+  subgroup = "Overall",
+
+  event_aspirin =
+    sum(IST_df$death14 == "Yes" & IST_df$aspirin == 1),
+
+  n_aspirin =
+    sum(IST_df$aspirin == 1),
+
+  event_control =
+    sum(IST_df$death14 == "Yes" & IST_df$aspirin == 0),
+
+  n_control =
+    sum(IST_df$aspirin == 0)
+)
+
+# RF quartile subgroup dataframe
+
+rf_quartile_df <- data.frame(
+
+  subgroup = c(
+    "Lowest risk",
+    "Low risk",
+    "Moderate risk",
+    "Highest risk"
+  ),
+
+  event_aspirin = aspirin_events,
+  n_aspirin = aspirin_n,
+
+  event_control = control_events,
+  n_control = control_n
+)
+
+# CLASSICS
+
+IST_df$age_group <- cut(
+  IST_df$AGE,
+  breaks = c(0, 65, 75, 120),
+  labels = c("<65", "65–75", "75+")
+)
+
+age_df <- IST_df %>%
+  group_by(age_group) %>%
+  summarise(
+
+    event_aspirin =
+      sum(death14 == "Yes" & aspirin == 1),
+
+    n_aspirin =
+      sum(aspirin == 1),
+
+    event_control =
+      sum(death14 == "Yes" & aspirin == 0),
+
+    n_control =
+      sum(aspirin == 0)
+
+  ) %>%
+  rename(subgroup = age_group)
+
+IST_df$consc_group <- factor(
+  IST_df$consc,
+  levels = c(0,1),
+  labels = c("Alert", "Drowsy/coma")
+)
+
+
+consc_df <- IST_df %>%
+  group_by(consc_group) %>%
+  summarise(
+
+    event_aspirin =
+      sum(death14 == "Yes" & aspirin == 1),
+
+    n_aspirin =
+      sum(aspirin == 1),
+
+    event_control =
+      sum(death14 == "Yes" & aspirin == 0),
+
+    n_control =
+      sum(aspirin == 0)
+
+  ) %>%
+  rename(subgroup = consc_group)
+
+
+IST_df$afib_group <- factor(IST_df$afib, labels = c("No AF", "AF"))
+
+afib_df <- IST_df %>%
+  group_by(afib_group) %>%
+  summarise(
+
+    event_aspirin =
+      sum(death14 == "Yes" & aspirin == 1),
+
+    n_aspirin =
+      sum(aspirin == 1),
+
+    event_control =
+      sum(death14 == "Yes" & aspirin == 0),
+
+    n_control =
+      sum(aspirin == 0)
+
+  ) %>%
+  rename(subgroup = afib_group)
+
+
+#Bind into one df
+
+forest_df <- bind_rows(
+  afib_df,
+  age_df,
+  consc_df,
+  rf_quartile_df,
+  overall_df
+)
+
+
+###################################
+# Plot for forest
+library(metafor)
+
+res <- rma(
+  ai = event_aspirin,
+  bi = n_aspirin - event_aspirin,
+  ci = event_control,
+  di = n_control - event_control,
+  data = forest_df,
+  measure = "OR",
+  slab = subgroup,
+  method = "ML"
+)
+
+par(mar = c(4,4,1,2))
+
+forest(
+
+  res,
+
+  xlim = c(-8, 2.5),
+
+  at = log(c(0.5, 1, 1.5)),
+
+  alim = c(log(0.2), log(2)),
+
+  atransf = exp,
+
+  ilab = cbind(
+    forest_df$n_aspirin,
+    forest_df$event_aspirin,
+    forest_df$n_control,
+    forest_df$event_control
+  ),
+
+  ilab.xpos = c(-5,-4,-3,-2),
+
+  slab = forest_df$subgroup,
+
+  rows = c(1:2, 4:6, 8:9, 11:14, 16),
+
+  xlab = "Odds Ratio",
+
+  mlab = "",
+
+  psize = 1.2,
+
+  lwd = 1.5,
+
+  col = "maroon",
+
+  cex = 0.9
+)
+
+
+############################################################
+# Subgroup headers
+
+text(-8, 15, "Baseline risk (quartiles)", pos = 4, font = 2)
+
+text(-8, 10, "Age", pos = 4, font = 2)
+
+text(-8, 7, "Consciousness", pos = 4, font = 2)
+
+text(-8, 3, "Atrial fibrillation", pos = 4, font = 2)
+
+
+############################################################
+# Column headers
+
+text(
+  c(-5,-4,-3,-2,3),
+  18,
+  c(
+    "Aspirin",
+    "Events",
+    "Control",
+    "Events",
+    "OR [95% CI]"
+  ),
+  font = 2
+)
+
+text(-8, 19, "IST trial", pos = 4, font = 2)
+############################################################
+
+#####################################################
+# Clean GGPlot for absolute
+library(ggplot2)
+library(microshades)
+
+#Data prep
+curve_df <- data.frame(risk = xp, prop = p1exp)
+
+
+group_df <- data.frame(
+  risk = quartile_mean_risk,
+  benefit = ratediff,
+  lower = CI[,2],
+  upper = CI[,3]
+)
+
+hist_df <- data.frame(risk = IST_risk_base)
+
+# plot
+aspirin_plot_rf <- ggplot() +
+
+  # baseline risk distribution (scaled density)
+  geom_density(
+    data = hist_df,
+    aes(x = risk, y = after_stat(scaled) * 0.015),
+    fill = "grey80",
+    color = NA,
+    alpha = 0.4
+  ) +
+
+  # proportional model
+  geom_line(
+    data = curve_df,
+    aes(x = risk, y = prop),
+    linetype = "dashed",
+    linewidth = 1.7,
+    colour = "#F09163"
+  ) +
+
+  # grouped estimates
+  geom_point(
+    data = group_df,
+    aes(x = risk, y = benefit),
+    size = 3,
+    color = "#A80050"
+  ) +
+
+  geom_errorbar(
+    data = group_df,
+    aes(x = risk, ymin = lower, ymax = upper),
+    width = 0.005,
+    alpha = 0.2
+  ) +
+
+  # zero line
+  geom_hline(yintercept = 0, linetype = "dotted") +
+
+  coord_cartesian(xlim = c(0, 0.4), ylim = c(-0.02, 0.035)) +
+
+  labs(
+    x = "Baseline risk",
+    y = "Benefit by aspirin (absolute risk difference)"
+  ) +
+
+  theme_classic(base_size = 13) +
+  theme(
+    axis.ticks = element_blank(),
+    axis.line = element_line(color = "grey60", linewidth = 0.5),
+  ) +
+
+  annotate(
+    "text",
+    x = 0.3,
+    y = 0.016,
+    label = "Proportional effect",
+    color = "#F09163",
+    hjust = 0,
+    size = 6
+  ) +
+
+  labs(
+    title = "Absolute Benefit of Aspirin Across RF-Predicted Baseline Risk"
+  )
+
+aspirin_plot_rf
+
+
+saveRDS(aspirin_plot_rf, "aspirin_plot_rf.rds")
