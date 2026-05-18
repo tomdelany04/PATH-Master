@@ -93,7 +93,6 @@ cox.vitd.fact <- coxph(Surv(time,death) ~ vitd + strata(age) + strata(bmi) + sex
 summary(cox.vitd.fact)
 tidy(cox.vitd.fact, conf.int = T, exponentiate=T)
 
-
 # Vitamin D and Omega-3 group compared to Double Placebo
 vital.both1 <- vital.hte %>% 
   filter(
