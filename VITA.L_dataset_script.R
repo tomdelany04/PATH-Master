@@ -10,14 +10,15 @@ library(ggplot2)
 library(plotly)
 library(survival)
 library(survminer)
+library(Hmisc)
 
 
 
 #Data load
 vital <- read_sas("VITAL_trial_NEJM_2022.sas7bdat")
 names(vital)
-# view(vital)
 dim(vital)
+
 
 # Data preparation
 vital.hte <- vital %>%
@@ -45,234 +46,601 @@ vital.hte <- vital %>%
                       labels = c("No", "Yes")),
     currsmk = factor(currsmk, 
                      levels = c(0,1),
-                     labels = c("Former", "Current")),
+                     labels = c("No", "Yes")),
     familyHist = factor(parhxmi,
                         levels = c(0,1),
-                        labels = c("Former", "Current")))
-View(vital.hte)
+                        labels = c("No", "Yes")))
 
 
-# Descriptive statistics 
-# crude 2x2 table
-vital_tab <- table(vital.hte$death, vital.hte$fishoilonly)
-vital_tab
+# Descriptive statistics
+table1(~ as.factor(death) + age + bmi + sex + htnmed + diabetes + currsmk + familyHist , data =vital.hte,  digits =2)
 
-# Descriptive table
-vital_tab2 <- table1(~age + bmi + sex + htnmed + currsmk + diabetes + familyHist, data =vital.hte,  digits =2)
-vital_tab2
+# Descriptive statistics by treatment group
+table(vital.hte$vitd, vital.hte$fishoil)
 
-# Event rates by treatment group
-vital.hte %>%
-  group_by(vitd, fishoil) %>%
-  summarise(
-    n = n(),
-    events = sum(death),
-    event_rate = mean(death),
-    .groups = "drop"
-  ) %>% 
-  print()
+#***kaplan Meier curve***#
+# kaplan Meier curve for vitd
+vital.kp <- vital.hte %>% 
+  select(time, death, vitd, fishoil) %>% 
+  drop_na()
 
-# Proportional hazards assumption 
-ph.test <- cox.zph(cox.vital.hte)
-print(ph.test)
+#Kaplan Meier for vit-D
+kp_vitd <- survfit(Surv(time, death)~ vitd, data = vital.kp)
 
-# create age and BMI strata
-vital.hte <- vital.hte %>%
-  mutate(
-    age.categ = ifelse(age >= 70, "Age >= 70", "Age < 70"),
-    bmi.categ = ifelse(bmi >= 30, "Obese(BMI>=30)", "Non-obese")
-  )
+ggsurvplot(
+  kp_vitd, 
+  data = vital.kp,
+  legend.title= "Vitamin D", 
+  legend.labs = c("Placebo", "Active Vit-D"),
+  risk.table = TRUE, 
+  break.x.by = 1,
+  xlim = c(0,6),
+  ylim = c(0.986, 1.00),
+  conf.int = FALSE, 
+  pval = TRUE,
+  ylab = "Probability \n no CVD death", xlab = "Time (Years)")
 
-# Unadjusted factorial analysis with cox proportional hazards model
-cox.vital.hte <- coxph(Surv(time,death) ~ vitd * fishoil, data = vital.hte)
-summary(cox.vital.hte)
-tidy(cox.vital.hte, conf.int = T, exponentiate=T)
+#Kaplan Meier for Omega-3
+kp_omega3 <- survfit(Surv(time, death)~ fishoil, data = vital.kp)
 
-# Adjusted factorial analysis with cox proportional hazards model
-cox.vitd.fact <- coxph(Surv(time,death) ~ vitd + strata(age) + strata(bmi) + sex + htnmed + diabetes + currsmk + familyHist, data = vital.hte)
-summary(cox.vitd.fact)
-tidy(cox.vitd.fact, conf.int = T, exponentiate=T)
-
-# Vitamin D and Omega-3 group compared to Double Placebo
-vital.both1 <- vital.hte %>% 
-  filter(
-    (vitd == "Placebo" & fishoil == "Placebo")|
-      (vitd == "Active Vit-D" & fishoil == "Active Omega-3")
-  ) %>% 
-  mutate(
-    treatment1 = factor(
-      ifelse(vitd == "Active Vit-D" & fishoil == "Active Omega-3", "vitd_with_omega3", "Double_placebo"),
-      levels = c("Double_placebo", "vitd_with_omega3")
-    )
-  )
-
-table(vital.both1$treatment1)
-
-# Fit cox model for vitD and Omega-3 group compared to Double Placebo group
-cox.both1 <- coxph(Surv(time,death) ~ treatment1 + strata(age) + strata(bmi) + sex + htnmed + diabetes + currsmk + familyHist,data = vital.both1)
-summary(cox.both1)
-tidy(cox.both1, conf.int = T, exponentiate=T)
-
-
-# Vitamin D and Omega-3 group compared to Omega-3 and Placebo group
-vital.both2 <- vital.hte %>% 
-  filter(
-    (vitd == "Placebo" & fishoil == "Active Omega-3")|
-      (vitd == "Active Vit-D" & fishoil == "Active Omega-3")
-  ) %>% 
-  mutate(
-    treatment2 = factor(
-      ifelse(vitd == "Active Vit-D" & fishoil == "Active Omega-3", "vitd_with_omega3", "Placebo_vitd_active_omega3"),
-      levels = c("Placebo_vitd_active_omega3", "vitd_with_omega3")
-    )
-  )
-
-table(vital.both2$treatment2)
-
-# Fit cox model for vitD and Omega-3 group compared to Omega-3 and Placebo group
-cox.both2 <- coxph(Surv(time,death) ~ treatment2 + strata(age) + strata(bmi) + sex + htnmed + diabetes + currsmk + familyHist, data = vital.both2)
-summary(cox.both2)
-tidy(cox.both2, conf.int = T, exponentiate=T)
+ggsurvplot(
+  kp_vitd, 
+  data = vital.kp,
+  legend.title= "Omega-3", 
+  legend.labs = c("Placebo", "Active Omega-3"),
+  risk.table = TRUE, 
+  break.x.by = 1,
+  xlim = c(0,6),
+  ylim = c(0.986, 1.00),
+  pval = TRUE,
+  ylab = "Probability \n no CVD death", xlab = "Time (Years)")
 
 
 
 
-#****PATH approach********
 
-# Fit a Cox proportional hazards model with out treatment 
-# doi: 10.7326/M18-3668
-cox.vital.baseline <- coxph(Surv(time,death) ~ strata(age) + strata(bmi)+ sex + htnmed + currsmk + diabetes + familyHist, 
-                            data = (vital.hte))
-summary(cox.vital.baseline)
+#***Factorial analysis: overall treatment effect**#  
+# Coxph model for overall treatment effect 
+cox.factorial <- coxph(Surv(time,death) ~ vitd + fishoil + age + bmi + sex + htnmed + diabetes + currsmk + familyHist,data = vital.hte)
 
-#linear predictor; predict baseline risk; Individual with cox model
+# Fit a Cox proportional hazards model with-out treatment 
+cox.vital.baseline <- coxph(Surv(time,death) ~ age + bmi + sex + htnmed + currsmk + diabetes + familyHist, data = vital.hte)
+
+#linear predictor; predict baseline individual risk 
 vital.hte$lp <- predict(cox.vital.baseline, newdata= vital.hte, type = "lp")
 
-# # Centering risk for interpretability
+#Centering risk for interpretability
 vital.hte$risk.center.cox <- vital.hte$lp - mean(vital.hte$lp, na.rm = T)
 
-# Baseline risk stratification: Dividing patients into four equal sized risk groups 
-risk.quarter <- quantile(vital.hte$risk.center.cox, probs = c(0,0.25, 0.50, 0.75,1), na.rm = T) 
+# Baseline risk stratification 
+# Dividing patients into four equal sized risk groups 
 vital.hte <- vital.hte %>%
   mutate(risk = ntile(risk.center.cox,4),
          risk = factor(risk,
                        levels= c(1,2,3,4),
                        labels = c("Q(low)", "Q2","Q3", "Q4(High)")))
 
-# fit Cox model with interaction between vitamin D and risk quarter
-cox.vital.vitd <- coxph(Surv(time,death) ~ vitd * risk, data = vital.hte)
-summary(cox.vital.vitd)
+
+# Fit cox with treatment and risk quarter
+cox.tx.risk <- coxph(Surv(time,death) ~ vitd + fishoil + risk, data = vital.hte, ties = "breslow")
+
+# Spline interaction effect model
+cox.spline <- coxph(Surv(time,death) ~ (vitd + fishoil) * ns(risk.center.cox, df =3) , data = vital.hte, ties = "breslow")
+
+# Individual variables
+vital.subgroup <- vital.hte %>% 
+  mutate(
+    age.categ = ifelse(age >= 70, "Age >= 70", "Age < 70"),
+    bmi.categ = ifelse(bmi >= 30, "Obese(BMI>=30)", "Non-obese(BMI < 30)")
+  )
+subgroup.variables <- c( "age.categ", "bmi.categ")
 
 
-# fit cox model with interaction between Omega-3 and risk quarter
-cox.vital.omega3 <- coxph(Surv(time,death) ~ fishoil * risk, data = vital.hte)
-summary(cox.vital.omega3)
 
-# fit cox model with interaction between vitamin D, Omega-3 and risk quarter
-cox.vital.interaction <- coxph(Surv(time, death)~ vitd* fishoil * risk, data = vital.hte)
-# summary(cox.interaction.hte)
+#****marginal effects for treatment heterogeneity**# 
+#**Vitd**
 
+# Overall risk difference
+overall.ard <- avg_comparisons(
+  cox.tx.risk,
+  variables = "vitd",
+  type = "survival",
+  comparison = "differenceavg",
+  conf_level = 0.99,
+  time = 5,
+  vcov = TRUE
+) %>%
+  as_tibble() %>%
+  mutate(subgroup = "Overall") %>%
+  select(subgroup, estimate, conf.low, conf.high, p.value)
 
-library(marginaleffects)
-library(ggplot2)
-library(plotly)
-
-# Overall Hazard lnratioavg
-overall.risk <- avg_comparisons(
-  cox.both1.risk,
-  variables = "treatment1",
-  comparison = "lnratioavg",   
-  transform = "exp"
-) %>% 
-  as_tibble() %>% 
-  mutate(subgroup = "Overall") %>% 
-  select(subgroup, estimate, conf.low, conf.high)
-
-# Hazard lnratioavg by Risk Quarter
-hr.by.risk <- avg_comparisons(
-  cox.both1.risk,
-  variables = "treatment1",
+# Risk difference by risk quarter
+ard.by.risk <- avg_comparisons(
+  cox.tx.risk,
+  variables = "vitd",
   by = "risk",
-  comparison = "lnratioavg",   
-  transform = "exp"
-) %>% 
-  as_tibble() %>% 
-  select(subgroup = risk, estimate, conf.low, conf.high)
+  type = "survival",
+  comparison = "differenceavg",
+  conf_level = 0.99,
+  time = 5,
+  vcov = TRUE
+) %>%
+  as_tibble() %>%
+  select(subgroup = risk, estimate, conf.low, conf.high, p.value)
 
-#Subgroup Hazard lnratioavg by Age and BMI
+# ARD at 5 years among age groups
 # Age >= 70
-hr.by.age <- avg_comparisons(
-  cox.both1.risk,
-  variables = "treatment1",
+ard.by.age1 <- avg_comparisons(
+  cox.tx.risk,
+  variables = "vitd",
   newdata = subset(vital.subgroup, age.categ == "Age >= 70"),
-  comparison = "lnratioavg",   
-  transform = "exp"
-) %>% 
-  as_tibble() %>% 
-  mutate(subgroup = "Age >= 70") %>% 
-  select(subgroup, estimate, conf.low, conf.high)
+  type = "survival",
+  comparison = "differenceavg",
+  conf_level = 0.99,
+  time = 5,
+  vcov = TRUE
+) %>%
+  as_tibble() %>%
+  mutate(subgroup = "Age >= 70") %>%
+  select(subgroup, estimate, conf.low, conf.high, p.value)
 
-# Age < 70
-hr.by.age2 <- avg_comparisons(
-  cox.both1.risk,
-  variables = "treatment1",
+# Age <= 70
+ard.by.age2 <- avg_comparisons(
+  cox.tx.risk,
+  variables = "vitd",
   newdata = subset(vital.subgroup, age.categ == "Age < 70"),
-  comparison = "lnratioavg",   
-  transform = "exp"
-) %>% 
-  as_tibble() %>% 
-  mutate(subgroup = "Age < 70") %>% 
-  select(subgroup, estimate, conf.low, conf.high)
+  type = "survival",
+  comparison = "differenceavg",
+  conf_level = 0.99,
+  time = 5,
+  vcov = TRUE
+) %>%
+  as_tibble() %>%
+  mutate(subgroup = "Age < 70") %>%
+  select(subgroup, estimate, conf.low, conf.high, p.value)
 
-# Bmi >= 30 : Obese 
-hr.by.bmi <- avg_comparisons(
-  cox.both1.risk,
-  variables = "treatment1",
+# ARD among at 5 years BMI group
+#BMI >= 30
+ard.by.bmi1 <- avg_comparisons(
+  cox.tx.risk,
+  variables = "vitd",
   newdata = subset(vital.subgroup, bmi.categ == "Obese(BMI>=30)"),
-  comparison = "lnratioavg",   
-  transform = "exp"
-) %>% 
-  as_tibble() %>% 
-  mutate(subgroup = "Obese(BMI>=30)") %>% 
-  select(subgroup, estimate, conf.low, conf.high)
+  type = "survival",
+  comparison = "differenceavg",
+  conf_level = 0.99,
+  time = 5,
+  vcov = TRUE
+) %>%
+  as_tibble() %>%
+  mutate(subgroup = "Obese(BMI>=30)") %>%
+  select(subgroup, estimate, conf.low, conf.high, p.value)
 
 # BMI < 30
-hr.by.bmi2 <- avg_comparisons(
-  cox.both1.risk,
-  variables = "treatment1",
-  newdata = subset(vital.subgroup, age == "Non-obese"),
-  comparison = "lnratioavg",   
-  transform = "exp"
-) %>% 
-  as_tibble() %>% 
-  mutate(subgroup = "Non-obese") %>% 
-  select(subgroup, estimate, conf.low, conf.high)
+ard.by.bmi2 <- avg_comparisons(
+  cox.tx.risk,
+  variables = "vitd",
+  newdata = subset(vital.subgroup, bmi.categ == "Non-obese(BMI < 30)"),
+  type = "survival",
+  comparison = "differenceavg",
+  conf_level = 0.99,
+  time = 5,
+  vcov = TRUE
+) %>%
+  as_tibble() %>%
+  mutate(subgroup = "Non-obese(BMI < 30)") %>%
+  select(subgroup, estimate, conf.low, conf.high, p.value)
 
 
 
+#***Forest plot: Risk modelling***#
+vital.plot.HTE <- bind_rows(overall.ard,
+                            ard.by.risk,
+                            ard.by.age1,
+                            ard.by.age2,
+                            ard.by.bmi1,
+                            ard.by.bmi2
+) %>%
+  mutate(subgroup = factor(subgroup,
+                           levels = c("Overall", "Q(low)", "Q2", "Q3",
+                                      "Q4(High)", "Age >= 70", "Age < 70",
+                                      "Obese(BMI>=30)", "Non-obese(BMI < 30)")))
 
+ggplot(vital.plot.HTE,
+       aes(x = estimate, y = subgroup)) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "grey50") +
+  geom_errorbarh(aes(xmin = conf.low, xmax = conf.high),
+                 height = 0.2, color = "grey30") +
+  geom_point(size = 3, color = "maroon") +
+  scale_x_continuous(labels = scales::label_number(accuracy = 0.01)) +
+  labs(title = "Forest Plot: Absolute Risk Difference for Vitamin D",
+       x = "Absolute Risk Difference at 5 years (99% CI)",
+       y = NULL) +
+  theme_minimal()
+
+
+
+#***marginal effects for treatment heterogeneity fo Omega-3**#
+
+
+# Overall risk difference
+overall.ard.omega <- avg_comparisons(
+  cox.tx.risk,
+  variables = "fishoil",
+  type = "survival",
+  comparison = "differenceavg",
+  conf_level = 0.99,
+  time = 5,
+  vcov = TRUE
+) %>%
+  as_tibble() %>%
+  mutate(subgroup = "Overall") %>%
+  select(subgroup, estimate, conf.low, conf.high, p.value)
+
+# Risk difference by risk quarter
+ard.by.risk.omega <- avg_comparisons(
+  cox.tx.risk,
+  variables = "fishoil",
+  by = "risk",
+  type = "survival",
+  comparison = "differenceavg",
+  conf_level = 0.99,
+  time = 5,
+  vcov = TRUE
+) %>%
+  as_tibble() %>%
+  select(subgroup = risk, estimate, conf.low, conf.high, p.value)
+
+# ARD at 5 years among age groups
+# Age >= 70
+ard.by.age1.omega <- avg_comparisons(
+  cox.tx.risk,
+  variables = "fishoil",
+  newdata = subset(vital.subgroup, age.categ == "Age >= 70"),
+  type = "survival",
+  comparison = "differenceavg",
+  conf_level = 0.99,
+  time = 5,
+  vcov = TRUE
+) %>%
+  as_tibble() %>%
+  mutate(subgroup = "Age >= 70") %>%
+  select(subgroup, estimate, conf.low, conf.high, p.value)
+
+# Age <= 70
+ard.by.age2.omega <- avg_comparisons(
+  cox.tx.risk,
+  variables = "fishoil",
+  newdata = subset(vital.subgroup, age.categ == "Age < 70"),
+  type = "survival",
+  comparison = "differenceavg",
+  conf_level = 0.99,
+  time = 5,
+  vcov = TRUE
+) %>%
+  as_tibble() %>%
+  mutate(subgroup = "Age < 70") %>%
+  select(subgroup, estimate, conf.low, conf.high, p.value)
+
+# ARD among at 5 years BMI group
+#BMI >= 30
+ard.by.bmi1.omega <- avg_comparisons(
+  cox.tx.risk,
+  variables = "fishoil",
+  newdata = subset(vital.subgroup, bmi.categ == "Obese(BMI>=30)"),
+  type = "survival",
+  comparison = "differenceavg",
+  conf_level = 0.99,
+  time = 5,
+  vcov = TRUE
+) %>%
+  as_tibble() %>%
+  mutate(subgroup = "Obese(BMI>=30)") %>%
+  select(subgroup, estimate, conf.low, conf.high, p.value)
+
+# BMI < 30
+ard.by.bmi2.oemga <- avg_comparisons(
+  cox.tx.risk,
+  variables = "fishoil",
+  newdata = subset(vital.subgroup, bmi.categ == "Non-obese(BMI < 30)"),
+  type = "survival",
+  comparison = "differenceavg",
+  conf_level = 0.99,
+  time = 5,
+  vcov = TRUE
+) %>%
+  as_tibble() %>%
+  mutate(subgroup = "Non-obese(BMI < 30)") %>%
+  select(subgroup, estimate, conf.low, conf.high, p.value)
 
 # Forest plot
+vital.plot.HTE.omega <- bind_rows(overall.ard.omega,
+                                  ard.by.risk.omega,
+                                  ard.by.age1.omega,
+                                  ard.by.age2.omega,
+                                  ard.by.bmi1.omega,
+                                  ard.by.bmi2.oemga,
+) %>%
+  mutate(subgroup = factor(subgroup,
+                           levels = c("Overall", "Q(low)", "Q2", "Q3",
+                                      "Q4(High)", "Age >= 70", "Age < 70",
+                                      "Obese(BMI>=30)", "Non-obese(BMI < 30)")))
+# ARD forest plot for Omega-3 fish oil
+ggplot(vital.plot.HTE.omega,
+       aes(x = estimate, y = subgroup)) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "grey50") +
+  geom_errorbarh(aes(xmin = conf.low, xmax = conf.high),
+                 height = 0.2, color = "grey30") +
+  geom_point(size = 3, color = "darkblue") +
+  scale_x_continuous(labels = scales::label_number(accuracy = 0.01)) +
+  labs(title = "Forest Plot: Absolute Risk Difference for Omega-3",
+       x = "Absolute Risk Difference at 5 years (99% CI)",
+       y = NULL) +
+  theme_minimal()
 
-vital.plot.HTE <- bind_rows(overall.risk,
-                            hr.by.risk, 
-                            hr.by.age, 
-                            hr.by.age2, 
-                            hr.by.bmi,
-                            hr.by.bmi2) %>% 
-  mutate(subgroup = factor(subgroup, 
-                           levels = c("Overall", "Q(low)", "Q2", "Q3", "Q4(High)", "Age >= 70", "Age < 70", "Obese(BMI>=30)", "Non-obese")))
-print(vital.plot.HTE)
 
-p1 <- ggplot(vital.plot.HTE,
-             aes(x = estimate, y = subgroup)) +
-  geom_vline(xintercept = 1, linetype = "dashed", color = "grey50") +
-  geom_errorbarh(aes(xmin = conf.low, xmax = conf.high), height = 0.2, color = "grey30") +
-  geom_point(size = 3, color = "maroon") +
-  scale_x_log10() + 
-  labs(title = "Forest Plot of Treatment Heterogeneity ",
-       x = "Hazard ratio (95% CI)",
-       y = "Risk") +
-  theme_minimal() 
+#**Effect modelling***#
 
-ggplotly(p1)
+# survival at t=5 from cox.vital.baseline
+surv_baseline <- survfit(cox.vital.baseline)
+
+surv_t5 <- summary(
+  surv_baseline,
+  times  = 5,
+  extend = TRUE
+)$surv
+
+surv_baseline_time5 <- surv_t5^exp(vital.hte$lp)
+
+# Baseline risk per patient
+vital.hte$baseline_risk <- 1 - surv_baseline_time5
+
+hist(vital.hte$baseline_risk,
+     main = "Baseline risk distribution",
+     xlab = "Baseline risk at 5 years")
+
+# Proportional effect of VitD 
+cox.prop.vitd <- coxph(Surv(time, death)~ vitd + fishoil + risk.center.cox,
+                       data = vital.hte,
+                       ties = "breslow")
+
+# Hazard ratio vitd from cox.prop.vitd
+hr_vitd <- exp(coef(cox.prop.vitd)["vitdActive Vit-D"])
+
+proportional_line <- data.frame(
+  baseline_risk = vital.hte$baseline_risk,
+  benefit       = surv_baseline_time5^hr_vitd - surv_baseline_time5
+)
+
+proportional_line <- proportional_line %>%
+  arrange(baseline_risk)
+
+# Grouped ARD by baseline risk quarter
+grouped.ard.by.risk <- avg_comparisons(
+  cox.tx.risk,
+  newdata    = vital.hte,
+  variables  = "vitd",
+  by         = "risk",
+  type       = "survival",
+  comparison = "differenceavg",
+  conf_level = 0.99,
+  time       = 5,
+  vcov       = TRUE
+) %>%
+  as_tibble() %>%
+  mutate(
+    ard      = -estimate,
+    ard.low  = -conf.high,
+    ard.high = -conf.low
+  ) %>%
+  left_join(
+    vital.hte %>%
+      group_by(risk) %>%
+      summarise(med.baseline = median(baseline_risk)),
+    by = "risk"
+  )
+
+#**Effect modelling for omega-3 fishoil**
+cox.prop.omega <- cox.prop.vitd
+hr_omega <- exp(coef(cox.prop.omega)["fishoilActive Omega-3"])
+
+# Proportional effect of omega-3 
+proportional_line_omega <- data.frame(
+  baseline_risk = vital.hte$baseline_risk,
+  benefit       = surv_baseline_time5^hr_omega - surv_baseline_time5
+)
+
+proportional_line_omega <- proportional_line_omega %>%
+  arrange(baseline_risk)
+
+# Grouped ARD by baseline risk quarter
+grouped.ard.by.risk.omega <- avg_comparisons(
+  cox.tx.risk,
+  newdata    = vital.hte,
+  variables  = "fishoil",
+  by         = "risk",
+  type       = "survival",
+  comparison = "differenceavg",
+  conf_level = 0.99,
+  time       = 5,
+  vcov       = TRUE
+) %>%
+  as_tibble() %>%
+  mutate(
+    ard      = -estimate,
+    ard.low  = -conf.high,
+    ard.high = -conf.low
+  ) %>%
+  left_join(
+    vital.hte %>%
+      group_by(risk) %>%
+      summarise(med.baseline = median(baseline_risk)),
+    by = "risk"
+  )
+
+
+
+#*** Absolute benefit versus baseline risk plot***
+#**VitD**
+#*
+xmax <- quantile(vital.hte$baseline_risk, 0.99, na.rm =T)
+
+# X-axis 
+xp <- seq(
+  min(vital.hte$baseline_risk ,na.rm = T), xmax,
+  length.out = 300
+)
+
+# baseline risk probability scale
+p1exp <- (1 - xp)^hr_vitd - (1 - xp)
+
+# y-axis
+yax <- range(
+  c(p1exp, grouped.ard.by.risk$ard.low, grouped.ard.by.risk$ard.high)
+  , na.rm =T
+)
+
+# Proportional effect line
+plot(
+  x    = xp,
+  y    = p1exp,
+  type = "l",
+  lty  = 2,
+  lwd  = 3,
+  xlim = range(0, xmax),
+  ylim = yax,
+  col  = "maroon",
+  xlab = "Predicted baseline risk of CVD death at 5 years",
+  ylab = "Absolute risk benefit at 5 years: VitD",
+  cex.lab = 1.2,
+  las  = 1,
+  bty  = "l"
+)
+
+# reference line (ARD = 0)
+abline(h = 0, lty = 1, col ="black")
+
+# Baseline risk distribution 
+histSpike(
+  vital.hte$baseline_risk,
+  add  = TRUE,
+  side = 1,
+  nint = 300,
+  frac = 0.15
+)
+
+# Grouped ARD 
+points(
+  x   = grouped.ard.by.risk$med.baseline,
+  y   = grouped.ard.by.risk$ard,
+  pch = 1,
+  cex = 2,
+  lwd = 2,
+  col = "blue"
+)
+
+# 99% CI 
+arrows(
+  x0    = grouped.ard.by.risk$med.baseline,
+  x1    = grouped.ard.by.risk$med.baseline,
+  y0    = grouped.ard.by.risk$ard.low,
+  y1    = grouped.ard.by.risk$ard.high,
+  angle = 90,
+  code  = 3,
+  length = 0.1,
+  col   = "blue"
+)
+
+
+legend(
+  "topleft",
+  lty    = c(2, NA),
+  pch    = c(NA, 1),
+  lwd    = c(3, 2),
+  bty    = "n",
+  col    = c("maroon", "blue"),
+  cex    = 1.1,
+  legend = c("Expected with proportional effect", "Grouped patients")
+)
+
+
+#*** Absolute benefit versus baseline risk plot***
+#**fishoil/omega-3**
+
+xmax <- quantile(vital.hte$baseline_risk, 0.99, na.rm =T)
+
+# X-axis 
+xp <- seq(
+  min(vital.hte$baseline_risk ,na.rm = T), xmax,
+  length.out = 300
+)
+
+# baseline risk probability scale
+p1exp <- (1 - xp)^hr_omega - (1 - xp)
+
+# y-axis
+yax <- range(
+  c(p1exp, grouped.ard.by.risk.omega$ard.low, grouped.ard.by.risk.omega$ard.high)
+  , na.rm =T
+)
+
+# Proportional effect line
+plot(
+  x    = xp,
+  y    = p1exp,
+  type = "l",
+  lty  = 2,
+  lwd  = 3,
+  xlim = range(0, xmax),
+  ylim = yax,
+  col  = "maroon",
+  xlab = "Predicted baseline risk of CVD death at 5 years",
+  ylab = "Absolute risk benefit at 5yrs:fishoil",
+  cex.lab = 1.2,
+  las  = 1,
+  bty  = "l"
+)
+
+# reference line (ARD = 0)
+abline(h = 0, lty = 1, col ="black")
+
+# Baseline risk distribution 
+histSpike(
+  vital.hte$baseline_risk,
+  add  = TRUE,
+  side = 1,
+  nint = 300,
+  frac = 0.15
+)
+
+# Grouped ARD 
+points(
+  x   = grouped.ard.by.risk.omega$med.baseline,
+  y   = grouped.ard.by.risk.omega$ard,
+  pch = 1,
+  cex = 2,
+  lwd = 2,
+  col = "blue"
+)
+
+# 99% CI 
+arrows(
+  x0    = grouped.ard.by.risk.omega$med.baseline,
+  x1    = grouped.ard.by.risk.omega$med.baseline,
+  y0    = grouped.ard.by.risk.omega$ard.low,
+  y1    = grouped.ard.by.risk.omega$ard.high,
+  angle = 90,
+  code  = 3,
+  length = 0.1,
+  col   = "blue"
+)
+
+legend(
+  "topleft",
+  lty    = c(2, NA),
+  pch    = c(NA, 1),
+  lwd    = c(3, 2),
+  bty    = "n",
+  col    = c("maroon", "blue"),
+  cex    = 1.2,
+  legend = c("Expected with proportional effect", "Grouped patients")
+)
