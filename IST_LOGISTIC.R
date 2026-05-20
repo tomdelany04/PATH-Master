@@ -20,7 +20,6 @@ IST_df$death14n <- as.integer(IST_df$death14 == "Yes")
 
 table1(~death14|aspirin, data= IST_df)
 
-
 library(broom)
 
 mod_IST <- glm(death14 ~ aspirin, data = IST_df, family = binomial) #Perform logistic regression
@@ -268,6 +267,8 @@ res <- rma(
 
 par(mar = c(4,4,1,2))
 
+
+png("IST_forest_report.png", width = 2000, height = 1400, res = 300)
 forest(
 
   res,
@@ -312,9 +313,9 @@ forest(
 
 text(-8, 15, "Baseline risk (quartiles)", pos = 4, font = 2)
 
-text(-8, 10, "Age", pos = 4, font = 2)
+text(-8, 10, "Consciousness", pos = 4, font = 2)
 
-text(-8, 7, "Consciousness", pos = 4, font = 2)
+text(-8, 7, "Age", pos = 4, font = 2)
 
 text(-8, 3, "Atrial fibrillation", pos = 4, font = 2)
 
@@ -336,6 +337,10 @@ text(
 )
 
 text(-8, 19, "IST trial", pos = 4, font = 2)
+
+
+dev.off()
+
 ############################################################
 # Absolute benefit with CI
 
@@ -643,8 +648,52 @@ saveRDS(aspirin_plot, "aspirin_plot.rds")
 
 
 
+############################################################
+# Forest for poster
+
+png(
+  "IST_pres_forest.png",
+  width = 1800,
+  height = 1200,
+  res = 220
+)
+
+par(mar = c(4,4,1,2))
+
+gusto_pres_forest <- forest(
+    res,
+    xlim = c(-5, 2.5),
+    at = log(c(0.5, 1, 1.5)),
+    alim = c(log(0.2), log(2)),
+    atransf = exp,
+    slab = forest_df$subgroup,
+    rows = c(1:2, 4:6, 8:9, 11:14, 16),
+    xlab = "Odds Ratio",
+    mlab = "",
+    psize = 1.2,
+    lwd = 1.5,
+    col = "red",
+    cex = 0.9
+  )
+
+############################################################
+# Subgroup headers
+############################################################
+
+text(-5, 15, "Baseline risk (quartiles)", pos = 4, font = 2)
+text(-5, 10, "Consciousness", pos = 4, font = 2)
+text(-5, 7, "Age", pos = 4, font = 2)
+text(-5, 3, "Atrial fibrillation", pos = 4, font = 2)
 
 
+
+############################################################
+# Title
+############################################################
+
+text(-2, 18, "IST-1 trial", pos = 4, font = 2)
+
+dev.off()
 
 
 

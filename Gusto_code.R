@@ -601,7 +601,7 @@ annotate(
   annotate(
     "text",
     x = 0.28,
-    y = 0.029,
+    y = 0.031,
     label = "Spline (df = 3)",
     color = "#4292C6",
     hjust = 0,

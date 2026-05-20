@@ -17,11 +17,11 @@ editor: visual
 
 ## Agenda
 
--   Introduction to the PATH statement
--   Outline of Studies and Datasets
--   Methodology
--   Results
--   Discussion and Conclusion
+- Motivation & Methodology
+- Empirical Analyses
+- Simulation Evidence
+- Implications
+
 
 ::: {style="margin-top: 4rem; padding: 0.6rem 1rem; border: 1px solid #84003d; border-radius: 10px; display: inline-block; background: #ADD8E6; font-size: 0.8em;"}
 <ul style="margin: 0; padding-left: 1.2em;">
@@ -32,6 +32,13 @@ editor: visual
 
 </ul>
 :::
+
+## Why Subgroup Analyses Fail
+
+
+
+
+
 
 ## The PATH Statement - [Kent et al., 2019](https://pmc.ncbi.nlm.nih.gov/articles/PMC7750907/){style="color: blue;"}
 
@@ -80,7 +87,7 @@ trial_summary <- data.frame(
   VITAL = c(
     "Marine omega-3 fatty acid, Vitamin D3, both or double-placebo in death from cardiovascular causes",
     "25,435",
-    "",
+    "2011-2017",
     "a 2×2 factorial randomized controlled trial",
     "5 years"
   )
@@ -132,19 +139,111 @@ trial_summary %>%
 
 :::
 
+## Overall outcome of studies
+
+<ul style="margin: 0; padding-left: 1.2em;"> <li><strong>IST:</strong> aspirin reduced death or non-fatal recurrent stroke (OR 0.89).</li>
+<li><strong>DIG:</strong> all-cause mortality digoxin versus placebo (RR 0.99).</li> 
+<li><strong>GUSTO-I:</strong> 30-day mortality was reduced with accelerated tPA versus with streptokinase (OR 0.85).</li> 
+<li><strong>VITAL:</strong> Supplementation with vitamin D did not result in a lower incidence of cancer or cardiovascular events than placebo</li> </ul> 
+
+::: {style="margin-top: 0.8rem; padding: 0.8rem 1rem; border-left: 4px solid #84003d; background: #f8f8f8; font-size: 0.8em;"}
+How might the magnitude and direction of the overall treatment effect in each trial influence the ability to detect heterogeneous treatment effects?
+:::
+
+
 ## Path Workflow
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-knitr::include_graphics("PATH_workflow_io.png")
+knitr::include_graphics("PATH.png")
 ```
 
-## Simulation Experiment Methodology
+## Logistic Regression Specification
+
+For each trial, the logistic regression model was specified <em>a priori</em> using domain knowledge from peer-reviewed clinical and methodological papers, with covariates chosen for their prognostic relevance and availability at baseline.
+
+::: {style="margin-top: 1rem; padding: 0.8rem 1rem; border: 1px solid #84003d; border-radius: 10px; background: #ADD8E6; font-size: 0.8em;"}
+For the IST trial, the adjustment model was informed by [Thompson et al., 2015](https://pubmed.ncbi.nlm.nih.gov/25497979/). The specification used baseline predictors of 14-day mortality:
+
+$$
+\text{logit}\big(P(\text{death14}_i = 1)\big)
+=
+\beta_0
++ \beta_1 \text{AGE}_i
++ \beta_2 \text{consc}_i \\
+\qquad
++ \beta_3 \text{ct\infarct}_i 
++ \beta_4 \text{motor}_i
++ \beta_5 \text{afib}_i
+$$
+:::
+
+## Random Forest Specification
+
+- The random forest models were fit using all prognostic baseline variables available in each dataset for risk stratification. 
+- This flexible strategy was informed by ensemble-learning approaches in the IST trial [Hwangbo et al. 2022](https://www.nature.com/articles/s41598-022-22323-9).
+
+::: {style="margin-top: 1rem; padding: 0.8rem 1rem; border: 1px solid #84003d; border-radius: 10px; background: #ADD8E6; font-size: 0.8em;"}
+
+```{r}
+#| echo: true
+#| eval: false
+rf_fit_IST <- ranger(
+  death14 ~ AGE + SEX + RCONSC + RSBP + RATRIAL + RDELAY +
+    RSLEEP + RCT + RVISINF + RDEF1 + RDEF2 + RDEF3 + RDEF4 + RDEF5,
+  data = IST_df,
+  probability = TRUE,
+  num.trees = 1000,
+  seed = 88
+)
+```
+:::
+
+## Simulation Study Design
+
+- **Aim**: Evaluate whether risk-based interaction testing falsely detects treatment effect heterogeneity under the null
+
+- **Data-generating mechanism**  
+
+::: {style="margin-top: 1rem; padding: 0.8rem 1rem; border: 1px solid #84003d; border-radius: 10px; background: #ADD8E6; font-size: 0.8em;"}
+$$
+\text{logit}\{P(Y_i = 1)\}
+=
+-2 -0.5Z_i + X_i\beta
+$$
+
+$$
+X_j \sim N(0,1),
+\qquad
+Z_i \sim \text{Bernoulli}(0.5)
+$$
+:::
+
+#
+- **Estimand / Target**  
+$$
+H_0:\beta_{Z \times lp}=0
+$$
+
+
+- **Methods**: Risk modelling + likelihood ratio interaction testing
+
+- **Performance measure**: Empirical rejection rate at $\alpha = 0.05$
+
+## Final Heatmap
+
+```{r}
+p <- readRDS("type1_error_surface_plot.rds")
+
+p
+
+```
+
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 knitr::include_graphics("MCworkflow.png")
 ```
 
-
+## Relative vs Absolute Benefit
 
 
 ## Relative Effect Illustration
@@ -156,8 +255,8 @@ knitr::include_graphics("MCworkflow.png")
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width='100%'}
 knitr::include_graphics("gusto_pres_forest.png")
-```
 
+```
 :::
 
 :::
@@ -193,13 +292,15 @@ data.subgroups[10:7, 1:4] <- cbind(
 
 
 
-
-
 ## Relative Effect Results
 
 
-- Panel of 4 forest plots?
+- Panel of 3 Binary forest plots?
+```{r}
+knitr::include_graphics("IST_pres_forest.png")
+```
 
+- Kaplan Meier and other results for VITAL trial
 
 ## Absolute treatment effect
 
@@ -208,5 +309,22 @@ Gusto_plot <- readRDS("gusto_plot.rds")
 Gusto_plot
 ```
 
+- Make a note of axes ranges
 
+
+# MC Simulation
+
+- Show table for power of interaction tests under varying strength of interaction
+
+```{r}
+knitr::include_graphics("Heatmap_MC.png")
+```
+
+
+# Future Directions
+
+- Regulatory Considerations
+- Sample size required
+
+- 
 
