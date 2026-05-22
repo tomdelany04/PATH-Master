@@ -5,6 +5,7 @@ library(kableExtra)
 library(Hmisc)      
 library(DescTools)  
 library(metafor)
+library(readr)
 
 #Loading and preparing dataset
 
@@ -251,7 +252,7 @@ m_lp_main <- glm(DEATHn ~ Digoxin + lp, data = dig_clean, family = binomial())
 beta_tx <- coef(m_lp_main)["Digoxin"]   # log-odd for Digoxin vs Placebo
 
 # Expected benefit curve as a function of baseline risk xp
-xp <- seq(0.002, 0.5, by = 0.001)      # baseline risk grid
+xp <- seq(0.002, 0.7, by = 0.001)      # baseline risk grid
 logxp0 <- log(xp/(1-xp))               # baseline logit
 
 # Expected ARD = P(Y=1|Placebo) - P(Y=1|Digoxin)
@@ -341,7 +342,9 @@ DIG_presn_forest <- forest(
   mlab    = "",
   psize   = 1.4,
   lwd     = 1.8,
-  col     = "red",
+  colout = c(rep("black", 10), 
+             "#a80050"),
+  addfit = FALSE,
   cex     = 1
 )
 
@@ -363,7 +366,7 @@ dev.off()
 library(ggplot2)
 library(microshades)
 hist_df <- data.frame(
-  risk = dig.df$baseline_risk_dist
+  risk = baseline_risk_dist
 )
 
 curve_df <- data.frame(
@@ -398,21 +401,12 @@ DIG_plot <- ggplot() +
     alpha  = 0.4
   ) +
   
-  # Proportional effect curve 
-  geom_line(
-    data      = curve_df,
-    mapping   = aes(x = risk, y = prop),
-    linetype  = "dashed",
-    linewidth = 1.7,
-    colour    = "#F09163"
-  ) +
-  
   # Spline model
   geom_line(
     data      = spline_df,
     mapping   = aes(x = risk, y = spline),
     linewidth = 1.7,
-    colour    = "#4292C6"
+    colour    = "darkblue"
   ) +
   
   # Risk-quartile point estimates
@@ -420,7 +414,7 @@ DIG_plot <- ggplot() +
     data    = group_df,
     mapping = aes(x = risk, y = benefit),
     size    = 3,
-    colour  = "#238B45"
+    colour  = "#a80050"
   ) +
   
   # 95% CI bars
@@ -428,8 +422,8 @@ DIG_plot <- ggplot() +
     data    = group_df,
     mapping = aes(x = risk, ymin = lower, ymax = upper),
     width   = 0.005,
-    alpha   = 0.4,
-    colour  = "#238B45"
+    alpha   = 0.6,
+    colour  = "grey80"
   ) +
   
   # Zero-benefit reference line 
@@ -437,8 +431,8 @@ DIG_plot <- ggplot() +
   
   # Axis limits
   coord_cartesian(
-    xlim = c(0, 0.8),
-    ylim = c(-0.09, 0.08)
+    xlim = c(0, 0.7),
+    ylim = c(-0.07, 0.07)
   ) +
   
   # Labels
@@ -449,7 +443,7 @@ DIG_plot <- ggplot() +
   ) +
   
   # Theme
-  theme_classic(base_size = 13) +
+  theme_classic(base_size = 15) +
   theme(
     plot.title = element_text(face = "bold", size = 14),
     axis.ticks = element_blank(),
@@ -459,31 +453,13 @@ DIG_plot <- ggplot() +
   # annotations without legend needed
   annotate(
     "text",
-    x = 0.40, y = 0.050,
-    label    = "Proportional effect",
-    colour   = "#F09163",
+    x = 0.60, y = 0.012,
+    label    = "Proportional Effect",
+    colour   = "darkblue",
     hjust    = 0,
     size     = 4.5,
     fontface = "bold"
-  ) +
-  annotate(
-    "text",
-    x = 0.40, y = 0.042,
-    label    = "Spline (df = 3)",
-    colour   = "#4292C6",
-    hjust    = 0,
-    size     = 4.5,
-    fontface = "bold"
-  ) +
-  annotate(
-    "text",
-    x = 0.40, y = 0.034,
-    label    = "Risk quartiles",
-    colour   = "#238B45",
-    hjust    = 0,
-    size     = 4.5,
-    fontface = "bold"
-  )
+  ) 
 
 DIG_plot
 
