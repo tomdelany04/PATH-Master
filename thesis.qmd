@@ -19,6 +19,22 @@ format:
     controls: true
     embed-resources: true
     css: thesis-slides.css
+resources:
+  - images/University_Of_Galway_Logo.png
+  - images/clipboard-3280506532.png
+  - images/quarto.png
+  - images/GitHub_Invertocat_Black.png
+  - mean.png
+  - people.png
+  - age-range.png
+  - IST-1.PNG
+  - Digitalis2-1.jpg
+  - Gusto.svg
+  - VITAL.jpg
+  - PATH.png
+  - path (1).png
+  - Heatmap_MC.png
+  - processing.png
 editor: visual
 ---
 
@@ -333,12 +349,6 @@ $$
 $$
 X_j \sim N(0,1), \qquad Z_i \sim \text{Bernoulli}(0.5)
 $$
-
-<ul>
-<li>Sample sizes varied across <strong>n = 50, 100, 500, 1000, 2000, 5000</strong>.</li>
-<li>The number of prognostic covariates varied from <strong>p = 1</strong> to <strong>p = 10</strong>.</li>
-<li>Each dataset was split <strong>50:50</strong> into training and test sets.</li>
-</ul>
 :::
 :::
 
@@ -353,6 +363,15 @@ H_0:\beta_{Z \times lp}=0
 $$
 :::
 :::
+:::
+
+::: {.ademp-card .fragment .ademp-wide-card}
+<h3>Simulation Conditions</h3>
+<ul>
+<li>Sample sizes varied across <strong>n =  50, 75, 100, 150, 200, 300, 500, 750,1000, 2000, 5000</strong>.</li>
+<li>The number of prognostic covariates varied from <strong>p = 1</strong> to <strong>p = 10</strong>.</li>
+<li>Each dataset was split <strong>50:50</strong> into training and test sets.</li>
+</ul>
 :::
 
 ## ADEMP: Methods and Performance {.ademp-slide}
@@ -394,7 +413,7 @@ knitr::include_graphics("MCworkflow.png")
 
 ## Relative vs Absolute Benefit
 
-## Relative Effect Illustration
+## Relative Effect Illustration {.forest-slide}
 
 ::::::: columns
 :::: {.column width="60%"}
@@ -407,11 +426,11 @@ knitr::include_graphics("gusto_pres_forest.png")
 ::::
 
 :::: {.column .fragment width="40%" data-fragment-index="1"}
-::: {style="margin-top: 0.1rem; width: 98%; padding: 0.9rem 1rem; border: 1px solid #84003d; border-radius: 10px; background: #f7f7f7; font-size: 0.78em;"}
+::: {.forest-code-card}
 ```{r}
 #| echo: true
 #| eval: false
-#| code-line-numbers: "|1-5|7|9-13|"
+#| code-line-numbers: "|1-5|7|9-11|"
 gusto$lp <- predict(
   model1,
   newdata = transform(gusto, tpa = 0),
@@ -427,6 +446,13 @@ data.subgroups[10:7, 1:4] <- cbind(
 )
 ```
 :::
+
+::: {.info-box}
+<ul>
+<li>The overall odds ratio favours accelerated tPA, with point estimates below 1 across most displayed subgroups.</li>
+<li>Risk-based quartiles suggest a broadly similar relative effect, but lower-risk groups have wider confidence intervals.</li>
+</ul>
+:::
 ::::
 :::::::
 
@@ -440,32 +466,52 @@ knitr::include_graphics("IST_pres_forest.png")
 
 -   Kaplan Meier and other results for VITAL trial
 
-## Absolute treatment effect
+## Absolute treatment effect {.absolute-slide}
 
-```{r}
+::::::: columns
+:::: {.column width="60%"}
+::: {style="margin-top: 0.1rem; width: 98%;"}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width='100%'}
 Gusto_plot <- readRDS("gusto_plot.rds")
 Gusto_plot
 ```
+:::
+::::
 
--   Make a note of axes ranges
-
-# MC Simulation
-
--   Show table for power of interaction tests under varying strength of interaction
-
+:::: {.column .fragment width="40%" data-fragment-index="1"}
+::: {.forest-code-card}
 ```{r}
-knitr::include_graphics("Heatmap_MC.png")
+#| echo: true
+#| eval: false
+
 ```
+:::
+
+::: {.info-box}
+<ul>
+<li>In the GUSTO trial, absolute treatment benefit increases as baseline risk increases, with larger gains concentrated in higher-risk patients.</li>
+<li>Random forest stratification produced very similar quartiles, so only one version is shown here for presentation clarity; both appear in the final report.</li>
+</ul>
+:::
+::::
+:::::::
+
+# Across Trials
+
+
+
 
 ## Ongoing Work
 
--   Extension of Monte carlo simulation framework for assessment of power
+-   Extend the Monte Carlo framework to assess power, examining how reliably interaction effects are detected as both sample size and effect strength vary.
 
 $$
 \text{logit}\{P(Y_i = 1)\}
 =
 -2 -0.5Z_i + 0.5X_i + \gamma(Z_iX_i)
 $$
+
+-   Complete the written interpretation of the simulation and empirical results, including implications, limitations, and presentation of the final figures.
 
 # Discussion and Conclusion
 

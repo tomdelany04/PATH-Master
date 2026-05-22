@@ -28,7 +28,7 @@ label(gusto$tx)     <- "Treatment"
 
 
 
-tab1 <- table1( ~ age + Killip + sysbp + pulse + pmi + miloc + sex + day30 | tx, data = gusto, test = TRUE)
+tab1 <- table1( ~ age + Killip + sysbp + pulse + pmi + miloc + sex + day30 | tx, data = gusto, test = TRUE) 
 
 tab1
 
@@ -136,7 +136,7 @@ model1 <- glm(
     miloc,
   data = gusto,
   family = binomial
-)
+)   #Adjustment based on Steyeberg et al., 2000
 
 summary(model1)
 
@@ -500,7 +500,7 @@ geom_line(
   ),
   linetype = "dashed",
   linewidth = 1.7,
-  colour = "#F09163"
+  colour = "darkblue"
 ) +
 
   ##########################################################
@@ -514,7 +514,7 @@ geom_line(
     y = spline
   ),
   linewidth = 1.7,
-  color = "#4292C6"
+  color = "#a80050"
 ) +
 
   ##########################################################
@@ -528,7 +528,7 @@ geom_point(
     y = benefit
   ),
   size = 3,
-  color = "#238B45"
+  color = "#a80050"
 ) +
 
   geom_errorbar(
@@ -556,8 +556,8 @@ geom_hline(
 ##########################################################
 
 coord_cartesian(
-  xlim = c(0, 0.5),
-  ylim = c(-0.02, 0.05)
+  xlim = c(0, 0.4),
+  ylim = c(-0.01, 0.05)
 ) +
 
   ##########################################################
@@ -574,7 +574,7 @@ labs(
 # Theme
 ##########################################################
 
-theme_classic(base_size = 13) +
+theme_classic(base_size = 16) +
 
   theme(
     axis.ticks = element_blank(),
@@ -590,10 +590,10 @@ theme_classic(base_size = 13) +
 
 annotate(
   "text",
-  x = 0.4,
-  y = 0.040,
+  x = 0.23,
+  y = 0.043,
   label = "Proportional effect",
-  color = "#F09163",
+  color = "darkblue",
   hjust = 0,
   size = 6
 ) +
@@ -603,7 +603,7 @@ annotate(
     x = 0.28,
     y = 0.031,
     label = "Spline (df = 3)",
-    color = "#4292C6",
+    color = "#a80050",
     hjust = 0,
     size = 6
   )
@@ -799,6 +799,7 @@ par(mar = c(4,4,1,2))
 forest(
 
   res,
+  addfit = FALSE,
 
   xlim = c(-8, 2.5),
 
@@ -829,7 +830,8 @@ forest(
 
   lwd = 1.5,
 
-  col = "maroon",
+  colout = c(rep("black", 10), 
+             "#a80050"),
 
   cex = 0.9
 )
@@ -884,6 +886,7 @@ par(mar = c(4,4,1,2))
 
 gusto_pres_forest <- forest(
   res,
+  addfit = FALSE,
   xlim = c(-1.5, 1.5),
   at = log(c(0.5, 1, 2)),
   alim = c(log(0.2), log(2.5)),
@@ -894,7 +897,8 @@ gusto_pres_forest <- forest(
   mlab = "",
   psize = 1.4,
   lwd = 1.8,
-  col = "red",
+  colout = c(rep("black", 10), 
+  "#a80050"),# Overall (row 11)
   cex = 1
 )
 
@@ -918,3 +922,4 @@ text(-0.4, 17, "GUSTO-I trial", pos = 4, font = 2)
 
 dev.off()
 
+gusto_pres_forest
