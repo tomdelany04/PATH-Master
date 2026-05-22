@@ -6,7 +6,6 @@ library(Hmisc)
 library(DescTools)  
 library(metafor)
 
-
 #Loading and preparing dataset
 
 dig <- read_csv("DIG.csv")   
