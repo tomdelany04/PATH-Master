@@ -483,7 +483,6 @@ grouped.ard.by.risk.omega <- avg_comparisons(
 #**VitD**
 
 xmax <- quantile(vital.hte$baseline_risk, 0.95, na.rm =T)
-
 # X-axis 
 xp <- seq(
   min(vital.hte$baseline_risk ,na.rm = T), xmax,
