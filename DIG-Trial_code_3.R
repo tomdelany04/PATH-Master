@@ -210,7 +210,6 @@ colnames(data.subgroups)
 
 
 par(mar=c(4,4,1,2))
-par(fg="maroon")
 data.subgroups[1:2, "name"]  <- c("EF > 0.25", "EF <= 0.25")
 data.subgroups[3:4, "name"]  <- c("Age < 70", "Age >= 70")
 data.subgroups[5:6, "name"]  <- c("NYHA Class I/II", "NYHA Class III/IV")
@@ -233,7 +232,8 @@ forest(res,
        psize=1, 
        lwd=1.5, 
        addfit=FALSE,
-       col="maroon",
+       colout = c(rep("black", 10), 
+                  "#a80050"),
        shade=FALSE)
 
 
@@ -284,7 +284,8 @@ plot(x = xp,
      type = "l",
      lty = 2, 
      lwd = 3, 
-     col = "maroon",
+     colout = c(rep("black", 10), 
+                "#a80050"),
      xlim = c(0.15, 0.5), 
      ylim = c(min(-0.01, min(ci_low, na.rm=TRUE)), 0.25),
      xlab = "Baseline risk",
@@ -357,7 +358,7 @@ text(-1.5,  3, "Ejection Fraction",         pos = 4, font = 2)
 #Title 
 text(-0.4, 17, "DIG Trial", pos = 4, font = 2)
 
-
+DIG_presn_forest
 
 dev.off()
 
