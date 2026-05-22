@@ -496,11 +496,6 @@ Gusto_plot
 ::::
 :::::::
 
-# Across Trials
-
-
-
-
 ## Ongoing Work
 
 -   Extend the Monte Carlo framework to assess power, examining how reliably interaction effects are detected as both sample size and effect strength vary.
@@ -517,4 +512,4 @@ $$
 
 -   Regulatory Considerations
 -   Sample size required
--   
+-    
