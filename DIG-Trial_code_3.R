@@ -6,6 +6,7 @@ library(Hmisc)
 library(DescTools)  
 library(metafor)
 
+
 #Loading and preparing dataset
 
 dig <- read_csv("DIG.csv")   
@@ -93,7 +94,7 @@ coef(model_with_tx)["Digoxin"] #-0.00224
 
 
 #Check for interaction
-# 1. Traditional approach
+# Fit Logistic regression model with interaction between Digoxin and all covariates
 g <- glm(DEATHn ~ Digoxin * (AGE + Classification + SYSBP
                              + PREVMI + EJF_PER),
          data = dig.df,
@@ -102,7 +103,45 @@ g <- glm(DEATHn ~ Digoxin * (AGE + Classification + SYSBP
 
 print(anova(g, test = 'LRT'))
 
-# 2. PATH statement: linear interaction with linear predictor; baseline risk, tx=ref, SK
+
+#Spline
+library(splines)
+sysbp_maxed_dig <- with(dig.df, pmin(SYSBP, 120))
+
+# Adjusted outcome model with natural splines
+model1_dig <- glm(
+  DEATHn ~
+    Digoxin        +
+    AGE            +
+    Classification +
+    sysbp_maxed_dig +
+    ns(EJF_PER, df = 3) +
+    PREVMI,
+  data   = dig.df,
+  family = binomial
+)
+
+summary(model1_dig)
+
+# Interaction check (treatment and each covariate) 
+
+model2_dig <- glm(
+  DEATHn ~ Digoxin * (
+    AGE             +
+      Classification  +
+      sysbp_maxed_dig +
+      ns(EJF_PER, df = 3) +
+      PREVMI
+  ),
+  data   = dig.df,
+  family = binomial
+)
+
+anova(model2_dig, test = "LRT")
+
+
+
+# PATH statement: linear interaction with linear predictor; baseline risk, tx=ref, SK
 # Baseline risk model excluding treatment (PATH lp model)
 model_no_tx <- glm(
   DEATHn ~ AGE + Classification + SYSBP +
@@ -315,7 +354,6 @@ legend("topleft",
 
 
 
-
 #***Plot for presentation**
 #**Forest plot*
 
@@ -362,8 +400,9 @@ dev.off()
 #**Preparation*
 library(ggplot2)
 library(microshades)
+
 hist_df <- data.frame(
-  risk = dig.df$baseline_risk_dist
+  risk = baseline_risk_dist
 )
 
 curve_df <- data.frame(
@@ -383,6 +422,7 @@ group_df <- data.frame(
   upper = as.numeric(ci_up)
 )
 
+xmax <- quantile(hist_df$baseline_risk_dist, 0.99, na.rm = TRUE) 
 
 DIG_plot <- ggplot() +
   
@@ -390,8 +430,8 @@ DIG_plot <- ggplot() +
   geom_density(
     data    = hist_df,
     mapping = aes(
-      x = risk,
-      y = after_stat(scaled) * 0.015   # FIX 3: ..scaled.. → after_stat(scaled)
+      x = baseline_risk_dist,
+      y = ..scaled.. * 0.05
     ),
     fill   = "grey80",
     colour = NA,
@@ -437,7 +477,7 @@ DIG_plot <- ggplot() +
   
   # Axis limits
   coord_cartesian(
-    xlim = c(0, 0.8),
+    xlim = c(0, 0.65),
     ylim = c(-0.09, 0.08)
   ) +
   

@@ -11,6 +11,8 @@ library(plotly)
 library(survival)
 library(survminer)
 library(Hmisc)
+library(splines)
+library(scales)
 
 
 
@@ -146,7 +148,7 @@ overall.ard <- avg_comparisons(
   variables = "vitd",
   type = "survival",
   comparison = "differenceavg",
-  conf_level = 0.99,
+  conf_level = 0.95,
   time = 5,
   vcov = TRUE
 ) %>%
@@ -161,7 +163,7 @@ ard.by.risk <- avg_comparisons(
   by = "risk",
   type = "survival",
   comparison = "differenceavg",
-  conf_level = 0.99,
+  conf_level = 0.95,
   time = 5,
   vcov = TRUE
 ) %>%
@@ -176,7 +178,7 @@ ard.by.age1 <- avg_comparisons(
   newdata = subset(vital.subgroup, age.categ == "Age >= 70"),
   type = "survival",
   comparison = "differenceavg",
-  conf_level = 0.99,
+  conf_level = 0.95,
   time = 5,
   vcov = TRUE
 ) %>%
@@ -191,7 +193,7 @@ ard.by.age2 <- avg_comparisons(
   newdata = subset(vital.subgroup, age.categ == "Age < 70"),
   type = "survival",
   comparison = "differenceavg",
-  conf_level = 0.99,
+  conf_level = 0.95,
   time = 5,
   vcov = TRUE
 ) %>%
@@ -207,7 +209,7 @@ ard.by.bmi1 <- avg_comparisons(
   newdata = subset(vital.subgroup, bmi.categ == "Obese(BMI>=30)"),
   type = "survival",
   comparison = "differenceavg",
-  conf_level = 0.99,
+  conf_level = 0.95,
   time = 5,
   vcov = TRUE
 ) %>%
@@ -222,7 +224,7 @@ ard.by.bmi2 <- avg_comparisons(
   newdata = subset(vital.subgroup, bmi.categ == "Non-obese(BMI < 30)"),
   type = "survival",
   comparison = "differenceavg",
-  conf_level = 0.99,
+  conf_level = 0.95,
   time = 5,
   vcov = TRUE
 ) %>%
@@ -268,7 +270,7 @@ overall.ard.omega <- avg_comparisons(
   variables = "fishoil",
   type = "survival",
   comparison = "differenceavg",
-  conf_level = 0.99,
+  conf_level = 0.95,
   time = 5,
   vcov = TRUE
 ) %>%
@@ -283,7 +285,7 @@ ard.by.risk.omega <- avg_comparisons(
   by = "risk",
   type = "survival",
   comparison = "differenceavg",
-  conf_level = 0.99,
+  conf_level = 0.95,
   time = 5,
   vcov = TRUE
 ) %>%
@@ -298,7 +300,7 @@ ard.by.age1.omega <- avg_comparisons(
   newdata = subset(vital.subgroup, age.categ == "Age >= 70"),
   type = "survival",
   comparison = "differenceavg",
-  conf_level = 0.99,
+  conf_level = 0.95,
   time = 5,
   vcov = TRUE
 ) %>%
@@ -313,7 +315,7 @@ ard.by.age2.omega <- avg_comparisons(
   newdata = subset(vital.subgroup, age.categ == "Age < 70"),
   type = "survival",
   comparison = "differenceavg",
-  conf_level = 0.99,
+  conf_level = 0.95,
   time = 5,
   vcov = TRUE
 ) %>%
@@ -329,7 +331,7 @@ ard.by.bmi1.omega <- avg_comparisons(
   newdata = subset(vital.subgroup, bmi.categ == "Obese(BMI>=30)"),
   type = "survival",
   comparison = "differenceavg",
-  conf_level = 0.99,
+  conf_level = 0.95,
   time = 5,
   vcov = TRUE
 ) %>%
@@ -344,7 +346,7 @@ ard.by.bmi2.oemga <- avg_comparisons(
   newdata = subset(vital.subgroup, bmi.categ == "Non-obese(BMI < 30)"),
   type = "survival",
   comparison = "differenceavg",
-  conf_level = 0.99,
+  conf_level = 0.95,
   time = 5,
   vcov = TRUE
 ) %>%
@@ -422,7 +424,7 @@ grouped.ard.by.risk <- avg_comparisons(
   by         = "risk",
   type       = "survival",
   comparison = "differenceavg",
-  conf_level = 0.99,
+  conf_level = 0.95,
   time       = 5,
   vcov       = TRUE
 ) %>%
@@ -460,7 +462,7 @@ grouped.ard.by.risk.omega <- avg_comparisons(
   by         = "risk",
   type       = "survival",
   comparison = "differenceavg",
-  conf_level = 0.99,
+  conf_level = 0.95,
   time       = 5,
   vcov       = TRUE
 ) %>%
@@ -481,8 +483,8 @@ grouped.ard.by.risk.omega <- avg_comparisons(
 
 #*** Absolute benefit versus baseline risk plot***
 #**VitD**
-#*
-xmax <- quantile(vital.hte$baseline_risk, 0.99, na.rm =T)
+
+xmax <- quantile(vital.hte$baseline_risk, 0.95, na.rm =T)
 
 # X-axis 
 xp <- seq(
@@ -566,7 +568,7 @@ legend(
 #*** Absolute benefit versus baseline risk plot***
 #**fishoil/omega-3**
 
-xmax <- quantile(vital.hte$baseline_risk, 0.99, na.rm =T)
+xmax <- quantile(vital.hte$baseline_risk, 0.95, na.rm =T)
 
 # X-axis 
 xp <- seq(
@@ -634,6 +636,7 @@ arrows(
   col   = "blue"
 )
 
+
 legend(
   "topleft",
   lty    = c(2, NA),
@@ -644,3 +647,202 @@ legend(
   cex    = 1.2,
   legend = c("Expected with proportional effect", "Grouped patients")
 )
+
+
+#**Standardized plot for presentaion*
+#**Forest plot*
+
+library(metafor)
+library(dplyr)
+
+png(
+  "VITAL_presn_forest_vitd.png",
+  width  = 1800,
+  height = 1200,
+  res    = 220
+)
+
+# data prep
+vitd.fp <- vital.plot.HTE %>%
+  mutate(
+    subgroup = as.character(subgroup),
+    estimate = 100 * estimate,
+    low      = 100 * conf.low,
+    high     = 100 * conf.high
+  )
+
+
+
+# Labels on the left side 
+vitd.labels <- c(
+  "Overall (Trial Average)",
+  "Risk Quarter 4",
+  "Risk Quarter 3",
+  "Risk Quarter 2",
+  "Risk Quarter 1",
+  "Age >= 70",
+  "Age < 70",
+  "Obese (BMI >= 30)",
+  "Non-obese (BMI < 30)"
+)
+
+# Row positions 
+vitd.rows <- c(13, 11, 10, 9, 8, 6, 5, 3, 2)
+
+# CI text
+ci.txt <- sprintf(
+  "%.2f [%.2f, %.2f]",
+  vitd.fp$estimate,
+  vitd.fp$low,
+  vitd.fp$high
+)
+# Plot limits
+x.left  <- -2.2
+x.right <-  2.2
+
+par(mar = c(4, 4, 2, 2))
+
+forest(
+  x       = vitd.fp$estimate,
+  ci.lb   = vitd.fp$low,
+  ci.ub   = vitd.fp$high,
+  slab    = vitd.labels,
+  rows    = vitd.rows,
+  xlim    = c(x.left, x.right),
+  alim    = c(-1, 1),
+  at      = seq(-1, 1, by = 0.5),
+  refline = 0,
+  xlab    = "Vitamin D: Absolute Risk Difference at 5 years, percentage points",
+  mlab    = "",
+  psize   = 1.4,
+  lwd     = 1.8,
+  col     = "black",
+  cex     = 0.9,
+  ylim    = c(0, 16),
+  header  = FALSE,
+  annotate = FALSE
+)
+
+
+# Top headers
+text(x.left, 15.5, "Study", pos = 4, font = 2, cex = 1.0)
+text(0, 15.5, "VITAL Trial: Vitamin D", font = 2, cex = 1.0)
+text(x.right, 15.5, "ARD [95% CI]", pos = 2, font = 2, cex = 1.0)
+
+# Horizontal line under headers
+segments(x.left, 15.0, x.right, 15.0, lwd = 1.5)
+
+# Section headers
+text(x.left, 12.2, "Baseline risk (quartiles)", pos = 4, font = 2, cex = 0.9)
+text(x.left, 6.5, "Age", pos = 4, font = 2, cex = 0.9)
+text(x.left, 3.5, "BMI", pos = 4, font = 2, cex = 0.9)
+
+# Right-side CI values
+text(
+  x.right,
+  vitd.rows,
+  ci.txt,
+  pos = 2,
+  cex = 0.85,
+  col = "black"
+)
+
+dev.off()
+
+
+#**Omega-3 fish oil forest plot*
+png(
+  "VITAL_presn_forest_omega.png",
+  width  = 1800,
+  height = 1200,
+  res    = 220
+)
+
+# data prep
+omega.fp <- vital.plot.HTE.omega %>%
+  mutate(
+    subgroup = as.character(subgroup),
+    estimate = 100 * estimate,
+    low      = 100 * conf.low,
+    high     = 100 * conf.high
+  )
+
+# Labels on the left side
+omega.labels <- c(
+  "Overall (Trial Average)",
+  "Risk Quarter 4",
+  "Risk Quarter 3",
+  "Risk Quarter 2",
+  "Risk Quarter 1",
+  "Age >= 70",
+  "Age < 70",
+  "Obese (BMI >= 30)",
+  "Non-obese (BMI < 30)"
+)
+  
+# Row positions
+omega.rows <- c(13, 11, 10, 9, 8, 6, 5, 3, 2)
+
+# CI text
+ci.txt.omega <- sprintf(
+  "%.2f [%.2f, %.2f]",
+  omega.fp$estimate,
+  omega.fp$low,
+  omega.fp$high
+)
+
+# Plot limits
+x.left  <- -2.2
+x.right <-  2.2
+par(mar = c(4, 4, 2, 2))
+  
+forest(
+  x       = omega.fp$estimate,
+  ci.lb   = omega.fp$low,
+  ci.ub   = omega.fp$high,
+  slab    = omega.labels,
+  rows    = omega.rows,
+  xlim    = c(x.left, x.right),
+  alim    = c(-1, 1),
+  at      = seq(-1, 1, by = 0.5),
+  refline = 0,
+  xlab    = "Omega-3: Absolute Risk Difference at 5 years, percentage points",
+  mlab    = "",
+  psize   = 1.4,
+  lwd     = 1.8,
+  col     = "black",
+  cex     = 0.9,
+  ylim    = c(0, 16),
+  header  = FALSE,
+  annotate = FALSE
+)
+
+# Top headers
+text(x.left, 15.5, "Study", pos = 4, font = 2, cex = 1.0)
+text(0, 15.5, "VITAL Trial: Omega-3", font = 2, cex = 1.0)
+text(x.right, 15.5, "ARD [95% CI]", pos = 2, font = 2, cex = 1.0)
+
+# Horizontal line under headers
+segments(x.left, 15.0, x.right, 15.0, lwd = 1.5)
+
+# Section headers
+text(x.left, 12.2, "Baseline risk (quartiles)", pos = 4, font = 2, cex = 0.9)
+text(x.left, 6.5, "Age", pos = 4, font = 2, cex = 0.9)
+text(x.left, 3.5, "BMI", pos = 4, font = 2, cex = 0.9)
+
+
+# Right-side CI values
+text(
+  x.right,
+  omega.rows,
+  ci.txt.omega,
+  pos = 2,
+  cex = 0.85,
+  col = "black"
+)
+
+dev.off()
+
+
+
+
