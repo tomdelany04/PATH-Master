@@ -232,6 +232,7 @@ ard.by.bmi2 <- avg_comparisons(
   mutate(subgroup = "Non-obese(BMI < 30)") %>%
   select(subgroup, estimate, conf.low, conf.high, p.value)
 
+
 #***Forest plot: Risk modelling***#
 vital.plot.HTE <- bind_rows(overall.ard,
                             ard.by.risk,
