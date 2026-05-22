@@ -1,6 +1,14 @@
-#Loading and preparing dataset
+
 library(dplyr)
-dig <- read_csv("DIG.csv")   # keep raw data
+library(table1)
+library(kableExtra)
+library(Hmisc)      
+library(DescTools)  
+library(metafor)
+
+#Loading and preparing dataset
+
+dig <- read_csv("DIG.csv")   
 
 dig.df <- dig %>%
   select(TRTMT, AGE, EJF_PER, FUNCTCLS, DEATH, SYSBP, HEARTRTE, PREVMI) %>%
@@ -9,8 +17,8 @@ dig.df <- dig %>%
     DEATH = as.integer(DEATH),
     TRTMT_f =factor(TRTMT, levels = c(0,1), labels = c("Placebo", "Digoxin")),
     DEATH_f = factor(DEATH, levels = c(0,1), labels = c("Alive", "Dead")),
-    DEATHn = DEATH, # 0/1 outcome directly
-    Digoxin = TRTMT, # 0/1 treatment directly
+    DEATHn = DEATH, 
+    Digoxin = TRTMT, 
     Classification = factor(
       FUNCTCLS, levels = c(1, 2, 3, 4),
       labels = c("NYHA_Class1", "NYHA_Class2", "NYHA_Class3", "NYHA_Class4")
@@ -21,20 +29,16 @@ dig.df <- dig %>%
 dig.df <- na.omit(dig.df)
 
 # simple cross-table
-library(table1)
+
 table1(~ factor(DEATH) | factor(TRTMT), data=dig, digits=2) 
 
-#*Baseline Descriptive table(Group wise summary by treatment group)
-library(table1)
+
+#**Baseline Descriptive table(Group wise summary by treatment group)**
 dig.discr <- table1(
   ~ DEATH + AGE + Ejection_Fraction + Classification,
   data = dig.df, digits = 2
 )
 
-#Crude Odds Ratio
-library(Hmisc)
-library(DescTools)
-library(kableExtra)
 
 #Drop unused labels
 dig$TRTMT_f <- droplevels(factor(dig$TRTMT,
@@ -98,7 +102,7 @@ g <- glm(DEATHn ~ Digoxin * (AGE + Classification + SYSBP
 
 print(anova(g, test = 'LRT'))
 
-# 2. PATH statement: linear interaction with linear predictor; baseline risk, so tx=ref, SK
+# 2. PATH statement: linear interaction with linear predictor; baseline risk, tx=ref, SK
 # Baseline risk model excluding treatment (PATH lp model)
 model_no_tx <- glm(
   DEATHn ~ AGE + Classification + SYSBP +
@@ -203,7 +207,7 @@ kable(as.data.frame(data.subgroups),
   kable_styling(full_width = F, position = "left")
 colnames(data.subgroups)
 
-library(metafor)
+
 par(mar=c(4,4,1,2))
 par(fg="maroon")
 data.subgroups[1:2, "name"]  <- c("EF > 0.25", "EF <= 0.25")
@@ -215,18 +219,23 @@ res <- rma(ai=tevent, bi=tnoevent, ci=cevent, di=cnoevent,
            data=data.subgroups, measure="OR",
            slab=name, method="ML")
 
-forest(res, xlim=c(-1.2,0.8), 
+forest(res, 
+       xlim=c(-1.2,0.8), 
        at=log(c(0.5, 1, 2)), 
        alim=c(log(0.2), log(2)),
        atransf=exp,
        adj=1,
        cex=.9, ylim=c(0,22),
        rows=c(1:2, (4:5)-.5, 6:7, 10:13, 15),
-       xlab="", mlab="", psize=1, lwd=1.5, addfit=FALSE,
+       xlab="",
+       mlab="", 
+       psize=1, 
+       lwd=1.5, 
+       addfit=FALSE,
        col="maroon",
        shade=FALSE)
 
-# Now the plot exists, so text() is valid
+
 text(-1.2, 18, "DIG Trial Subgroups", font=2, adj=0, cex=.9)  # left header
 text(0.8,  18, "OR [95% CI]",        font=2, adj=1, cex=.9)  # right header
 
@@ -234,9 +243,7 @@ text(0.8,  18, "OR [95% CI]",        font=2, adj=1, cex=.9)  # right header
 saveRDS(res, file = "dig_forest_baseline_risk_model.rds")
 
 
-#*Risk vs Benefit plot*
-library(Hmisc)      
-library(DescTools)  
+#**Risk vs Benefit plot*
 
 # Treatment effect model  
 m_lp_main <- glm(DEATHn ~ Digoxin + lp, data = dig_clean, family = binomial())
@@ -247,7 +254,7 @@ beta_tx <- coef(m_lp_main)["Digoxin"]   # log-odd for Digoxin vs Placebo
 xp <- seq(0.002, 0.5, by = 0.001)      # baseline risk grid
 logxp0 <- log(xp/(1-xp))               # baseline logit
 
-# Expected ARR = P(Y=1|Placebo) - P(Y=1|Digoxin)
+# Expected ARD = P(Y=1|Placebo) - P(Y=1|Digoxin)
 p1exp <- plogis(logxp0) - plogis(logxp0 + beta_tx)
 
 # Distribution of baseline risk from the tx_no model 
@@ -259,22 +266,31 @@ n1 <- as.numeric(events1 + nevents1)
 n2 <- as.numeric(events2 + nevents2)  
 
 CI <- BinomDiffCI(
-  x1 = as.numeric(events1), n1 = n1,   # Placebo worsenin
+  x1 = as.numeric(events1), n1 = n1,   # Placebo worsening
   x2 = as.numeric(events2), n2 = n2,   # Digoxin Dead
   method = "scorecc"
 )
-# CI columns: est, lwr, upr 
 
+
+# CI columns: est, lwr, upr 
 ci_low <- CI[, 2]
 ci_up  <- CI[, 3]
 
 #Plot 
 par(mar=c(5,5,2,2))
-plot(x = xp, y = p1exp,
-     type = "l", lty = 2, lwd = 3, col = "maroon",
-     xlim = c(0.15, 0.5), ylim = c(min(-0.01, min(ci_low, na.rm=TRUE)), 0.25),
-     xlab = "Baseline risk", ylab = "Benefit by Digoxin",
-     cex.lab = 1.2, las = 1, bty = "l")
+plot(x = xp,
+     y = p1exp,
+     type = "l",
+     lty = 2, 
+     lwd = 3, 
+     col = "maroon",
+     xlim = c(0.15, 0.5), 
+     ylim = c(min(-0.01, min(ci_low, na.rm=TRUE)), 0.25),
+     xlab = "Baseline risk",
+     ylab = "Benefit by Digoxin",
+     cex.lab = 1.2, 
+     las = 1, 
+     bty = "l")
 
 # zero line
 lines(x = c(0, 0.5), y = c(0, 0), col = "gray30")
@@ -299,5 +315,179 @@ legend("topleft",
 
 
 
+
+#***Plot for presentation**
+#**Forest plot*
+
+# For final Presentation (modified to only have Labels, OR and plot)
+png(
+  "DIG_presn_forest.png",
+  width  = 1800,
+  height = 1200,
+  res    = 220
+)
+
+par(mar = c(4, 4, 1, 2))
+
+DIG_presn_forest <- forest(
+  res,
+  xlim    = c(-1.5, 1.5),
+  at      = log(c(0.5, 1, 2)),
+  alim    = c(log(0.2), log(2.5)),
+  atransf = exp,
+  slab    = data.subgroups$name,         
+  rows    = c(1:2, 4:5, 7:8, 10:13, 15), 
+  xlab    = "Odds Ratio",
+  mlab    = "",
+  psize   = 1.4,
+  lwd     = 1.8,
+  col     = "red",
+  cex     = 1
+)
+
+#Subgroup 
+text(-1.5, 14, "Baseline risk (quartiles)", pos = 4, font = 2)
+text(-1.5,  9, "NYHA Class",               pos = 4, font = 2)
+text(-1.5,  6, "Age",                       pos = 4, font = 2)
+text(-1.5,  3, "Ejection Fraction",         pos = 4, font = 2)
+
+#Title 
+text(-0.4, 17, "DIG Trial", pos = 4, font = 2)
+
+
+
+dev.off()
+
+#**Absolute benefit vs baseline risk plot*
+#**Preparation*
+library(ggplot2)
+library(microshades)
+hist_df <- data.frame(
+  risk = dig.df$baseline_risk_dist
+)
+
+curve_df <- data.frame(
+  risk = xp,
+  prop = p1exp
+)
+
+spline_df <- data.frame(
+  risk = xp,
+  spline = plogis(logxp0) - plogis(logxp0 + beta_tx)
+)
+
+group_df <- data.frame(
+  risk = as.numeric(rate0),
+  benefit = as.numeric(ratediff),
+  lower = as.numeric(ci_low),
+  upper = as.numeric(ci_up)
+)
+
+
+DIG_plot <- ggplot() +
+  
+  # Baseline risk distribution 
+  geom_density(
+    data    = hist_df,
+    mapping = aes(
+      x = risk,
+      y = after_stat(scaled) * 0.015   # FIX 3: ..scaled.. → after_stat(scaled)
+    ),
+    fill   = "grey80",
+    colour = NA,
+    alpha  = 0.4
+  ) +
+  
+  # Proportional effect curve 
+  geom_line(
+    data      = curve_df,
+    mapping   = aes(x = risk, y = prop),
+    linetype  = "dashed",
+    linewidth = 1.7,
+    colour    = "#F09163"
+  ) +
+  
+  # Spline model
+  geom_line(
+    data      = spline_df,
+    mapping   = aes(x = risk, y = spline),
+    linewidth = 1.7,
+    colour    = "#4292C6"
+  ) +
+  
+  # Risk-quartile point estimates
+  geom_point(
+    data    = group_df,
+    mapping = aes(x = risk, y = benefit),
+    size    = 3,
+    colour  = "#238B45"
+  ) +
+  
+  # 95% CI bars
+  geom_errorbar(
+    data    = group_df,
+    mapping = aes(x = risk, ymin = lower, ymax = upper),
+    width   = 0.005,
+    alpha   = 0.4,
+    colour  = "#238B45"
+  ) +
+  
+  # Zero-benefit reference line 
+  geom_hline(yintercept = 0, linetype = "dotted") +
+  
+  # Axis limits
+  coord_cartesian(
+    xlim = c(0, 0.8),
+    ylim = c(-0.09, 0.08)
+  ) +
+  
+  # Labels
+  labs(
+    title = "Absolute Benefit of Digoxin Across Baseline Mortality Risk",
+    x     = "Baseline risk",
+    y     = "Benefit by Digoxin (absolute risk difference)"
+  ) +
+  
+  # Theme
+  theme_classic(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    axis.ticks = element_blank(),
+    axis.line  = element_line(colour = "grey60", linewidth = 0.5)
+  ) +
+  
+  # annotations without legend needed
+  annotate(
+    "text",
+    x = 0.40, y = 0.050,
+    label    = "Proportional effect",
+    colour   = "#F09163",
+    hjust    = 0,
+    size     = 4.5,
+    fontface = "bold"
+  ) +
+  annotate(
+    "text",
+    x = 0.40, y = 0.042,
+    label    = "Spline (df = 3)",
+    colour   = "#4292C6",
+    hjust    = 0,
+    size     = 4.5,
+    fontface = "bold"
+  ) +
+  annotate(
+    "text",
+    x = 0.40, y = 0.034,
+    label    = "Risk quartiles",
+    colour   = "#238B45",
+    hjust    = 0,
+    size     = 4.5,
+    fontface = "bold"
+  )
+
+DIG_plot
+
+# saving
+saveRDS(DIG_plot, "dig_benefit_baseline_risk_plot.rds")
 
 
