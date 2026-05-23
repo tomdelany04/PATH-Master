@@ -2,7 +2,6 @@ library(shiny)
 library(ggplot2)
 
 # Logistic model coefficients (from IST model1)
-# Replace these with your actual coef(model1) values
 coef_intercept   <- -3.85
 coef_age         <-  0.032
 coef_consc       <- -0.62
