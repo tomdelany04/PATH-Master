@@ -7,6 +7,9 @@ subtitle: |
   School of Mathematical and Statistical Sciences, University of Galway
 format: 
   revealjs: 
+    self-contained: true
+    embed-resources: true
+    css: thesis-slides.css
     transition: slide
     transition-speed: slow
     footer: "[GitHub](https://github.com/tomdelany04/PATH-Master)"
@@ -17,13 +20,10 @@ format:
     height: 720
     show-slide-number: all
     controls: true
-    embed-resources: true
-    css: thesis-slides.css
 resources:
-  - images/University_Of_Galway_Logo.png
-  - images/clipboard-3280506532.png
-  - images/quarto.png
-  - images/GitHub_Invertocat_Black.png
+  - University_Of_Galway_Logo.png
+  - clipboard-3280506532.png
+  - GitHub_Invertocat_Black.png
   - mean.png
   - people.png
   - age-range.png
@@ -42,6 +42,8 @@ resources:
   - DIG_presn_forest.png
   - VITAL_presn_forest_omega.png
   - VITAL_presn_forest_vitd.png
+  - VITAL_plot_omg.png
+  - VITAL_plot_Vit.png
 editor: visual
 ---
 
@@ -55,10 +57,8 @@ editor: visual
 ::: info-box
 <ul>
 
-<li>This slidedeck was built in <img src="images/clipboard-3280506532.png" alt="RStudio logo" style="height:1.2em; vertical-align:middle;"/> using <img src="images/quarto.png" alt="Quarto logo" style="height:1.2em; vertical-align:middle;"/></li>
-
-<li>Our GitHub repository is linked in the footer <img src="images/GitHub_Invertocat_Black.png" alt="GitHub logo" style="height:1.2em; vertical-align:middle;"/></li>
-
+<li>This slidedeck was built in <img src="images/clipboard-3280506532.png" alt="RStudio logo" style="height:1.2em; vertical-align:middle;"> using <img src="images/quarto.png" alt="Quarto logo" style="height:1.2em; vertical-align:middle;"></li>
+<li>Our GitHub repository is linked in the footer <img src="images/GitHub_Invertocat_Black.png" alt="GitHub logo" style="height:1.2em; vertical-align:middle;"></li>
 </ul>
 :::
 
@@ -69,15 +69,18 @@ Responses to a given treatment can vary considerably across individuals within a
 ::: {.columns .concept-grid}
 ::: {.column width="33%"}
 ::: {.concept-card .fragment}
-<img src="mean.png" alt="Average effect icon" class="concept-image"/>
+<img src="mean.png" class="concept-image" alt="Average effect icon">
 <h3>Average Effect</h3>
-<p>Randomised trials usually report one overall treatment estimate for the full study population.</p>
+<p>
+Randomised trials usually report one overall treatment estimate
+for the full study population.
+</p>
 :::
 :::
 
 ::: {.column width="33%"}
 ::: {.concept-card .fragment}
-<img src="people.png" alt="Demographic differences icon" class="concept-image"/>
+<img src="people.png" class="concept-image" alt="Demographic differences icon">
 <h3>Patient Differences</h3>
 <p>Demographics, disease severity, and baseline prognosis can all change the magnitude of treatment benefit.</p>
 :::
@@ -85,7 +88,7 @@ Responses to a given treatment can vary considerably across individuals within a
 
 ::: {.column width="33%"}
 ::: {.concept-card .fragment}
-<img src="age-range.png" alt="Subgroup analysis icon" class="concept-image"/>
+<img src="age-range.png" class="concept-image" alt="Subgroup analysis icon">
 <h3>Subgroup Limitations</h3>
 <p>Traditional one-variable subgroup analyses are often underpowered and can miss multivariable response patterns.</p>
 :::
@@ -121,7 +124,6 @@ The PATH statement provides guidance for analysing and reporting predictive appr
 <li>PATH analyses allow for multivariate modelling of risk on the individual level</li>
 <li>It is better aligned with clinical decisions, where patients differ across several risk factors simultaneously.</li>
 </ul>
-<img src="processing.png" alt="Processing illustration" class="path-card-image"/>
 :::
 :::
 :::
@@ -215,14 +217,14 @@ trial_summary %>%
 ::: {.columns .outcomes-grid}
 ::: {.column width="50%"}
 ::: {.outcome-card .fragment}
-<img src="IST-1.PNG" alt="IST trial logo" class="outcome-image"/>
+<img src="IST-1.PNG" class="outcome-image" alt="IST trial logo">
 <p><strong>Beneficial overall effect:</strong> aspirin reduced death or non-fatal recurrent stroke <strong>(OR 0.89)</strong>.</p>
 :::
 :::
 
 ::: {.column width="50%"}
 ::: {.outcome-card .fragment}
-<img src="Digitalis2-1.jpg" alt="DIG trial logo" class="outcome-image"/>
+<img src="Digitalis2-1.jpg" class="outcome-image" alt="DIG trial logo">
 <p><strong>No clear overall difference:</strong> all-cause mortality was similar for digoxin versus placebo <strong>(RR 0.99)</strong>.</p>
 :::
 :::
@@ -238,7 +240,7 @@ trial_summary %>%
 
 ::: {.column width="50%"}
 ::: {.outcome-card .fragment}
-<img src="VITAL.jpg" alt="VITAL trial logo" class="outcome-image"/>
+<img src="VITAL.jpg" class="outcome-image" alt="VITAL trial logo">
 <p><strong>No clear overall difference:</strong> vitamin D supplementation did not lower cancer or cardiovascular events compared with placebo.</p>
 :::
 :::
@@ -257,7 +259,7 @@ knitr::include_graphics("PATH.png")
 
 ::: {.column width="26%"}
 ::: {.workflow-side-card}
-<img src="path (1).png" alt="Path icon" class="workflow-icon"/>
+<img src="path (1).png" class="workflow-icon" alt="Path icon">
 <p><strong>Stage 1:</strong> Prepare Datasets for Analysis.</p>
 <p><strong>Stage 2:</strong> Model Baseline risk using appropriate method.</p>
 <p><strong>Stage 3:</strong> Visualise Treatment Heterogeneity on Relative and Absolute Scales.</p>
@@ -348,6 +350,118 @@ h_0(t)\exp\Big(
 $$
 :::
 
+
+## Relative vs Absolute Benefit
+
+## Relative Effect Illustration {.forest-slide}
+
+::: {style="margin-top: 0.1rem; width: 86%; margin-left: auto; margin-right: auto;"}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width='88%'}
+knitr::include_graphics("gusto_pres_forest.png")
+
+```
+:::
+
+::: {.info-box}
+<ul>
+<li>Risk-based quartiles suggest a broadly similar relative effect, but lower-risk groups have wider confidence intervals.</li>
+</ul>
+:::
+
+## Relative Effect Results {.results-panel-slide}
+
+::: {.columns .results-panel-grid}
+::: {.column width="50%"}
+::: {.results-panel-card}
+<h3>DIG</h3>
+<img src="DIG_presn_forest.png" alt="DIG relative effect forest plot" style="width:100%; height:auto;">
+:::
+:::
+
+::: {.column width="50%"}
+::: {.results-panel-card}
+<h3>IST-1</h3>
+<img src="IST_pres_forest.png" alt="IST-1 relative effect forest plot" style="width:100%; height:auto;">
+:::
+:::
+:::
+
+## VITAL Relative Effect Results {.results-panel-slide}
+
+::: {.columns .results-panel-grid}
+::: {.column width="50%"}
+::: {.results-panel-card}
+<h3>VITAL: Omega-3</h3>
+<img src="VITAL_presn_forest_omega.png" alt="VITAL omega-3 relative effect forest plot" style="width:100%; height:auto;">
+:::
+:::
+
+::: {.column width="50%"}
+::: {.results-panel-card}
+<h3>VITAL: Vitamin D</h3>
+<img src="VITAL_presn_forest_vitd.png" alt="VITAL vitamin D relative effect forest plot" style="width:100%; height:auto;">
+:::
+:::
+:::
+
+## Absolute treatment effect {.absolute-slide}
+
+::: {style="margin-top: 0.1rem; width: 86%; margin-left: auto; margin-right: auto;"}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width='88%'}
+Gusto_plot <- readRDS("gusto_plot.rds")
+Gusto_plot
+```
+:::
+
+::: {.info-box}
+<ul>
+<li>In the GUSTO trial, absolute treatment benefit increases as baseline risk increases, with larger gains concentrated in higher-risk patients.</li>
+<li>Random forest stratification produced similar quartiles across all studies</li>
+</ul>
+:::
+
+## Absolute Benefit Results {.results-panel-slide}
+
+::: {.columns .results-panel-grid}
+::: {.column width="50%"}
+::: {.results-panel-card}
+<h3>IST</h3>
+```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width='100%', fig.width=8.5, fig.height=5.6}
+aspirin_plot <- readRDS("aspirin_plot.rds")
+aspirin_plot
+```
+:::
+:::
+
+::: {.column width="50%"}
+::: {.results-panel-card}
+<h3>DIG</h3>
+```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width='100%', fig.width=8.5, fig.height=5.6}
+dig_benefit_plot <- readRDS("dig_benefit_baseline_risk_plot.rds")
+dig_benefit_plot
+```
+:::
+:::
+:::
+
+## VITAL Absolute Benefit Results {.results-panel-slide}
+
+::: {.columns .results-panel-grid}
+::: {.column width="50%"}
+::: {.results-panel-card}
+<h3>VITAL: Omega-3</h3>
+<img src="VITAL_plot_omg.png" alt="VITAL omega-3 absolute benefit plot" style="width:100%; height:auto;">
+:::
+:::
+
+::: {.column width="50%"}
+::: {.results-panel-card}
+<h3>VITAL: Vitamin D</h3>
+<img src="VITAL_plot_Vit.png" alt="VITAL vitamin D absolute benefit plot" style="width:100%; height:auto;">
+:::
+:::
+:::
+
 ## Simulation Study Design [Morris et al. 2019](https://pmc.ncbi.nlm.nih.gov/articles/PMC6492164/) {.ademp-slide}
 
 ADEMP is a structured way to summarise a simulation study through its <strong>Aim</strong>, <strong>Data-generating mechanism</strong>, <strong>Estimand</strong>, <strong>Methods</strong>, and <strong>Performance measure</strong>.
@@ -357,9 +471,7 @@ ADEMP is a structured way to summarise a simulation study through its <strong>Ai
 ::: {.ademp-card .fragment}
 <div class="ademp-badge">A</div>
 <h3>Aim</h3>
-<ul>
-<li>Evaluate whether risk-based interaction testing falsely detects treatment effect heterogeneity under the null.</li>
-</ul>
+<p>Evaluate whether risk-based interaction testing falsely detects treatment effect heterogeneity under the null</p>
 :::
 :::
 
@@ -427,103 +539,13 @@ $$
 <div class="ademp-badge">P</div>
 <h3>Performance Measure</h3>
 <p>Empirical rejection rate at <strong>&alpha; = 0.05</strong>.</p>
-![](Heatmap_MC.png){width="100%"}
-:::
-:::
-:::
-
-## Relative vs Absolute Benefit
-
-## Relative Effect Illustration {.forest-slide}
-
-::: {style="margin-top: 0.1rem; width: 86%; margin-left: auto; margin-right: auto;"}
-```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width='88%'}
-knitr::include_graphics("gusto_pres_forest.png")
-
-```
-:::
-
-::: {.info-box}
-<ul>
-<li>Risk-based quartiles suggest a broadly similar relative effect, but lower-risk groups have wider confidence intervals.</li>
-</ul>
-:::
-
-## Relative Effect Results {.results-panel-slide}
-
-::: {.columns .results-panel-grid}
-::: {.column width="50%"}
-::: {.results-panel-card}
-<h3>DIG</h3>
-![](DIG_presn_forest.png){width="100%"}
-:::
-:::
-
-::: {.column width="50%"}
-::: {.results-panel-card}
-<h3>IST-1</h3>
-![](IST_pres_forest.png){width="100%"}
-:::
-:::
-:::
-
-## VITAL Relative Effect Results {.results-panel-slide}
-
-::: {.columns .results-panel-grid}
-::: {.column width="50%"}
-::: {.results-panel-card}
-<h3>VITAL: Omega-3</h3>
-![](VITAL_presn_forest_omega.png){width="100%"}
-:::
-:::
-
-::: {.column width="50%"}
-::: {.results-panel-card}
-<h3>VITAL: Vitamin D</h3>
-![](VITAL_presn_forest_vitd.png){width="100%"}
-:::
-:::
-:::
-
-## Absolute treatment effect {.absolute-slide}
-
-::: {style="margin-top: 0.1rem; width: 86%; margin-left: auto; margin-right: auto;"}
-```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width='88%'}
-Gusto_plot <- readRDS("gusto_plot.rds")
-Gusto_plot
-```
-:::
-
-::: {.info-box}
-<ul>
-<li>In the GUSTO trial, absolute treatment benefit increases as baseline risk increases, with larger gains concentrated in higher-risk patients.</li>
-<li>Random forest stratification produced very similar quartiles, so only one version is shown here for presentation clarity; both appear in the final report.</li>
-</ul>
-:::
-
-## Absolute Benefit Results {.results-panel-slide}
-
-::: {.columns .results-panel-grid}
-::: {.column width="50%"}
-::: {.results-panel-card}
-<h3>IST</h3>
-```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width='100%', fig.width=8.5, fig.height=5.6}
-aspirin_plot <- readRDS("aspirin_plot.rds")
-aspirin_plot
-```
-:::
-:::
-
-::: {.column width="50%"}
-::: {.results-panel-card}
-<h3>DIG</h3>
-```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width='100%', fig.width=8.5, fig.height=5.6}
-dig_benefit_plot <- readRDS("dig_benefit_baseline_risk_plot.rds")
-dig_benefit_plot
+```{r}
+knitr::include_graphics("Heatmap_MC.png")
 ```
 :::
 :::
 :::
+
 
 ## Ongoing Work
 
@@ -542,7 +564,7 @@ $$
 ::: {.columns .conclusion-grid}
 ::: {.column width="33%"}
 ::: {.conclusion-card .fragment}
-<img src="people.png" alt="Population icon" class="conclusion-card-image"/>
+<img src="people.png" class="conclusion-card-image" alt="Population icon">
 <h3>Dataset Requirements</h3>
 <p>PATH is most feasible in large, well-characterised datasets where baseline risk and subgroup differences can be estimated reliably.</p>
 :::
@@ -557,10 +579,10 @@ $$
 
 ::: {.column width="33%"}
 ::: {.conclusion-card .fragment}
-<div class="conclusion-logo-row">
-<img src="FDA_logo.png" alt="FDA logo" class="conclusion-logo"/>
-<img src="EMA_Logo.png" alt="EMA logo" class="conclusion-logo"/>
-</div>
+::: {.conclusion-logo-row}
+<img src="FDA_logo.png" class="conclusion-logo" alt="FDA logo">
+<img src="EMA_Logo.png" class="conclusion-logo" alt="EMA logo">
+:::
 <h3>Implementation</h3>
 <p>Implementation may depend on future reporting expectations from major regulators, but there is currently no routine regulatory requirement for PATH analyses.</p>
 :::
