@@ -10,7 +10,6 @@ coef_motor       <-  0.29
 coef_afib        <-  0.45
 coef_aspirin     <- -0.12
 
-# Helper functions
 plogis_manual <- function(x) 1 / (1 + exp(-x))
 
 calc_risk <- function(age, consc, ct, motor, afib, aspirin) {
