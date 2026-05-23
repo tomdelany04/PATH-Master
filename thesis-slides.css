@@ -389,3 +389,201 @@
   justify-content: center;
   text-align: center;
 }
+
+.reveal .slides section.results-panel-slide {
+  width: 96%;
+  max-width: 1240px;
+  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+}
+
+.reveal .slides section.results-panel-slide h2 {
+  margin-bottom: 0.4em;
+}
+
+.reveal .slides section.results-panel-slide .results-panel-grid {
+  gap: 1rem;
+  margin-top: 0.8rem;
+  align-items: stretch;
+}
+
+.reveal .slides section.results-panel-slide .results-panel-card {
+  background: #f8fbfd;
+  border: 1px solid #d5e2eb;
+  border-top: 5px solid #84003d;
+  border-radius: 12px;
+  padding: 0.55rem 0.6rem 0.5rem 0.6rem;
+  min-height: 330px;
+  box-sizing: border-box;
+}
+
+.reveal .slides section.results-panel-slide .results-panel-card h3 {
+  margin-top: 0;
+  margin-bottom: 0.25rem;
+  font-size: 0.84em;
+}
+
+.reveal .slides section.results-panel-slide .results-panel-card p {
+  font-size: 0.7em;
+  line-height: 1.2;
+  margin-bottom: 0;
+}
+
+.reveal .slides section.results-panel-slide .results-panel-placeholder {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-top-color: #c1d2df;
+  background: #fcfdff;
+}
+
+.reveal .slides section.forest-slide,
+.reveal .slides section.absolute-slide {
+  width: 96%;
+  max-width: 1240px;
+  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+}
+
+.reveal .slides section.forest-slide .forest-code-card,
+.reveal .slides section.absolute-slide .forest-code-card {
+  margin-top: 0.1rem;
+  width: 98%;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid #84003d;
+  border-radius: 10px;
+  background: #f7f7f7;
+  font-size: 0.72em;
+  box-sizing: border-box;
+}
+
+.reveal .slides section.forest-slide .forest-code-card .cell pre,
+.reveal .slides section.absolute-slide .forest-code-card .cell pre {
+  margin: 0;
+  max-height: none;
+  overflow: visible;
+}
+
+.reveal .slides section.forest-slide .forest-code-card .cell pre code,
+.reveal .slides section.absolute-slide .forest-code-card .cell pre code {
+  font-size: 0.7em;
+  line-height: 1.08;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.reveal .slides section.forest-slide .info-box,
+.reveal .slides section.absolute-slide .info-box {
+  margin-top: 0.8rem;
+  width: 86%;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 0.69em;
+  line-height: 1.18;
+}
+
+.reveal .slides section.conclusion-slide {
+  width: 96%;
+  max-width: 1240px;
+  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+}
+
+.reveal .slides section.conclusion-slide h2 {
+  margin-bottom: 0.4em;
+}
+
+.reveal .slides section.conclusion-slide .conclusion-grid {
+  gap: 1rem;
+  margin-top: 0.9rem;
+  align-items: stretch;
+}
+
+.reveal .slides section.conclusion-slide .conclusion-card {
+  background: #f8fbfd;
+  border: 1px solid #d5e2eb;
+  border-top: 5px solid #84003d;
+  border-radius: 12px;
+  padding: 1rem 1rem 0.9rem 1rem;
+  min-height: 285px;
+  box-sizing: border-box;
+}
+
+.reveal .slides section.conclusion-slide .conclusion-card-image {
+  display: block;
+  width: 3.8rem;
+  height: 3.8rem;
+  object-fit: contain;
+  margin-bottom: 0.8rem;
+}
+
+.reveal .slides section.conclusion-slide .conclusion-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 0.8rem;
+}
+
+.reveal .slides section.conclusion-slide .conclusion-logo-row {
+  display: flex;
+  gap: 0.7rem;
+  align-items: center;
+}
+
+.reveal .slides section.conclusion-slide .conclusion-logo {
+  height: 2.2rem;
+  width: auto;
+  object-fit: contain;
+}
+
+.reveal .slides section.conclusion-slide .conclusion-title-row h3 {
+  margin: 0;
+}
+
+.reveal .slides section.conclusion-slide .conclusion-card h3 {
+  margin-top: 0;
+  margin-bottom: 0.45rem;
+  font-size: 0.84em;
+}
+
+.reveal .slides section.conclusion-slide .conclusion-card p {
+  font-size: 0.72em;
+  line-height: 1.24;
+  margin-bottom: 0;
+}
+
+.reveal .slides section.references-slide {
+  width: 96%;
+  max-width: 1240px;
+  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+}
+
+.reveal .slides section.references-slide h2 {
+  margin-bottom: 0.35em;
+}
+
+.reveal .slides section.references-slide .references-grid {
+  gap: 1rem;
+  margin-top: 0.7rem;
+  align-items: flex-start;
+}
+
+.reveal .slides section.references-slide .column > ul {
+  font-size: 0.52em;
+  line-height: 1.2;
+  margin: 0;
+  padding-left: 1.15em;
+}
+
+.reveal .slides section.references-slide li {
+  margin: 0.38em 0;
+}
