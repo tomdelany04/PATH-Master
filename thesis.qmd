@@ -162,7 +162,7 @@ trial_summary <- data.frame(
     "Marine omega-3 fatty acid, Vitamin D3, both or double-placebo in death from cardiovascular causes",
     "25,435",
     "2011-2017",
-    "a 2×2 factorial randomized controlled trial",
+    "2×2 factorial RCT",
     "5 years"
   )
 )
@@ -174,7 +174,7 @@ trial_summary %>%
     IST = md("[International Stroke Trial](https://pubmed.ncbi.nlm.nih.gov/?term=9174558)"),
     DIG = md("[DIG Trial](https://pubmed.ncbi.nlm.nih.gov/9036306/)"),
     GUSTO = md("[GUSTO-I Trial](https://pubmed.ncbi.nlm.nih.gov/8204123/)"),
-    VITAL = md("[VITamin D and OmegA-3 TriaL (VITAL)](https://www.nature.com/articles/s41430-022-01244-w)")
+    VITAL = md("[VITAL](https://www.nature.com/articles/s41430-022-01244-w/)")
   ) %>%
   tab_options(
     table.border.top.color = "#84003d",
@@ -597,29 +597,37 @@ $$
 ::: {.columns .conclusion-grid}
 ::: {.column width="33%"}
 ::: {.conclusion-card .fragment}
-<img src="people.png" class="conclusion-card-image" alt="Population icon">
 <h3>Dataset Requirements</h3>
-<p>PATH is most feasible in large, well-characterised datasets where baseline risk and subgroup differences can be estimated reliably.</p>
-:::
+<ul>
+<li>PATH is most feasible in large, well-characterised datasets where baseline risk and subgroup differences can be estimated reliably.</li>
+<li>Trials of this size being conducted and available to analyse is a potential barrier.</li>
+</ul>
+::: 
 :::
 
 ::: {.column width="33%"}
 ::: {.conclusion-card .fragment}
 <h3>Treatment Effect</h3>
-<p>The usefulness of PATH also depends on the trials overall treatment effect: when weak, detection of HTE may remain difficult even in strong datasets.</p>
+<ul>
+<li>The usefulness of PATH also depends on the trial's overall treatment effect.</li> 
+<li>When weak/ not evident, detection of HTE may remain difficult even in strong datasets.</li>
+</ul>
 :::
 :::
 
 ::: {.column width="33%"}
 ::: {.conclusion-card .fragment}
-::: {.conclusion-logo-row}
-<img src="FDA_logo.png" class="conclusion-logo" alt="FDA logo">
-<img src="EMA_Logo.png" class="conclusion-logo" alt="EMA logo">
-:::
 <h3>Implementation</h3>
-<p>Implementation may depend on future reporting expectations from major regulators, but there is currently no routine regulatory requirement for PATH analyses.</p>
+<ul>
+<li>Implementation may depend on future reporting expectations from major regulators.</li>
+<li>There is currently no routine regulatory requirement for PATH analyses.</li>
+</ul>
 :::
 :::
+:::
+
+::: {.fragment}
+- Thank you for listening.
 :::
 
 ## References {.references-slide}
@@ -631,7 +639,7 @@ $$
 - International Stroke Trial Collaborative Group. The International Stroke Trial (IST): a randomised trial of aspirin, subcutaneous heparin, both, or neither among 19,435 patients with acute ischaemic stroke. *Lancet.* 1997.
 - The Digitalis Investigation Group. The effect of digoxin on mortality and morbidity in patients with heart failure. *N Engl J Med.* 1997;336:525-533.
 - The GUSTO Investigators. An international randomized trial comparing four thrombolytic strategies for acute myocardial infarction. *N Engl J Med.* 1993;329:673-682.
-:::
+::: 
 
 ::: {.column width="50%"}
 - Manson JE, Cook NR, Lee IM, et al. Marine n-3 fatty acids and prevention of cardiovascular disease and cancer. *N Engl J Med.* 2019;380:23-32.

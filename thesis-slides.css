@@ -1,3 +1,7 @@
+.reveal {
+  font-size: 39px;
+}
+
 .reveal .slide-logo {
   max-height: 5.5rem !important;
 }
@@ -586,6 +590,17 @@
   font-size: 0.72em;
   line-height: 1.24;
   margin-bottom: 0;
+}
+
+.reveal .slides section.conclusion-slide .conclusion-card ul {
+  margin: 0;
+  padding-left: 1.1em;
+}
+
+.reveal .slides section.conclusion-slide .conclusion-card li {
+  font-size: 0.68em;
+  line-height: 1.2;
+  margin: 0;
 }
 
 .reveal .slides section.references-slide {
