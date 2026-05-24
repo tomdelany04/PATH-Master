@@ -446,20 +446,20 @@ Gusto_plot
 ```
 :::
 
-::: {.info-box}
+::: {.info-box style="padding:0.35rem 0.6rem;"}
 <ul>
 <li>In the GUSTO trial, absolute treatment benefit increases as baseline risk increases, with larger gains concentrated in higher-risk patients.</li>
 <li>Random forest stratification produced similar quartiles across all studies</li>
 </ul>
 :::
 
-## Absolute Benefit Results {.results-panel-slide}
+## Absolute Benefit Results {.results-panel-slide .absolute-results-panel-slide}
 
 ::: {.columns .results-panel-grid}
 ::: {.column width="50%"}
 ::: {.results-panel-card}
 <h3>IST</h3>
-```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width='100%', fig.width=8.5, fig.height=5.6}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width='100%', fig.width=9.6, fig.height=6.4}
 aspirin_plot <- readRDS("aspirin_plot.rds")
 aspirin_plot
 ```
@@ -469,7 +469,7 @@ aspirin_plot
 ::: {.column width="50%"}
 ::: {.results-panel-card}
 <h3>DIG</h3>
-```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width='100%', fig.width=8.5, fig.height=5.6}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width='100%', fig.width=9.6, fig.height=6.4}
 dig_benefit_plot <- readRDS("dig_benefit_baseline_risk_plot.rds")
 dig_benefit_plot
 ```
@@ -477,7 +477,7 @@ dig_benefit_plot
 :::
 :::
 
-## VITAL Absolute Benefit Results {.results-panel-slide}
+## VITAL Absolute Benefit Results {.results-panel-slide .absolute-results-panel-slide}
 
 ::: {.columns .results-panel-grid}
 ::: {.column width="50%"}
@@ -636,7 +636,7 @@ $$
 ::: {.column width="50%"}
 - Manson JE, Cook NR, Lee IM, et al. Marine n-3 fatty acids and prevention of cardiovascular disease and cancer. *N Engl J Med.* 2019;380:23-32.
 - Caldeira D, Costa J, Fernandes RM, et al. Analysis of the VITAL cohort. *Eur J Clin Nutr.* 2022.
-- Thompson DDO, et al. Adjustment model specification for 14-day mortality in the International Stroke Trial. 2015.
+- Thompson DDO, et al. Adjustment model specification for 14-day mortality in the International Stroke Trial. 2015. 
 - Steyerberg EW, et al. Adjustment model specification in the GUSTO-I trial. 2000.
 - Hwangbo H, et al. Ensemble-learning approaches for treatment heterogeneity analysis in the IST trial. *Sci Rep.* 2022;12.
 :::

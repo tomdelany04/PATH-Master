@@ -564,10 +564,10 @@ aspirin_plot <- ggplot() +
   # baseline risk distribution (scaled density)
   geom_density(
     data = hist_df,
-    aes(x = risk, y = after_stat(scaled) * 0.015),
+    aes(x = risk, y = ..scaled..* 0.015),
     fill = "grey80",
     color = NA,
-    alpha = 0.2
+    alpha = 0.6
   ) +
 
   # proportional model
@@ -612,7 +612,7 @@ aspirin_plot <- ggplot() +
     y = "Benefit by aspirin (absolute risk difference)"
   ) +
 
-  theme_classic(base_size = 15) +
+  theme_classic(base_size = 17) +
   theme(
     axis.ticks = element_blank(),
     axis.line = element_line(color = "grey60", linewidth = 0.5),
@@ -620,7 +620,7 @@ aspirin_plot <- ggplot() +
 
   annotate(
     "text",
-    x = 0.4,
+    x = 0.3,
     y = 0.016,
     label = "Proportional effect",
     color = "darkblue",

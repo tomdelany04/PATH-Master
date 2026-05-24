@@ -431,6 +431,36 @@
   margin-bottom: 0;
 }
 
+.reveal .slides section.absolute-results-panel-slide {
+  width: 98%;
+  max-width: 1265px;
+}
+
+.reveal .slides section.absolute-results-panel-slide h2 {
+  margin-bottom: 0.22em;
+}
+
+.reveal .slides section.absolute-results-panel-slide .results-panel-grid {
+  gap: 0.7rem;
+  margin-top: 0.35rem;
+}
+
+.reveal .slides section.absolute-results-panel-slide .results-panel-card {
+  padding: 0.3rem 0.35rem 0.28rem 0.35rem;
+  min-height: 375px;
+}
+
+.reveal .slides section.absolute-results-panel-slide .results-panel-card h3 {
+  margin-bottom: 0.12rem;
+  font-size: 0.8em;
+}
+
+.reveal .slides section.absolute-results-panel-slide .results-panel-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 .reveal .slides section.results-panel-slide .results-panel-placeholder {
   display: flex;
   flex-direction: column;

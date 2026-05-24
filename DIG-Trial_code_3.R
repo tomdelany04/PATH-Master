@@ -395,7 +395,7 @@ DIG_plot <- ggplot() +
     data    = hist_df,
     mapping = aes(
       x = risk,
-      y = after_stat(scaled) * 0.015   # FIX 3: ..scaled.. → after_stat(scaled)
+      y = ..scaled..* 0.015   # FIX 3: ..scaled.. → after_stat(scaled)
     ),
     fill   = "grey80",
     colour = NA,
@@ -444,7 +444,7 @@ DIG_plot <- ggplot() +
   ) +
   
   # Theme
-  theme_classic(base_size = 15) +
+  theme_classic(base_size = 17) +
   theme(
     plot.title = element_text(face = "bold", size = 14),
     axis.ticks = element_blank(),
@@ -455,11 +455,11 @@ DIG_plot <- ggplot() +
   annotate(
     "text",
 
-    x = 0.60, y = 0.012,
+    x = 0.43, y = -0.012,
     label    = "Proportional Effect",
     colour   = "darkblue",
     hjust    = 0,
-    size     = 4.5,
+    size     = 6,
     fontface = "bold"
   ) 
 
