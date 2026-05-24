@@ -4,7 +4,7 @@ author:
   - Tom Delany & Misgana Ojamo
 subtitle: |
   Supervisor: Dr. Neil O'Leary,
-  School of Mathematical and Statistical Sciences, University of Galway
+institute: School of Mathematical and Statistical Sciences
 format: 
   revealjs: 
     self-contained: true
@@ -111,7 +111,7 @@ The PATH statement provides guidance for analysing and reporting predictive appr
 <p>PATH is a reporting framework for <strong>predictive HTE analyses</strong> in randomised trials.</p>
 <ul>
 <li>It focuses on how treatment benefit varies across <strong>baseline patient profiles</strong>.</li>
-<li>Its aim is more individualised estimates of treatment benefit, not just one overall average.</li>
+<li>Its aim to provide patient-centered estimates of outcome risks with versus without the intervention.</li>
 </ul>
 :::
 :::
@@ -123,6 +123,7 @@ The PATH statement provides guidance for analysing and reporting predictive appr
 <ul>
 <li>PATH analyses allow for multivariate modelling of risk on the individual level</li>
 <li>It is better aligned with clinical decisions, where patients differ across several risk factors simultaneously.</li>
+<li>Mitigates certain limitations of subgroup analyses (Type I error, low power).</li>
 </ul>
 :::
 :::
@@ -140,7 +141,7 @@ trial_summary <- data.frame(
     "Aspirin and heparin in acute ischaemic stroke",
     "19,435",
     "1991-1996",
-    "Open-label factorial RCT",
+    "Open-label RCT",
     "14 days and 6 months"
   ),
   DIG = c(
@@ -218,7 +219,7 @@ trial_summary %>%
 ::: {.column width="50%"}
 ::: {.outcome-card .fragment}
 <img src="IST-1.PNG" class="outcome-image" alt="IST trial logo">
-<p><strong>Beneficial overall effect:</strong> aspirin reduced death or non-fatal recurrent stroke <strong>(OR 0.89)</strong>.</p>
+<p><strong>Beneficial overall effect:</strong> aspirin  significantly reduced death or non-fatal recurrent stroke <strong>(OR 0.95)</strong>.</p>
 :::
 :::
 
@@ -234,17 +235,23 @@ trial_summary %>%
 ::: {.column width="50%"}
 ::: {.outcome-card .fragment}
 <strong>GUSTO-1</strong> 
-<p><strong>Beneficial overall effect:</strong> 30-day mortality was lower with accelerated tPA than with streptokinase <strong>(OR 0.85)</strong>.</p>
+<p><strong>Beneficial overall effect:</strong> 30-day mortality was significantly lower with accelerated tPA than with streptokinase <strong>(OR 0.85)</strong>.</p>
 :::
 :::
 
 ::: {.column width="50%"}
 ::: {.outcome-card .fragment}
 <img src="VITAL.jpg" class="outcome-image" alt="VITAL trial logo">
-<p><strong>No clear overall difference:</strong> vitamin D supplementation did not lower cancer or cardiovascular events compared with placebo.</p>
+<p><strong>No clear overall difference:</strong> vitamin D/Omega-3 supplementation did not significantly lower cancer compared with placebo <strong>(HR 0.96/0.92).</strong></p>
 :::
 :::
 :::
+
+::: {.info-box .fragment style="margin-top:0.38rem; padding:0.42rem 0.72rem; font-size:0.62em; line-height:1.06;"}
+<strong>PATH recommendation:</strong> Risk-modeling approaches should generally be applied in presence of an overall treatment effect, and interpreted more cautiously when there is not.
+:::
+
+
 
 ## Path Workflow {.workflow-slide}
 
@@ -351,7 +358,33 @@ $$
 :::
 
 
-## Relative vs Absolute Benefit
+## Relative vs Absolute Benefit {.path-slide}
+
+::: {.columns .path-grid}
+::: {.column width="50%"}
+::: {.path-card}
+<div class="path-badge">R</div>
+<h3>Relative Effects</h3>
+<p>Relative effects describe how treatment changes outcomes proportionally, typically through odds ratios or hazard ratios.</p>
+<ul>
+<li>In PATH, they help assess whether treatment benefit is broadly consistent across baseline risk strata.</li>
+<li>In this presentation and in the report, we show these using PATH-aligned forest plots.</li>
+</ul>
+:::
+:::
+
+::: {.column width="50%"}
+::: {.path-card}
+<div class="path-badge">A</div>
+<h3>Absolute Effects</h3>
+<p>Absolute effects describe the change in event probability itself, so they are often more directly interpretable for patients and practice.</p>
+<ul>
+<li>In PATH, they show how treatment benefit may increase or decrease across baseline risk even when relative effects look stable.</li>
+<li>We present these as absolute treatment-benefit plots here and in the final report.</li>
+</ul>
+:::
+:::
+:::
 
 ## Relative Effect Illustration {.forest-slide}
 
@@ -572,8 +605,8 @@ $$
 
 ::: {.column width="33%"}
 ::: {.conclusion-card .fragment}
-<h3>Interaction Strength</h3>
-<p>The usefulness of PATH also depends on interaction strength: when heterogeneity is weak, detection may remain difficult even in strong datasets.</p>
+<h3>Treatment Effect</h3>
+<p>The usefulness of PATH also depends on the trials overall treatment effect: when weak, detection of HTE may remain difficult even in strong datasets.</p>
 :::
 :::
 
