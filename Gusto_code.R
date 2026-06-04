@@ -485,7 +485,7 @@ geom_density(
   ),
   fill = "grey80",
   color = NA,
-  alpha = 0.4
+  alpha = 0.6
 ) +
 
   ##########################################################
@@ -500,7 +500,7 @@ geom_line(
   ),
   linetype = "dashed",
   linewidth = 1.7,
-  colour = "#F09163"
+  colour = "darkblue"
 ) +
 
   ##########################################################
@@ -514,7 +514,7 @@ geom_line(
     y = spline
   ),
   linewidth = 1.7,
-  color = "#4292C6"
+  color = "#a80050"
 ) +
 
   ##########################################################
@@ -528,7 +528,7 @@ geom_point(
     y = benefit
   ),
   size = 3,
-  color = "#238B45"
+  color = "#a80050"
 ) +
 
   geom_errorbar(
@@ -556,7 +556,7 @@ geom_hline(
 ##########################################################
 
 coord_cartesian(
-  xlim = c(0, 0.5),
+  xlim = c(0, 0.4),
   ylim = c(-0.02, 0.05)
 ) +
 
@@ -590,10 +590,10 @@ theme_classic(base_size = 13) +
 
 annotate(
   "text",
-  x = 0.4,
+  x = 0.3,
   y = 0.040,
   label = "Proportional effect",
-  color = "#F09163",
+  color = "darkblue",
   hjust = 0,
   size = 6
 ) +
@@ -603,7 +603,7 @@ annotate(
     x = 0.28,
     y = 0.031,
     label = "Spline (df = 3)",
-    color = "#4292C6",
+    color = "#a80050",
     hjust = 0,
     size = 6
   )
@@ -829,7 +829,8 @@ forest(
 
   lwd = 1.5,
 
-  col = "maroon",
+  colout = c(rep("black", 10), 
+             "#a80050"),
 
   cex = 0.9
 )
@@ -894,7 +895,8 @@ gusto_pres_forest <- forest(
   mlab = "",
   psize = 1.4,
   lwd = 1.8,
-  col = "red",
+  colout = c(rep("black", 10), 
+             "#a80050"),
   cex = 1
 )
 

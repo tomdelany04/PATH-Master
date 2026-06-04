@@ -499,7 +499,7 @@ yax <- range(
 )
 
 # Proportional effect line
-plot(
+VITAL_plot_Vit <- plot(
   x    = xp,
   y    = p1exp,
   type = "l",
@@ -560,7 +560,7 @@ legend(
   cex    = 1.1,
   legend = c("Expected with proportional effect", "Grouped patients")
 )
-
+VITAL_plot_Vit
 
 #*** Absolute benefit versus baseline risk plot***
 #**fishoil/omega-3**
@@ -583,7 +583,7 @@ yax <- range(
 )
 
 # Proportional effect line
-plot(
+VITAL_plot_Omg <- plot(
   x    = xp,
   y    = p1exp,
   type = "l",
@@ -645,7 +645,7 @@ legend(
   legend = c("Expected with proportional effect", "Grouped patients")
 )
 
-
+VITAL_plot_Omg
 #**Standardized plot for presentaion*
 #**Forest plot*
 

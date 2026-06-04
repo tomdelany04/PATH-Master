@@ -272,6 +272,7 @@ png("IST_forest_report.png", width = 2000, height = 1400, res = 300)
 forest(
 
   res,
+  addfit = FALSE,
 
   xlim = c(-8, 2.5),
 
@@ -302,7 +303,8 @@ forest(
 
   lwd = 1.5,
 
-  col = "maroon",
+  colout = c(rep("black", 11), 
+             "#a80050"),
 
   cex = 0.9
 )
@@ -562,10 +564,10 @@ aspirin_plot <- ggplot() +
   # baseline risk distribution (scaled density)
   geom_density(
     data = hist_df,
-    aes(x = risk, y = after_stat(scaled) * 0.015),
+    aes(x = risk, y = ..scaled..* 0.015),
     fill = "grey80",
     color = NA,
-    alpha = 0.2
+    alpha = 0.6
   ) +
 
   # proportional model
@@ -574,7 +576,7 @@ aspirin_plot <- ggplot() +
     aes(x = risk, y = prop),
     linetype = "dashed",
     linewidth = 1.7,
-    colour = "#F09163"
+    colour = "darkblue"
   ) +
 
   # spline model
@@ -582,7 +584,7 @@ aspirin_plot <- ggplot() +
     data = spline_df,
     aes(x = risk, y = spline),
     linewidth = 1.7,
-    color = "#4292C6"
+    color = "#a80050"
   ) +
 
   # grouped estimates
@@ -590,7 +592,7 @@ aspirin_plot <- ggplot() +
     data = group_df,
     aes(x = risk, y = benefit),
     size = 3,
-    color = "#238B45"
+    color = "#a80050"
   ) +
 
   geom_errorbar(
@@ -610,7 +612,7 @@ aspirin_plot <- ggplot() +
     y = "Benefit by aspirin (absolute risk difference)"
   ) +
 
-  theme_classic(base_size = 13) +
+  theme_classic(base_size = 17) +
   theme(
     axis.ticks = element_blank(),
     axis.line = element_line(color = "grey60", linewidth = 0.5),
@@ -618,10 +620,10 @@ aspirin_plot <- ggplot() +
 
   annotate(
     "text",
-    x = 0.4,
+    x = 0.3,
     y = 0.016,
     label = "Proportional effect",
-    color = "#F09163",
+    color = "darkblue",
     hjust = 0,
     size = 6
   ) +
@@ -631,7 +633,7 @@ aspirin_plot <- ggplot() +
     x = 0.3,
     y = 0.0085,
     label = "Spline (df = 3)",
-    color = "#4292C6",
+    color = "#a80050",
     hjust = 0,
     size = 6
   ) +
@@ -660,9 +662,12 @@ png(
 
 par(mar = c(4,4,1,2))
 
-gusto_pres_forest <- forest(
+IST_pres_forest <- forest(
     res,
-    xlim = c(-5, 2.5),
+    colout = c(rep("black", 11), 
+               "#a80050"),
+    addfit = FALSE,
+    xlim = c(-1.5, 1.5),
     at = log(c(0.5, 1, 1.5)),
     alim = c(log(0.2), log(2)),
     atransf = exp,
@@ -672,7 +677,6 @@ gusto_pres_forest <- forest(
     mlab = "",
     psize = 1.2,
     lwd = 1.5,
-    col = "red",
     cex = 0.9
   )
 
@@ -680,10 +684,10 @@ gusto_pres_forest <- forest(
 # Subgroup headers
 ############################################################
 
-text(-5, 15, "Baseline risk (quartiles)", pos = 4, font = 2)
-text(-5, 10, "Consciousness", pos = 4, font = 2)
-text(-5, 7, "Age", pos = 4, font = 2)
-text(-5, 3, "Atrial fibrillation", pos = 4, font = 2)
+text(-1.5, 15, "Baseline risk (quartiles)", pos = 4, font = 2)
+text(-1.5, 10, "Consciousness", pos = 4, font = 2)
+text(-1.5, 7, "Age", pos = 4, font = 2)
+text(-1.5, 3, "Atrial fibrillation", pos = 4, font = 2)
 
 
 
@@ -691,10 +695,11 @@ text(-5, 3, "Atrial fibrillation", pos = 4, font = 2)
 # Title
 ############################################################
 
-text(-2, 18, "IST-1 trial", pos = 4, font = 2)
+text(-0.3, 18, "IST-1 trial", pos = 4, font = 2)
+
+IST_pres_forest
 
 dev.off()
-
 
 
 
