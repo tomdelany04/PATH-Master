@@ -323,6 +323,11 @@
   box-sizing: border-box;
 }
 
+.reveal .slides section.ademp-slide .ademp-wide-card {
+  margin-top: 0.8rem;
+  min-height: auto;
+}
+
 .reveal .slides section.ademp-slide .ademp-badge {
   width: 2.35rem;
   height: 2.35rem;
@@ -388,4 +393,48 @@
   align-items: center;
   justify-content: center;
   text-align: center;
+}
+
+.reveal .slides section.forest-slide,
+.reveal .slides section.absolute-slide {
+  width: 96%;
+  max-width: 1240px;
+  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+}
+
+.reveal .slides section.forest-slide .forest-code-card,
+.reveal .slides section.absolute-slide .forest-code-card {
+  margin-top: 0.1rem;
+  width: 98%;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid #84003d;
+  border-radius: 10px;
+  background: #f7f7f7;
+  font-size: 0.72em;
+  box-sizing: border-box;
+}
+
+.reveal .slides section.forest-slide .forest-code-card .cell pre,
+.reveal .slides section.absolute-slide .forest-code-card .cell pre {
+  margin: 0;
+  max-height: none;
+  overflow: visible;
+}
+
+.reveal .slides section.forest-slide .forest-code-card .cell pre code,
+.reveal .slides section.absolute-slide .forest-code-card .cell pre code {
+  font-size: 0.74em;
+  line-height: 1.1;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.reveal .slides section.forest-slide .info-box,
+.reveal .slides section.absolute-slide .info-box {
+  margin-top: 0.6rem;
+  font-size: 0.69em;
+  line-height: 1.18;
 }

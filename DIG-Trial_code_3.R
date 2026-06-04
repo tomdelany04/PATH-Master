@@ -453,7 +453,11 @@ DIG_plot <- ggplot() +
   # annotations without legend needed
   annotate(
     "text",
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 0a03a30b35e58756a76950dcc726a3c9c6ed8bb7
     x = 0.60, y = 0.012,
     label    = "Proportional Effect",
     colour   = "darkblue",
@@ -465,4 +469,12 @@ DIG_plot <- ggplot() +
 DIG_plot
 
 # saving
+<<<<<<< HEAD
 saveRDS(DIG_plot, "dig_benefit_baseline_risk_plot.rds")
+=======
+saveRDS(DIG_plot, "dig_benefit_baseline_risk_plot.rds")
+
+
+
+
+>>>>>>> 0a03a30b35e58756a76950dcc726a3c9c6ed8bb7
