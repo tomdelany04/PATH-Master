@@ -490,14 +490,16 @@ xp <- seq(
 )
 
 # baseline risk probability scale
-p1exp <- (1 - xp)^hr_vitd - (1 - xp)
+p1exp <- (1 - xp) - (1 - xp)^hr_vitd 
 
 # y-axis
-yax <- range(
-  c(p1exp, grouped.ard.by.risk$ard.low, grouped.ard.by.risk$ard.high)
-  , na.rm =T
-)
+# yax <- range(
+#   c(p1exp, grouped.ard.by.risk$ard.low, grouped.ard.by.risk$ard.high)
+#   , na.rm =T
+# )
 
+
+png("VITAL_plot_Vit.png", width=1800, height=1200, res=220)
 # Proportional effect line
 VITAL_plot_Vit <- plot(
   x    = xp,
@@ -506,7 +508,7 @@ VITAL_plot_Vit <- plot(
   lty  = 2,
   lwd  = 3,
   xlim = range(0, xmax),
-  ylim = yax,
+  ylim = range(-0.006,0.009),
   col  = "maroon",
   xlab = "Predicted baseline risk of CVD death at 5 years",
   ylab = "Absolute risk benefit at 5 years: VitD",
@@ -534,7 +536,7 @@ points(
   pch = 1,
   cex = 2,
   lwd = 2,
-  col = "blue"
+  col = "darkblue"
 )
 
 # 99% CI 
@@ -546,7 +548,7 @@ arrows(
   angle = 90,
   code  = 3,
   length = 0.1,
-  col   = "blue"
+  col   = "darkblue"
 )
 
 
@@ -556,11 +558,12 @@ legend(
   pch    = c(NA, 1),
   lwd    = c(3, 2),
   bty    = "n",
-  col    = c("maroon", "blue"),
+  col    = c("maroon", "darkblue"),
   cex    = 1.1,
   legend = c("Expected with proportional effect", "Grouped patients")
 )
 VITAL_plot_Vit
+dev.off()
 
 #*** Absolute benefit versus baseline risk plot***
 #**fishoil/omega-3**
@@ -574,7 +577,7 @@ xp <- seq(
 )
 
 # baseline risk probability scale
-p1exp <- (1 - xp)^hr_omega - (1 - xp)
+p1exp <- (1 - xp) - (1 - xp)^hr_omega 
 
 # y-axis
 yax <- range(
@@ -582,6 +585,8 @@ yax <- range(
   , na.rm =T
 )
 
+
+png("VITAL_plot_omg.png", width=1800, height=1200, res=220)
 # Proportional effect line
 VITAL_plot_Omg <- plot(
   x    = xp,
@@ -618,7 +623,7 @@ points(
   pch = 1,
   cex = 2,
   lwd = 2,
-  col = "blue"
+  col = "darkblue"
 )
 
 # 99% CI 
@@ -630,7 +635,7 @@ arrows(
   angle = 90,
   code  = 3,
   length = 0.1,
-  col   = "blue"
+  col   = "darkblue"
 )
 
 
@@ -640,12 +645,14 @@ legend(
   pch    = c(NA, 1),
   lwd    = c(3, 2),
   bty    = "n",
-  col    = c("maroon", "blue"),
+  col    = c("maroon", "darkblue"),
   cex    = 1.2,
   legend = c("Expected with proportional effect", "Grouped patients")
 )
-
 VITAL_plot_Omg
+dev.off()
+
+
 #**Standardized plot for presentaion*
 #**Forest plot*
 
