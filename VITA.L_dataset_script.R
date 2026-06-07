@@ -847,6 +847,98 @@ text(
 
 dev.off()
 
+png(
+  "VITAL_report_forest_vitd.png",
+  width  = 1800,
+  height = 1200,
+  res    = 220
+)
+
+x.left  <- -3.2
+x.right <-  3.2
+
+par(mar = c(4, 4, 2, 2))
+
+VITAL_report_forest_vitd <- forest(
+  x        = vitd.fp$estimate,
+  ci.lb    = vitd.fp$low,
+  ci.ub    = vitd.fp$high,
+  slab     = vitd.labels,
+  rows     = vitd.rows,
+  xlim     = c(x.left, x.right),
+  alim     = c(-1, 1),
+  at       = seq(-1, 1, by = 0.5),
+  refline  = 0,
+  xlab     = "Vitamin D: Absolute Risk Difference at 5 years, percentage points",
+  mlab     = "",
+  psize    = 1.2,
+  lwd      = 1.5,
+  col      = "black",
+  cex      = 0.9,
+  ylim     = c(0, 16),
+  header   = FALSE,
+  annotate = FALSE
+)
+
+text(x.left, 15.5, "Study", pos = 4, font = 2, cex = 1.0)
+text(0, 15.5, "VITAL Trial: Vitamin D", font = 2, cex = 1.0)
+text(x.right, 15.5, "ARD [95% CI]", pos = 2, font = 2, cex = 1.0)
+segments(x.left, 15.0, x.right, 15.0, lwd = 1.5)
+text(x.left, 12.2, "Baseline risk (quartiles)", pos = 4, font = 2, cex = 0.9)
+text(x.left, 6.5, "Age", pos = 4, font = 2, cex = 0.9)
+text(x.left, 3.5, "BMI", pos = 4, font = 2, cex = 0.9)
+text(x.right, vitd.rows, ci.txt, pos = 2, cex = 0.85, col = "black")
+
+VITAL_report_forest_vitd
+
+dev.off()
+
+png(
+  "VITAL_report_forest_omega.png",
+  width  = 1800,
+  height = 1200,
+  res    = 220
+)
+
+x.left  <- -3.2
+x.right <-  3.2
+
+par(mar = c(4, 4, 2, 2))
+
+VITAL_report_forest_omega <- forest(
+  x        = omega.fp$estimate,
+  ci.lb    = omega.fp$low,
+  ci.ub    = omega.fp$high,
+  slab     = omega.labels,
+  rows     = omega.rows,
+  xlim     = c(x.left, x.right),
+  alim     = c(-1, 1),
+  at       = seq(-1, 1, by = 0.5),
+  refline  = 0,
+  xlab     = "Omega-3: Absolute Risk Difference at 5 years, percentage points",
+  mlab     = "",
+  psize    = 1.2,
+  lwd      = 1.5,
+  col      = "black",
+  cex      = 0.9,
+  ylim     = c(0, 16),
+  header   = FALSE,
+  annotate = FALSE
+)
+
+text(x.left, 15.5, "Study", pos = 4, font = 2, cex = 1.0)
+text(0, 15.5, "VITAL Trial: Omega-3", font = 2, cex = 1.0)
+text(x.right, 15.5, "ARD [95% CI]", pos = 2, font = 2, cex = 1.0)
+segments(x.left, 15.0, x.right, 15.0, lwd = 1.5)
+text(x.left, 12.2, "Baseline risk (quartiles)", pos = 4, font = 2, cex = 0.9)
+text(x.left, 6.5, "Age", pos = 4, font = 2, cex = 0.9)
+text(x.left, 3.5, "BMI", pos = 4, font = 2, cex = 0.9)
+text(x.right, omega.rows, ci.txt.omega, pos = 2, cex = 0.85, col = "black")
+
+VITAL_report_forest_omega
+
+dev.off()
+
 
 
 

@@ -11,6 +11,7 @@ library(readr)
 
 dig <- read_csv("DIG.csv")   
 
+
 dig.df <- dig %>%
   select(TRTMT, AGE, EJF_PER, FUNCTCLS, DEATH, SYSBP, HEARTRTE, PREVMI) %>%
   mutate(
@@ -28,6 +29,8 @@ dig.df <- dig %>%
     sysbp_maxed = pmin(SYSBP, 120)
   )
 dig.df <- na.omit(dig.df)
+
+
 
 # simple cross-table
 
@@ -105,6 +108,10 @@ print(anova(g, test = 'LRT'))
 
 # 2. PATH statement: linear interaction with linear predictor; baseline risk, tx=ref, SK
 # Baseline risk model excluding treatment (PATH lp model)
+
+
+
+
 model_no_tx <- glm(
   DEATHn ~ AGE + Classification + SYSBP +
     PREVMI + EJF_PER,
@@ -359,6 +366,63 @@ text(-1.5,  3, "Ejection Fraction",         pos = 4, font = 2)
 text(-0.4, 17, "DIG Trial", pos = 4, font = 2)
 
 DIG_presn_forest
+
+dev.off()
+
+png(
+  "DIG_report_forest.png",
+  width  = 1800,
+  height = 1200,
+  res    = 220
+)
+
+par(mar = c(4, 4, 1, 2))
+
+DIG_report_forest <- forest(
+  res,
+  addfit  = FALSE,
+  xlim    = c(-8, 2.5),
+  at      = log(c(0.5, 1, 2)),
+  alim    = c(log(0.2), log(2)),
+  atransf = exp,
+  ilab    = cbind(
+    data.subgroups$tn,
+    data.subgroups$tevent,
+    data.subgroups$cn,
+    data.subgroups$cevent
+  ),
+  ilab.xpos = c(-5, -4, -3, -2),
+  slab      = data.subgroups$name,
+  rows      = c(1:2, 4:5, 7:8, 10:13, 15),
+  xlab      = "Odds Ratio",
+  mlab      = "",
+  psize     = 1.2,
+  lwd       = 1.5,
+  colout    = c(rep("black", 10), "#a80050"),
+  cex       = 0.9
+)
+
+text(-8, 14, "Baseline risk (quartiles)", pos = 4, font = 2)
+text(-8,  9, "NYHA Class",               pos = 4, font = 2)
+text(-8,  6, "Age",                      pos = 4, font = 2)
+text(-8,  3, "Ejection Fraction",        pos = 4, font = 2)
+
+text(
+  c(-5, -4, -3, -2, 3),
+  17,
+  c(
+    "Digoxin",
+    "Events",
+    "Placebo",
+    "Events",
+    "OR [95% CI]"
+  ),
+  font = 2
+)
+
+text(-8, 18, "DIG Trial", pos = 4, font = 2)
+
+DIG_report_forest
 
 dev.off()
 
