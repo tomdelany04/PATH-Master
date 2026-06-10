@@ -528,7 +528,7 @@ aspirin_plot_rf <- ggplot() +
     aes(x = risk, y = prop),
     linetype = "dashed",
     linewidth = 1.7,
-    colour = "#F09163"
+    colour = "#A80050"
   ) +
 
   # grouped estimates
@@ -567,7 +567,7 @@ aspirin_plot_rf <- ggplot() +
     x = 0.3,
     y = 0.016,
     label = "Proportional effect",
-    color = "#F09163",
+    color = "#a80050",
     hjust = 0,
     size = 6
   ) +

@@ -420,7 +420,7 @@ text(
   font = 2
 )
 
-text(-8, 18, "DIG Trial", pos = 4, font = 2)
+text(-1, 17, "DIG Trial", pos = 4, font = 2)
 
 DIG_report_forest
 
@@ -459,7 +459,7 @@ DIG_plot <- ggplot() +
     data    = hist_df,
     mapping = aes(
       x = risk,
-      y = ..scaled..* 0.015   # FIX 3: ..scaled.. → after_stat(scaled)
+      y = ..scaled..* 0.015 
     ),
     fill   = "grey80",
     colour = NA,

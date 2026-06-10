@@ -578,7 +578,7 @@ text(
   font = 2
 )
 
-text(-8, 18, "GUSTO-I trial", pos = 4, font = 2)
+text(-1, 17, "GUSTO-I trial", pos = 4, font = 2)
 
 dev.off()
 
