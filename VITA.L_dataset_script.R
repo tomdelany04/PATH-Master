@@ -490,14 +490,16 @@ xp <- seq(
 )
 
 # baseline risk probability scale
-p1exp <- (1 - xp)^hr_vitd - (1 - xp)
+p1exp <- (1 - xp) - (1 - xp)^hr_vitd 
 
 # y-axis
-yax <- range(
-  c(p1exp, grouped.ard.by.risk$ard.low, grouped.ard.by.risk$ard.high)
-  , na.rm =T
-)
+# yax <- range(
+#   c(p1exp, grouped.ard.by.risk$ard.low, grouped.ard.by.risk$ard.high)
+#   , na.rm =T
+# )
 
+
+png("VITAL_plot_Vit.png", width=1800, height=1200, res=220)
 # Proportional effect line
 VITAL_plot_Vit <- plot(
   x    = xp,
@@ -506,7 +508,7 @@ VITAL_plot_Vit <- plot(
   lty  = 2,
   lwd  = 3,
   xlim = range(0, xmax),
-  ylim = yax,
+  ylim = range(-0.006,0.009),
   col  = "maroon",
   xlab = "Predicted baseline risk of CVD death at 5 years",
   ylab = "Absolute risk benefit at 5 years: VitD",
@@ -534,7 +536,7 @@ points(
   pch = 1,
   cex = 2,
   lwd = 2,
-  col = "blue"
+  col = "darkblue"
 )
 
 # 99% CI 
@@ -546,7 +548,7 @@ arrows(
   angle = 90,
   code  = 3,
   length = 0.1,
-  col   = "blue"
+  col   = "darkblue"
 )
 
 
@@ -556,11 +558,12 @@ legend(
   pch    = c(NA, 1),
   lwd    = c(3, 2),
   bty    = "n",
-  col    = c("maroon", "blue"),
+  col    = c("maroon", "darkblue"),
   cex    = 1.1,
   legend = c("Expected with proportional effect", "Grouped patients")
 )
 VITAL_plot_Vit
+dev.off()
 
 #*** Absolute benefit versus baseline risk plot***
 #**fishoil/omega-3**
@@ -574,7 +577,7 @@ xp <- seq(
 )
 
 # baseline risk probability scale
-p1exp <- (1 - xp)^hr_omega - (1 - xp)
+p1exp <- (1 - xp) - (1 - xp)^hr_omega 
 
 # y-axis
 yax <- range(
@@ -582,6 +585,8 @@ yax <- range(
   , na.rm =T
 )
 
+
+png("VITAL_plot_omg.png", width=1800, height=1200, res=220)
 # Proportional effect line
 VITAL_plot_Omg <- plot(
   x    = xp,
@@ -618,7 +623,7 @@ points(
   pch = 1,
   cex = 2,
   lwd = 2,
-  col = "blue"
+  col = "darkblue"
 )
 
 # 99% CI 
@@ -630,7 +635,7 @@ arrows(
   angle = 90,
   code  = 3,
   length = 0.1,
-  col   = "blue"
+  col   = "darkblue"
 )
 
 
@@ -640,12 +645,14 @@ legend(
   pch    = c(NA, 1),
   lwd    = c(3, 2),
   bty    = "n",
-  col    = c("maroon", "blue"),
+  col    = c("maroon", "darkblue"),
   cex    = 1.2,
   legend = c("Expected with proportional effect", "Grouped patients")
 )
-
 VITAL_plot_Omg
+dev.off()
+
+
 #**Standardized plot for presentaion*
 #**Forest plot*
 
@@ -837,6 +844,98 @@ text(
   cex = 0.85,
   col = "black"
 )
+
+dev.off()
+
+png(
+  "VITAL_report_forest_vitd.png",
+  width  = 1800,
+  height = 1200,
+  res    = 220
+)
+
+x.left  <- -3.2
+x.right <-  3.2
+
+par(mar = c(4, 4, 2, 2))
+
+VITAL_report_forest_vitd <- forest(
+  x        = vitd.fp$estimate,
+  ci.lb    = vitd.fp$low,
+  ci.ub    = vitd.fp$high,
+  slab     = vitd.labels,
+  rows     = vitd.rows,
+  xlim     = c(x.left, x.right),
+  alim     = c(-1, 1),
+  at       = seq(-1, 1, by = 0.5),
+  refline  = 0,
+  xlab     = "Vitamin D: Absolute Risk Difference at 5 years, percentage points",
+  mlab     = "",
+  psize    = 1.2,
+  lwd      = 1.5,
+  col      = "black",
+  cex      = 0.9,
+  ylim     = c(0, 16),
+  header   = FALSE,
+  annotate = FALSE
+)
+
+text(x.left, 15.5, "Study", pos = 4, font = 2, cex = 1.0)
+text(0, 15.5, "VITAL Trial: Vitamin D", font = 2, cex = 1.0)
+text(x.right, 15.5, "ARD [95% CI]", pos = 2, font = 2, cex = 1.0)
+segments(x.left, 15.0, x.right, 15.0, lwd = 1.5)
+text(x.left, 12.2, "Baseline risk (quartiles)", pos = 4, font = 2, cex = 0.9)
+text(x.left, 6.5, "Age", pos = 4, font = 2, cex = 0.9)
+text(x.left, 3.5, "BMI", pos = 4, font = 2, cex = 0.9)
+text(x.right, vitd.rows, ci.txt, pos = 2, cex = 0.85, col = "black")
+
+VITAL_report_forest_vitd
+
+dev.off()
+
+png(
+  "VITAL_report_forest_omega.png",
+  width  = 1800,
+  height = 1200,
+  res    = 220
+)
+
+x.left  <- -3.2
+x.right <-  3.2
+
+par(mar = c(4, 4, 2, 2))
+
+VITAL_report_forest_omega <- forest(
+  x        = omega.fp$estimate,
+  ci.lb    = omega.fp$low,
+  ci.ub    = omega.fp$high,
+  slab     = omega.labels,
+  rows     = omega.rows,
+  xlim     = c(x.left, x.right),
+  alim     = c(-1, 1),
+  at       = seq(-1, 1, by = 0.5),
+  refline  = 0,
+  xlab     = "Omega-3: Absolute Risk Difference at 5 years, percentage points",
+  mlab     = "",
+  psize    = 1.2,
+  lwd      = 1.5,
+  col      = "black",
+  cex      = 0.9,
+  ylim     = c(0, 16),
+  header   = FALSE,
+  annotate = FALSE
+)
+
+text(x.left, 15.5, "Study", pos = 4, font = 2, cex = 1.0)
+text(0, 15.5, "VITAL Trial: Omega-3", font = 2, cex = 1.0)
+text(x.right, 15.5, "ARD [95% CI]", pos = 2, font = 2, cex = 1.0)
+segments(x.left, 15.0, x.right, 15.0, lwd = 1.5)
+text(x.left, 12.2, "Baseline risk (quartiles)", pos = 4, font = 2, cex = 0.9)
+text(x.left, 6.5, "Age", pos = 4, font = 2, cex = 0.9)
+text(x.left, 3.5, "BMI", pos = 4, font = 2, cex = 0.9)
+text(x.right, omega.rows, ci.txt.omega, pos = 2, cex = 0.85, col = "black")
+
+VITAL_report_forest_omega
 
 dev.off()
 

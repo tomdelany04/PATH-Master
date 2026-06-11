@@ -799,6 +799,7 @@ par(mar = c(4,4,1,2))
 forest(
 
   res,
+  addfit = FALSE,
 
   xlim = c(-8, 2.5),
 
@@ -868,7 +869,7 @@ text(
   font = 2
 )
 
-text(-8, 18, "GUSTO-I trial", pos = 4, font = 2)
+text(-1, 17, "GUSTO-I trial", pos = 4, font = 2)
 
 dev.off()
 ###################################
@@ -885,6 +886,7 @@ par(mar = c(4,4,1,2))
 
 gusto_pres_forest <- forest(
   res,
+  addfit = F,
   xlim = c(-1.5, 1.5),
   at = log(c(0.5, 1, 2)),
   alim = c(log(0.2), log(2.5)),

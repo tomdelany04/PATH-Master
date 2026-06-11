@@ -1,6 +1,16 @@
 
 
-#Propogate uncertainty in model using bootstraps
+# Monte Carlo simulation study
+#
+# ADEMP summary:
+# Aim: assess whether risk-based interaction testing falsely detects
+# treatment-effect heterogeneity under the null.
+# Data-generating mechanism: binary outcomes with prognostic covariates,
+# randomized treatment, and no true treatment-by-risk interaction.
+# Estimand: the null interaction effect between treatment and baseline risk.
+# Methods: fit a risk model in a training split, predict risk in a test split,
+# and compare main-effect versus interaction models by likelihood ratio test.
+# Performance measure: empirical Type I error at alpha = 0.05.
 
 #################
 #The simulation evaluates whether risk-based
@@ -252,8 +262,8 @@ png(
 null_plot <- ggplot(
   summary_results,
   aes(
-    x = n,
-    y = p,
+    x = p,
+    y = n,
     z = type1_error
   )
 ) +
@@ -261,15 +271,19 @@ null_plot <- ggplot(
   geom_contour(color = "black") +
   geom_point(size = 2) +
   scale_fill_viridis_c(name = "Type I Error") +
-  scale_x_log10() +
+  scale_x_continuous(
+    breaks = seq(0, 10, 2),
+    limits = c(0, 10)
+  ) +
+  scale_y_log10() +
   theme_minimal(base_size = 15) +  
   theme(
     panel.grid = element_blank()
   ) +
   labs(
     title = "Type I Error Surface Under the Null",
-    x = "Sample Size (log(n))",
-    y = "Parameters (p)",
+    x = "Parameters (p)",
+    y = "Sample Size (log(n))",
     fill = "Type I Error"
   ) 
 
@@ -296,11 +310,16 @@ null_plot
 
 
 ggplot(summary_results,
-       aes(x = n,
-           y = p,
+       aes(x = p,
+           y = n,
            z = type1_error)) +
   geom_contour_filled(aes(fill = after_stat(level_mid))) +
   scale_fill_viridis_c(name = "Type I Error") +
+  scale_x_continuous(
+    breaks = seq(0, 10, 2),
+    limits = c(0, 10)
+  ) +
+  scale_y_log10() +
   theme_minimal()
 
 
