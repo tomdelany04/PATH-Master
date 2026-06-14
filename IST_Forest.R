@@ -420,11 +420,15 @@ res <- rma(
   method = "ML"
 )
 
+png("IST_rf_forest_report.png", width = 2000, height = 1400, res = 300)
+
 par(mar = c(4,4,1,2))
 
-forest(
+IST_rf_report_forest <- forest(
 
   res,
+
+  addfit = FALSE,
 
   xlim = c(-8, 2.5),
 
@@ -455,7 +459,8 @@ forest(
 
   lwd = 1.5,
 
-  col = "maroon",
+  colout = c(rep("black", 11), 
+             "#a80050"),
 
   cex = 0.9
 )
@@ -466,9 +471,9 @@ forest(
 
 text(-8, 15, "Baseline risk (quartiles)", pos = 4, font = 2)
 
-text(-8, 10, "Age", pos = 4, font = 2)
+text(-8, 10, "Consciousness", pos = 4, font = 2)
 
-text(-8, 7, "Consciousness", pos = 4, font = 2)
+text(-8, 7, "Age", pos = 4, font = 2)
 
 text(-8, 3, "Atrial fibrillation", pos = 4, font = 2)
 
@@ -489,7 +494,10 @@ text(
   font = 2
 )
 
-text(-8, 19, "IST trial", pos = 4, font = 2)
+text(-1, 18, "IST-I trial", pos = 4, font = 2)
+IST_rf_report_forest
+
+dev.off()
 ############################################################
 
 #####################################################
@@ -580,3 +588,11 @@ aspirin_plot_rf
 
 
 saveRDS(aspirin_plot_rf, "aspirin_plot_rf.rds")
+
+ggsave(
+  filename = "aspirin_plot_rf.png",
+  plot = aspirin_plot_rf,
+  width = 9,
+  height = 6,
+  dpi = 300
+)

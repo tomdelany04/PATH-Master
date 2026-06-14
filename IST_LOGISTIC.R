@@ -269,7 +269,7 @@ par(mar = c(4,4,1,2))
 
 
 png("IST_forest_report.png", width = 2000, height = 1400, res = 300)
-forest(
+IST_rep_forest <- forest(
 
   res,
   addfit = FALSE,
@@ -338,8 +338,8 @@ text(
   font = 2
 )
 
-text(-8, 19, "IST trial", pos = 4, font = 2)
-
+text(-1, 18, "IST-I trial", pos = 4, font = 2)
+IST_rep_forest
 
 dev.off()
 

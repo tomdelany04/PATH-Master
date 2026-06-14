@@ -13,26 +13,36 @@ authors:
     location: Galway, Ireland
     email: M.Ojamo1@universityofgalway.ie
 abstract: |
-  Enter the text of your abstract here.
+  Treatment effects observed in randomized controlled trials often vary according to patients' baseline risk and other clinically prognostic characteristics. Despite this heterogeneity of treatment effect, trial findings are typically reported as a single average treatment effect, while conventional subgroup analyses are limited by multiplicity, low statistical power, and poor reproducibility. The Predictive Approaches to Treatment Effect Heterogeneity (PATH) framework was developed to address these limitations through multivariable risk modelling and predictive analyses of treatment benefit across differing levels of baseline risk.
+
+  The PATH framework was implemented across four large cardiovascular trials (GUSTO-I, IST-I, DIG, and VITAL) with differing clinical endpoints and outcome structures. Predictive risk models were used to evaluate treatment effects across baseline-risk strata, while a Monte Carlo simulation study was conducted to investigate the Type I error performance of risk-based interaction testing.
+
+  Evidence of treatment-effect heterogeneity on the absolute scale was observed in the GUSTO-I trial and, to a lesser extent, the IST-I trial, where higher-risk patients derived greater absolute treatment benefit. In contrast, the DIG and VITAL trials showed little evidence of clinically meaningful heterogeneity, consistent with their limited overall treatment effects. Simulation results demonstrated elevated Type I error rates in smaller samples, highlighting the importance of adequate sample size when conducting predictive heterogeneity analyses.
+
+  This report demonstrates the implementation of the PATH framework across a range of cardiovascular trial settings and outcome types. While predictive risk modelling identified clinically relevant heterogeneity in some trials, its utility was limited in studies lacking a clear overall treatment effect. Together with the simulation findings, these results suggest that successful application of PATH analyses depends on both adequate sample size and appropriate trial characteristics. (Draft)
 keywords:
   - blah
   - blee
   - bloo
   - these are optional and can be removed
-bibliography: MSc -Thesis.bib
+bibliography:
+  - PATH_intro_references.bib
+  - PATH - Thesis/MSc -Thesis.bib
 biblio-style: unsrt
 output: rticles::arxiv_article
 header-includes:
   - \providecommand{\pandocbounded}[1]{#1}
   - \usepackage[HTML]{xcolor}
+  - \usepackage{amsmath}
 ---
 
+# Introduction
 
-In mid-20th century, the US Air Force faced a life threatening challenge. Blame fell on the men in the cockpits, which lead to citing "pilot error" in crash reports as the main etiology. After a thorough investigation, it was found that the problem was not with the pilots but with the design of the cockpit itself. Back in early [@19^th], the engineers attempted, for first time to design a fighter plane cockpit that would fit the average pilot. By measuring hundreds of male pilots, researchers established standards for cockpit design, including seat and helmet size, the distance from a pilot’s feet to the throttle, and the reach from the hands to the control stick. These standards were used for more than two decades. However, when 4,063 pilots were measured, it was found that not a single pilot matched the “average” dimensions across all the parameters used to design the fighter-plane cockpit. In other words, nobody actually fit the average-based cockpit design [@rose_end_2016].
+In mid-20th century, the US Air Force faced a life threatening challenge. Blame fell on the men in the cockpits, which lead to citing "pilot error" in crash reports as the main etiology. After a thorough investigation, it was found that the problem was not with the pilots but with the design of the cockpit itself. Earlier in the twentieth century, engineers attempted, for the first time to design a fighter plane cockpit that would fit the average pilot. By measuring hundreds of male pilots, researchers established standards for cockpit design, including seat and helmet size, the distance from a pilot’s feet to the throttle, and the reach from the hands to the control stick. These standards were used for more than two decades. However, when 4,063 pilots were measured, it was found that not a single pilot matched the “average” dimensions across all the parameters used to design the fighter-plane cockpit. In other words, nobody actually fit the average-based cockpit design [@rose_end_2016].
 
 This historical encounter reflects similar challenge in the modern evidence-based medicine[@kent_personalized_2018]. In medical research, randomized controlled trial (RCT) is used to decide if a treatment is effective or not for a particular medical intervention. National and International guidelines for clinical decision making developed based on this gold standard [@kent_predictive_2020]. However, the average treatment effect resulted that comes from RCT findings fail to answer the practicing clinician question regarding the most likely outcome of an intervention for a particular patient that appears to a clinical service setting. The primary reason for this is that real patient in clinical setting usually differs from the average patient in a trial[@willke_concepts_2012] [@kent_personalized_2018].
 
-Modern trials increasingly enroll patients with less severe disease who are less likely to derive significant benefit from an intervention. Due to this, low-risk patients may attain minimal benefit, swaying the average effect size and reducing the statistical power of the trial, yielding negative or null results. As a result, higher-risk patients who actually possess the potential for a greater-than-observed benefit are left untreated and denied therapy. Conversely, trials tend not to enroll complex older patients with multiple comorbidities. Unfortunately, the findings from trials are generalized to them in clinical practice. This, in turn, results in overtreatment, as these patients may suffer unique treatment-related harms. [@greenfield_heterogeneity_2007]
+Modern trials increasingly enroll patients with less severe disease who are less likely to derive significant benefit from an intervention. Due to this, low-risk patients may attain minimal benefit, swaying the average effect size and reducing the statistical power of the trial, yielding negative or null results. As a result, higher-risk patients who actually possess the potential for a greater-than-observed benefit are left untreated and denied therapy. Conversely, trials tend not to enroll complex older patients with multiple co-morbidities. Unfortunately, the findings from trials are generalized to them in clinical practice. This, in turn, results in overtreatment, as these patients may suffer unique treatment-related harms. [@greenfield_heterogeneity_2007]
 
 Trial results represent summary data from a selected pool of patients, whereas individual responses to treatment are explained by a concept referred to as Heterogeneity of Treatment Effect (HTE), which has heightened relevance in recent research agendas of precision medicine and comparative effectiveness research [@kent_predictive_2020]. HTE refers to the non-random variation in the magnitude or direction of a treatment effect across levels of a patient attribute, or covariate, for a specific clinical outcome [@varadhan_estimation_2013]. Though the ultimate aim of traditional evidence-based medicine is to establish causality at a population level, the emergence of precision medicine and patient-centered research has elicited interest in identifying these individual variations [@selby_predictive_2025]. HTE is classified as quantitative when the treatment is beneficial for everyone but to different degrees, or qualitative when a treatment is beneficial for some but harmful for others [@wang_statistics_2007
 
@@ -74,36 +84,35 @@ In the end, the discussion synthesizes these results to map the policy and repor
 
 
 
-# 3 Methodology and Results
+# Methodology and Results
 
 
-## 3.1 Empirical Path Analyses
-The PATH approach was implemented in the IST-1, GUSTO-1, DIG and VITAL trials as outlined in Figure 3.1.1. Following data ingestion and exploratory analyses, risk modelling was performed using pre-specified, adjusted baseline models as outlined in section 3.2. These risk models were blinded from treatment allocation and employed to assess the relationship between baseline risk distributions and treatment effect on an absolute scale, in line with recommendations from Kent and Colleagues @kentPredictiveApproachesTreatment2020.
+The PATH approach was implemented in the IST-1, GUSTO-1, DIG and VITAL trials as outlined in Figure \ref{fig:path-workflow}. Following data ingestion and exploratory analyses, risk modelling was performed using pre-specified, adjusted baseline models for each trial, as described in Sections 2.1-2.4. These risk models were blinded from treatment allocation and employed to assess the relationship between baseline risk distributions and treatment effect on an absolute scale, in line with recommendations from Kent and Colleagues [@kentPredictiveApproachesTreatment2020].
 
 
-```{r}
+```{r path-workflow, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', out.width='80%', fig.cap='Overview of the empirical PATH workflow used across the trial analyses.'}
 knitr::include_graphics("PATH.png")
 ```
-## 3.1.1 Model Specification
 
 Binary Logistic Regression and Random Forest models were employed for baseline risk stratification in the GUSTO and IST trials, with model specification determined by previously published analyses of the trials. For the DIG binary outcome analysis, baseline risk stratification was illustrated using multivariable logistic regression only.
 
-GUSTO -I
+## GUSTO-I
 
 Binary Logistic Regression:
 
-For the GUSTO-I trial, baseline risk stratification was performed using logistic regression and random forest models. Model specification was adapted from the prognostic model reported by @STEYERBERG2000745 for the GUSTO-I trial and subsequently used in PATH demonstrations. The logistic regression model estimated 30-day mortality using treatment assignment **(Equation 3.1.1)** (tPA versus streptokinase), age, Killip class, systolic blood pressure, pulse rate, previous myocardial infarction, and infarct location.
+For the GUSTO-I trial, baseline risk stratification was performed using logistic regression and random forest models. Model specification was adapted from the prognostic model reported by @STEYERBERG2000745 for the GUSTO-I trial and subsequently used in PATH demonstrations. The logistic regression model estimated 30-day mortality using treatment assignment (tPA versus streptokinase), age, Killip class, systolic blood pressure, pulse rate, previous myocardial infarction, and infarct location, as shown in Equation \ref{eq:gusto-logistic}.
 
-To account for non-linear associations, systolic blood pressure was truncated at 120 mmHg using a piecewise linear transformation, while pulse rate was modelled using a spline term with a knot at 50 beats per minute, consistent with the original model specification. Predicted probabilities of 30-day mortality were generated for all participants from the fitted model.
+To account for non-linear associations, systolic blood pressure was truncated at 120 mmHg using the piecewise linear transformation in Equation \ref{eq:gusto-sysbp}, while pulse rate was modelled using a spline term with a knot at 50 beats per minute, consistent with the original model specification. Predicted probabilities of 30-day mortality were generated for all participants from the fitted model.
 
 A random forest model was also fitted using age, Killip class, systolic blood pressure, pulse rate, previous myocardial infarction, infarct location and sex as predictors. The model was implemented using the ranger package with 1,000 trees and probability estimation enabled. Individual-level predicted risks from both models were subsequently incorporated into the PATH framework for risk-based analyses of treatment effect heterogeneity.
 
-$$
+\begin{equation}
 \text{sysbp}_{\text{maxed},i} = \min(\text{sysbp}_i, 120)
-$$
+\label{eq:gusto-sysbp}
+\end{equation}
 
 
-$$
+\begin{equation}
 \text{logit}\big(P(\text{day30}_i = 1)\big)
 =
 \beta_0
@@ -115,9 +124,10 @@ $$
 + f(\text{pulse}_i)
 + \beta_5 \text{pmi}_i
 + \beta_6 \text{miloc}_i
-$$
+\label{eq:gusto-logistic}
+\end{equation}
 
-A random forest model **(Equation 3.1.2)** was developed using the principal baseline prognostic variables identified in previous GUSTO-I risk models. Treatment assignment was excluded to ensure that predicted probabilities reflected baseline prognosis independent of treatment @InternationalRandomizedTrial1993.
+A random forest model was developed using the principal baseline prognostic variables identified in previous GUSTO-I risk models. The binary outcome was death at day 30, and baseline risk was modelled using age, Killip class, systolic blood pressure, pulse, previous myocardial infarction, myocardial infarction location, and sex. Treatment assignment was excluded to ensure that predicted probabilities reflected baseline prognosis independent of treatment [@InternationalRandomizedTrial1993].
 
 ```{r}
 # rf_fit0 <- ranger(
@@ -130,52 +140,46 @@ A random forest model **(Equation 3.1.2)** was developed using the principal bas
 ```
 
 
-PATH compatible forest plots, similar to those used for displaying the results of conventional subgroup analyses @cuzickForestPlotsInterpretation2005 were constructed using the `metafor` package to present the relative effects of the GUSTO-I trial across risk quartiles **(figure3.1)**. Additionally, these forest plots allow for direct comparison of relative effects (ORs) within strata of traditional subgroups, namely Sex, Age and the location of any Myocardial Infarctions. These prognostic variables were selected for their interpretability for a general audience, as well as being prognostic of 30 day-mortality in the GUSTO trial @CALIFF1997630. PATH compatible forest plots constructed using predicted risk quartiles from a random forest and multivariate logistic regression approach are displayed below. 
+PATH compatible forest plots, similar to those used for displaying the results of conventional subgroup analyses [@cuzickForestPlotsInterpretation2005], were constructed using the `metafor` package to present the relative effects of the GUSTO-I trial across risk quartiles (Figure \ref{fig:gusto-relative-effects}). Additionally, these forest plots allow for direct comparison of relative effects (ORs) within strata of traditional subgroups, namely Sex, Age and the location of any Myocardial Infarctions. These prognostic variables were selected for their interpretability for a general audience, as well as being prognostic of 30 day-mortality in the GUSTO trial [@CALIFF1997630]. The corresponding absolute-benefit plots are presented in Figure \ref{fig:gusto-absolute-effects}.
 
-
-```{r}
-knitr::include_graphics("gusto_report_forest.png")
+```{r gusto-relative-effects, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', out.width='95%', fig.cap='PATH-compatible forest plots showing the relative treatment effect of tissue plasminogen activator compared with streptokinase across baseline-risk quartiles and conventional one-variable-at-a-time subgroups in GUSTO-I. Panels show quartiles derived from the multivariable logistic regression model and random forest model, respectively.'}
+knitr::include_graphics(c(
+  "gusto_report_forest.png",
+  "gusto_rf_report_forest.png"
+))
 ```
 
-```{r}
-knitr::include_graphics("gusto_rf_report_forest.png")
-
-```
-
-```{r}
+```{r gusto-absolute-effects, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.width=7, fig.height=4.2, out.width='88%', fig.cap='Absolute benefit of tissue plasminogen activator compared with streptokinase across predicted baseline risk in GUSTO-I. Panels show the multivariable logistic regression and random forest baseline-risk models, respectively.'}
 library(ggplot2)
 print(readRDS("gusto_plot.rds"))
-```
-
-```{r}
-library(ggplot2)
 print(readRDS("gusto_plot_rf.rds"))
 ```
-**plan is to have the above 4 as a panel of figures, with legend, if posiible**
+
 In the GUSTO analyses, the PATH-compatible forest plots indicate that the relative treatment effect of tissue plasminogen activator (tPA), compared with streptokinase, is broadly maintained across baseline-risk strata. This supports the interpretation that there is limited heterogeneity on the relative scale, consistent with the PATH framework and with the absence of strong evidence for treatment interaction in relation to baseline risk. However, when the results are viewed on the absolute scale, heterogeneity becomes more apparent, with patients in the upper tail of predicted baseline risk deriving greater absolute benefit from tPA than those at the lower end of the distribution.
 
 The overlaid density plot shows that most patients are concentrated at relatively low levels of baseline risk, with progressively fewer patients occupying the upper tail. It is within this smaller higher-risk subgroup that the estimated treatment benefit becomes most pronounced. The plots therefore suggest that the main contribution of risk stratification in GUSTO is not to demonstrate major departures from a proportional relative effect, but rather to show how baseline risk modifies the absolute clinical value of treatment.
 
-In the logistic regression analyses, the quartile-based estimates appear more consistent with a proportional effect on the absolute scale, showing a more orderly increase in benefit as predicted baseline risk rises. This is in keeping with the smoother absolute-benefit curve, where benefit increases across risk before flattening in the highest-risk region. By contrast, the random forest stratification suggests somewhat greater deviation from a simple proportional pattern, particularly at the extremes of the risk distribution. Taken together, these findings suggest that the logistic model yields baseline-risk groupings that more closely reflect the expected progression from lower to higher absolute treatment benefit, whereas the random forest captures a less regular pattern despite identifying the same overall concentration of benefit among patients at highest predicted risk.
+In the logistic regression analyses, the quartile-based estimates appear more consistent with a proportional effect on the absolute scale, showing a more orderly increase in benefit as predicted baseline risk rises. This is in keeping with the smoother absolute-benefit curve, where benefit increases across risk before flattening in the highest-risk region. By contrast, the random forest stratification shows somewhat greater deviation from a simple proportional pattern, particularly at the extremes of the risk distribution. Together, these findings suggest that the logistic model yields baseline-risk groupings that more closely reflect the expected progression from lower to higher absolute treatment benefit, whereas the random forest captures a less regular pattern.
 
 
-IST-I
+## IST-I
 
-For the IST-1 trial, baseline risk stratification was performed using both logistic regression **(Equation 3.1.3)** and random forest **(Equation 3.1.4)** models. The logistic regression model estimated 14-day mortality using age, level of consciousness, evidence of infarction on computed tomography, motor deficit severity and atrial fibrillation. These variables were selected based on a 2015 study by thompson and colleagues recommending the inclusion of these covariates for adjustment when performing statistical analyses on the IST-I trial @thompsonCovariateAdjustmentHad2015.
+For the IST-1 trial, baseline risk stratification was performed using both logistic regression and random forest models. The logistic regression model estimated 14-day mortality using age, level of consciousness, evidence of infarction on computed tomography, motor deficit severity and atrial fibrillation, as shown in Equation \ref{eq:ist-logistic}. These variables were selected based on a 2015 study by thompson and colleagues recommending the inclusion of these covariates for adjustment when performing statistical analyses on the IST-I trial [@thompsonCovariateAdjustmentHad2015].
 
-$$
+\begin{equation}
 \text{logit}\big(P(\text{death14}_i = 1)\big)
 =
 \beta_0
 + \beta_1 \text{AGE}_i
 + \beta_2 \text{consc}_i \\
 \qquad
-+ \beta_3 \text{ct\infarct}_i 
++ \beta_3 \text{CT infarct}_i 
 + \beta_4 \text{motor}_i
 + \beta_5 \text{afib}_i
-$$
+\label{eq:ist-logistic}
+\end{equation}
 
-A random forest model was also fitted to estimate baseline mortality risk. Consistent with ensemble-learning approaches previously applied to the IST dataset in an analysis by Hwangbo and colleagues, all prognostic baseline variables available prior to treatment allocation were included as predictors @hwangboStackingEnsembleLearning2022. These comprised age, sex, level of consciousness, systolic blood pressure, atrial fibrillation, treatment delay, sleep status at stroke onset, computed tomography (CT) before randomization, visible infarction on CT, and various neurological deficit measures. The model was implemented using the `ranger` package with 1,000 trees and probability estimation enabled. Individual-level predicted risks from both models were subsequently extracted and risk-based quartiles were constructed for illustration of the absolute and relative treatment effects of aspirin.
+A random forest model was also fitted to estimate baseline mortality risk. Consistent with ensemble-learning approaches previously applied to the IST dataset in an analysis by Hwangbo and colleagues, all prognostic baseline variables available prior to treatment allocation were included as predictors [@hwangboStackingEnsembleLearning2022]. These comprised age, sex, level of consciousness, systolic blood pressure, atrial fibrillation, treatment delay, sleep status at stroke onset, computed tomography (CT) before randomization, visible infarction on CT, and various neurological deficit measures. The model was implemented using the `ranger` package with 1,000 trees and probability estimation enabled. Individual-level predicted risks from both models were subsequently extracted and risk-based quartiles were constructed for illustration of the relative treatment effects in Figure \ref{fig:ist-relative-effects} and the absolute treatment effects in Figure \ref{fig:ist-absolute-effects}.
 
 
 ```{r}
@@ -189,26 +193,31 @@ A random forest model was also fitted to estimate baseline mortality risk. Consi
 # )
 ```
 
-```{r}
-library(ggplot2)
-print(readRDS("aspirin_plot.rds"))
+```{r ist-relative-effects, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', out.width='95%', fig.cap='PATH-compatible forest plots showing the relative treatment effect of aspirin compared with control across baseline-risk quartiles and conventional one-variable-at-a-time subgroups in IST-I. Panels show quartiles derived from the logistic regression and random forest baseline-risk models, respectively.'}
+knitr::include_graphics(c(
+  "IST_forest_report.png",
+  "IST_rf_forest_report.png"
+))
 ```
 
-```{r}
+```{r ist-absolute-effects, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.width=7, fig.height=4.2, out.width='88%', fig.cap='Absolute benefit of aspirin across predicted baseline risk in IST-I. Panels show the logistic regression and random forest baseline-risk models, respectively.'}
 library(ggplot2)
+print(readRDS("aspirin_plot.rds"))
 print(readRDS("aspirin_plot_rf.rds"))
 ```
 
+In the IST-I analyses, the PATH-compatible forest plots suggest that the relative treatment effect of aspirin remains broadly consistent across both baseline-risk quartiles and traditional one-variable-at-a-time subgroups. The overall odds ratio is close to the null, and the quartile-specific estimates from both the logistic regression and random forest baseline-risk models show no clear or consistent departure from this trial average. Similarly, the estimates across consciousness, age, and atrial fibrillation subgroups remain largely compatible with a common relative effect, with confidence intervals overlapping and generally crossing 1. This supports the interpretation that there is limited evidence of heterogeneity on the relative scale.
+
+The absolute-benefit plots provide some suggestion that the clinical effect of aspirin may increase as predicted baseline risk rises, particularly toward the upper end of the risk distribution. This is consistent with the PATH framework, where even a relatively stable proportional effect can translate into larger absolute benefit among patients at higher underlying risk. However, the grouped estimates are imprecise, with wide confidence intervals crossing zero across the risk strata. The evidence for absolute-scale heterogeneity is therefore suggestive rather than definitive.
+
+Overall, there is some indication that higher-risk patients may experience greater absolute benefit from aspirin, but this pattern is not statistically significant. This aligns with the overall trial result shown in the forest plots, where aspirin is associated with a modest average treatment effect that does not clearly exclude the null.
 
 
+## DIG
 
-DIG
+For the DIG trial, baseline risk stratification was performed using logistic regression. The logistic regression model estimated all-cause mortality using age, New York Heart Association (NYHA) functional class, systolic blood pressure, previous myocardial infarction, and left ventricular ejection fraction, as shown in Equation \ref{eq:dig-logistic}. Predictor selection was informed by established prognostic factors identified in analyses of the Digitalis Investigation Group trial and subsequent investigations of mortality risk among patients with heart failure and preserved systolic function in the DIG cohort [@InternationalRandomizedTrial1993; @JONES20041025].
 
-### DIG
-
-For the DIG trial, baseline risk stratification was performed using logistic regression **(Equation 3.1.5)**. The logistic regression model estimated all-cause mortality using age, New York Heart Association (NYHA) functional class, systolic blood pressure, previous myocardial infarction, and left ventricular ejection fraction. Predictor selection was informed by established prognostic factors identified in analyses of the Digitalis Investigation Group trial and subsequent investigations of mortality risk among patients with heart failure and preserved systolic function in the DIG cohort [@InternationalRandomizedTrial1993; @JONES20041025].
-
-$$
+\begin{equation}
 \text{logit}\big(P(\text{DEATH}_i = 1)\big)
 =
 \beta_0
@@ -218,28 +227,29 @@ $$
 + \beta_3 \text{SYSBP}_i
 + \beta_4 \text{PREVMI}_i
 + \beta_5 \text{EJF\_PER}_i
-$$
-```{r}
+\label{eq:dig-logistic}
+\end{equation}
+```{r dig-relative-effect, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', out.width='95%', fig.cap='PATH-compatible forest plot showing the relative treatment effect of digoxin compared with placebo across baseline-risk quartiles and conventional one-variable-at-a-time subgroups in the DIG trial.'}
 knitr::include_graphics("DIG_report_forest.png")
 ```
 
-```{r}
+```{r dig-absolute-effect, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.width=7, fig.height=4.2, out.width='88%', fig.cap='Absolute benefit of digoxin across predicted baseline mortality risk in the DIG trial.'}
 library(ggplot2)
 print(readRDS("dig_benefit_baseline_risk_plot.rds"))
 ```
 
-In the DIG analysis, there is little evidence of heterogeneity in either the relative or absolute treatment effect of digoxin compared with placebo. The PATH-compatible forest plot shows an overall trial estimate close to the null, with an odds ratio of 0.98, and the risk-based quartiles do not show a consistent departure from this overall effect. The quartile-specific estimates fluctuate around the line of no effect, with confidence intervals crossing 1 throughout, suggesting no clear evidence that the relative effect of digoxin differs across the distribution of predicted baseline mortality risk.
+In the DIG analysis, there is little evidence of heterogeneity in either the relative or absolute treatment effect of digoxin compared with placebo. The PATH-compatible forest plot in Figure \ref{fig:dig-relative-effect} shows an overall trial estimate close to the null, with an odds ratio of 0.98, and the risk-based quartiles do not show a consistent departure from this overall effect. The quartile-specific estimates fluctuate around the line of no effect, with confidence intervals crossing 1 throughout, suggesting no clear evidence that the relative effect of digoxin differs across the distribution of predicted baseline mortality risk.
 
-The absolute-benefit plot reaffirms this. Across the distribution of baseline mortality risk, the estimated benefit remains close to zero, and the proportional-effect curve is essentially flat. Although the observed quartile estimates vary slightly above and below the null, the uncertainty around these estimates is substantial. The overlaid density plot shows where patients are concentrated along the baseline-risk distribution, but unlike GUSTO, movement into higher-risk regions does not translate into a clearer absolute treatment benefit.
+The absolute-benefit plot in Figure \ref{fig:dig-absolute-effect} reaffirms this. Across the distribution of baseline mortality risk, the estimated benefit remains close to zero, and the proportional-effect curve is essentially flat. Although the observed quartile estimates vary slightly above and below the null, the uncertainty around these estimates is substantial. The overlaid density plot shows where patients are concentrated along the baseline-risk distribution, but unlike GUSTO, movement into higher-risk regions does not translate into a clearer absolute treatment benefit.
 
 This result is useful as a control case for the PATH approach. The DIG trial did not demonstrate a meaningful overall effect of digoxin on mortality, so there is limited reason to expect risk-based stratification to reveal clinically important treatment-effect heterogeneity. In addition, because the DIG training dataset involved permuted variables, the ability to detect genuine heterogeneity may be further limited by the structure of the available data. For this reason, the DIG binary outcome analysis was illustrated using the multivariable logistic-regression model only, rather than extending the analysis to a random forest model where there was little underlying treatment signal.
 
 
-VITAL
+## VITAL
 
-For the VITAL trial, baseline risk stratification was performed using a Cox proportional hazards model **(Equation 3.1.7)** rather than logistic regression or random forest. The model estimated time to cardiovascular death using age, body mass index, sex, use of antihypertensive medication, diabetes status, current smoking status, and family history of myocardial infarction. Covariate selection was informed by the adjusted VITAL cohort analysis reported by @caldeiraFishIntakeRisk2023, reflecting baseline demographic and cardiovascular risk characteristics available prior to treatment allocation.
+For the VITAL trial, baseline risk stratification was performed using a Cox proportional hazards model rather than logistic regression or random forest. The model estimated time to cardiovascular death using age, body mass index, sex, use of antihypertensive medication, diabetes status, current smoking status, and family history of myocardial infarction, as shown in Equation \ref{eq:vital-cox}. Covariate selection was informed by the adjusted VITAL cohort analysis reported by @caldeiraFishIntakeRisk2023, reflecting baseline demographic and cardiovascular risk characteristics available prior to treatment allocation.
 
-$$
+\begin{equation}
 h(t \mid X_i)
 =
 h_0(t)\exp\Big(
@@ -252,77 +262,86 @@ h_0(t)\exp\Big(
 + \beta_6 \text{diabetes}_i
 + \beta_7 \text{familyHist}_i
 \Big)
-$$
+\label{eq:vital-cox}
+\end{equation}
 
 
 
 
-```{r}
-knitr::include_graphics("VITAL_report_forest_omega.png")
+```{r vital-relative-effects, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', out.width='95%', fig.cap='PATH-compatible forest plots showing absolute risk differences for omega-3 and vitamin D supplementation across baseline-risk quartiles and conventional subgroups in VITAL.'}
+knitr::include_graphics(c(
+  "VITAL_report_forest_omega.png",
+  "VITAL_report_forest_vitd.png"
+))
 ```
 
-```{r}
-knitr::include_graphics("VITAL_report_forest_vitd.png")
+```{r vital-absolute-effects, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', out.width='88%', fig.cap='Absolute benefit of omega-3 and vitamin D supplementation across predicted 5-year baseline risk of cardiovascular death in VITAL.'}
+knitr::include_graphics(c(
+  "VITAL_plot_omg.png",
+  "VITAL_plot_Vit.png"
+))
 ```
 
-```{r}
-knitr::include_graphics("VITAL_plot_omg.png")
-```
+The VITAL analysis required a different modelling approach from the binary outcome trials because the endpoint was time to cardiovascular death at 5 years, rather than a fixed-date, binary outcome. Baseline risk was therefore estimated using the Cox proportional hazards model in Equation \ref{eq:vital-cox}, with covariates selected from the adjusted VITAL cohort analysis by Caldeira and colleagues [@caldeiraFishIntakeRisk2023]. The trial itself also had a more challenging structure than the others, using a 2-by-2 factorial design to evaluate vitamin D supplementation and marine omega-3 fatty acid supplementation within the same study population. For the PATH analysis, this meant that absolute risk differences were estimated separately for each intervention, while still employing the same PATH workflow.
 
-```{r}
-knitr::include_graphics("VITAL_plot_Vit.png")
-```
+Across both the omega-3 and vitamin D analyses, there is little evidence of treatment-effect heterogeneity. The PATH-compatible forest plots in Figure \ref{fig:vital-relative-effects} show overall absolute risk differences close to zero, and the risk-based quartiles do not show a consistent departure from the trial average. The subgroup estimates by age and BMI also remain close to the null, with confidence intervals crossing zero throughout. This result aligns with the overall reported findings from VITAL, where neither vitamin D nor omega-3 supplementation demonstrated a clear overall effect on the principal cardiovascular outcomes.
 
-The VITAL analysis required a different modelling approach from the binary outcome trials because the endpoint was time to cardiovascular death at 5 years, rather than a fixed-date, binary outcome. Baseline risk was therefore estimated using a Cox proportional hazards model, with covariates selected from the adjusted VITAL cohort analysis by calderia and colleagues @caldeiraFishIntakeRisk2023. The trial itself also had a more challenging structure than the others, using a 2-by-2 factorial design to evaluate vitamin D supplementation and marine omega-3 fatty acid supplementation within the same study population. For the PATH analysis, this meant that absolute risk differences were estimated separately for each intervention, while still employing the same PATH workflow.
-
-Across both the omega-3 and vitamin D analyses, there is little evidence of treatment-effect heterogeneity. The PATH-compatible forest plots show overall absolute risk differences close to zero, and the risk-based quartiles do not show a consistent departure from the trial average. The subgroup estimates by age and BMI also remain close to the null, with confidence intervals crossing zero throughout. This result aligns with the overall reported findings from VITAL, where neither vitamin D nor omega-3 supplementation demonstrated a clear overall effect on the principal cardiovascular outcomes.
-
-The absolute-benefit plots support the same interpretation on the continuous baseline-risk scale. These plots use a different visual style from the GUSTO and DIG figures, with base R graphics and the baseline-risk distribution shown along the bottom of the plot, but the visual elements remain the same. For both vitamin D and omega-3, the estimated absolute benefit remains very close to zero across the observed range of baseline risk. The patient distribution is concentrated at low predicted 5-year risk of cardiovascular death, and movement into the higher-risk tail does not reveal a clear increase in absolute benefit. Overall, the VITAL results therefore act as another example where the absence of a strong overall treatment effect is reflected in the absence of meaningful risk-based heterogeneity.
+The absolute-benefit plots in Figure \ref{fig:vital-absolute-effects} support the same interpretation on the continuous baseline-risk scale. These plots use a different visual style from the GUSTO and DIG figures, with base R graphics and the baseline-risk distribution shown along the bottom of the plot, but the visual elements remain the same. For both vitamin D and omega-3, the estimated absolute benefit remains very close to zero across the observed range of baseline risk. The patient distribution is concentrated at low predicted 5-year risk of cardiovascular death, and movement into the higher-risk tail does not reveal a clear increase in absolute benefit. Overall, the VITAL results therefore act as another example where the absence of a strong overall treatment effect is reflected in the absence of meaningful risk-based heterogeneity.
 
 
 
-## 3.2 Monte Carlo simulations 
+## Monte Carlo simulations 
 
-The Monte Carlo simulation study was designed using the ADEMP structure described by Morris and colleagues in 2019 where simulation studies are specified according to their Aim, Data-generating mechanism, Estimand, Methods and Performance measure @https://doi.org/10.1002/sim.8086. The aim was to assess whether a risk-based interaction test would falsely detect treatment-effect heterogeneity when no true interaction was present. This was used as a null simulation to evaluate the Type I error behaviour of the likelihood ratio test used in the PATH analyses.
+The Monte Carlo simulation study was designed using the ADEMP structure described by Morris and colleagues in 2019 where simulation studies are specified according to their Aim, Data-generating mechanism, Estimand, Methods and Performance measure [@https://doi.org/10.1002/sim.8086]. The aim was to assess whether a risk-based interaction test would falsely detect treatment-effect heterogeneity when no true interaction was present. This was used as a null simulation to evaluate the Type I error behaviour of the likelihood ratio test used in the PATH analyses.
 
-For each simulated dataset, \(p\) independent prognostic covariates were generated from standard normal distributions and treatment assignment was generated independently with equal probability of allocation to treatment or control. Binary outcomes were then generated from a logistic model with a constant treatment effect and no treatment-by-covariate interaction:
+For each simulated dataset, \(p\) independent prognostic covariates were generated from standard normal distributions and treatment assignment was generated independently with equal probability of allocation to treatment or control. Binary outcomes were then generated from the logistic model in Equation \ref{eq:simulation-outcome}, with a constant treatment effect and no treatment-by-covariate interaction:
 
-$$
+\begin{equation}
 \text{logit}\{P(Y_i = 1)\}
 =
 -2 - 0.5Z_i + 0.5\sum_{j=1}^{p}X_{ij}.
-$$
+\label{eq:simulation-outcome}
+\end{equation}
 
 The simulation varied the sample size across \(n = 50, 75, 100, 150, 200, 300, 500, 750, 1000, 2000,\) and \(5000\), and varied the number of prognostic covariates from \(p = 1\) to \(p = 10\). For each condition, the dataset was split equally into training and test samples. A logistic baseline risk model was fitted in the training sample using the prognostic covariates only. The fitted model was then used to generate a linear predictor in the test sample.
 
 The method compared a main-effects model against an interaction model in the test sample:
 
-$$
+\begin{equation}
 Y_{\text{null}} \sim Z + lp
-$$
+\label{eq:simulation-main}
+\end{equation}
 
-$$
+\begin{equation}
 Y_{\text{null}} \sim Z + lp + Z:lp.
-$$
+\label{eq:simulation-interaction}
+\end{equation}
 
-The estimand was the null treatment-by-risk interaction, \(H_0:\beta_{Z \times lp}=0\). A likelihood ratio test was used to compare the above two models, and the performance measure was the empirical Type I error rate, defined as the proportion of Monte Carlo repetitions with \(p < 0.05\). For each simulation condition, 1000 Monte Carlo repetitions were performed. The simulation results were summarised as a Type I error surface across sample size and number of prognostic parameters **(Figure 3.2.1)**
+The estimand was the null treatment-by-risk interaction, \(H_0:\beta_{Z \times lp}=0\). A likelihood ratio test was used to compare the main-effects model in Equation \ref{eq:simulation-main} with the interaction model in Equation \ref{eq:simulation-interaction}, and the performance measure was the empirical Type I error rate, defined as the proportion of Monte Carlo repetitions with \(p < 0.05\). For each simulation condition, 1000 Monte Carlo repetitions were performed. The simulation results were summarised as a Type I error surface across sample size and number of prognostic parameters (Figure \ref{fig:mc-type1-surface}).
 
-```{r, echo=FALSE, out.width='100%'}
+```{r mc-type1-surface, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', out.width='92%', fig.cap='Empirical Type I error surface for the likelihood ratio test of a treatment-by-risk interaction across simulated sample sizes and numbers of prognostic covariates.'}
 knitr::include_graphics("Heatmap_MC.png")
 ```
 
-Each point on the above type I error surface represents the 100 observations of empirical type I error rate at that particular combination of parameter and sample size values. The surface around each of these points was interpolated using geom_contour_filled argument in `ggplot2`. This linearly interpolates across the adjacent observations to give approximate levels of type I error rates across the entire surface. Type I error rates are notably higher in the lower portion of the graph, representing sample size values below n = 300. This simulation evidence aligns with a recommended research area of the PATH statement, which stresses the importance of identifying general principles, or heuristics to judge the adequacy of sample sizes @kentPredictiveApproachesTreatment2020.
+Each point on the above type I error surface represents the 100 observations of empirical type I error rate at that particular combination of parameter and sample size values. The surface around each of these points was interpolated using geom_contour_filled argument in `ggplot2`. This linearly interpolates across the adjacent observations to give approximate levels of type I error rates across the entire surface. Type I error rates are notably higher in the lower portion of the graph, representing sample size values below n = 300. This simulation evidence aligns with a recommended research area of the PATH statement, which stresses the importance of identifying general principles, or heuristics to judge the adequacy of sample sizes [@kentPredictiveApproachesTreatment2020].
 
 
-# 5 Discussion 
+# Discussion 
 
-The PATH statement, published in 2019, aimed to provide a framework for and promotion of the implementation of predictive approaches to assess the evidence of HTE within Randomised controlled-trials @kentPredictiveApproachesTreatment2020. Following this, the approach has been implemented to various clinical datasets, largely in a retrospective manner, rather than being packaged within the primary reporting of clinical trial results. Our findings, from both empirical analyses of retrospective datasets, as well simulation evidence may give an indication as to why that is the case. Widespread implementation of PATH analyses may be hindered by the necessity for an RCT to have an overall treatment effect, RCT sample size limitations, relative complexity of the approach and the absence of any regulatory expectations for predictive HTE analyses in trial reporting. 
+The PATH statement, published in 2019, aimed to provide a framework for and promotion of the implementation of predictive approaches to assess the evidence of HTE within Randomised controlled-trials [@kentPredictiveApproachesTreatment2020]. Following this, the approach has been implemented to various clinical datasets, largely in a retrospective manner, rather than being packaged within the primary reporting of clinical trial results. Our findings, from both empirical analyses of retrospective datasets, as well simulation evidence may give an indication as to why that is the case. Widespread implementation of PATH analyses may be hindered by the necessity for an RCT to have an overall treatment effect, RCT sample size limitations, relative complexity of the approach and the absence of any regulatory expectations for predictive HTE analyses in trial reporting. 
 
 From our empirical analyses, only the GUSTO-I trial and in a lesser capacity the IST-I trial showed any evidence of heterogeneity of treatment effect on the absolute scale. In contrast, the VITAL and DIG trials showed little evidence of variation in absolute treatment effect across baseline risk strata. This finding aligns with recommendations from the PATH statement to apply risk-modeling approaches in the presence of an overall treatment effect, and interpreted more cautiously when there is not. The GUSTO-I trial reported a clear overall mortality benefit of accelerated tPA compared with streptokinase (OR 0.85), while the IST-I trial demonstrated a modest reduction in death or recurrent stroke with aspirin (OR 0.95). By comparison, neither the DIG trial (RR 0.99 for all-cause mortality) nor the VITAL trial (HR 0.96 and 0.92 for vitamin D and omega-3 supplementation, respectively) demonstrated a clear overall treatment effect. The presence of heterogenous effects in the GUSTO-I and IST-I trials supports the notion that meaning treatment effect heterogeneity across risk-based subgroups is only likely to be found in trials reporting an overall effect of an intervention on clinical outcomes. Consequently, for trials that do not report any treatment effect, the applicability of the PATH approach is lessened, which may contribute to its relatively limited uptake since publication. 
 
-Another factor that may hinder the uptake of predictive approaches for assessing treatment-effect heterogeneity is the requirement for sufficiently large sample sizes. This limitation was highlighted in the original PATH statement, with heuristics for identifying the adequacy of sample sizes as a high-priority research need @kentPredictiveApproachesTreatment2020. Our simulation evidence indicates that the likelihood of detecting an interaction between baseline risk and treatment effect is highly dependent on sample size. In particular, elevated empirical type I error rates were detected in smaller datasets. This finding is also consistent with the existing PATH literature, with the majority of re-analyses of clinical trials using the PATH approach being employed large clinical trial datasets @10.1093/ije/dyw118, @10.1001/jamanetworkopen.2025.22390. Notably, many of these trials would fall outside the region of elevated Type I error observed in our simulation surface. This apparent requirement for large sample sizes may present a practical barrier to the adoption of PATH analyses, particularly given the increasing emphasis in clinical trial methodology on efficient study designs that aim to answer research questions using the smallest sample size compatible with adequate statistical power while minimizing research costs @CANDEL20231063. The necessity for an overall treatment effect to be present alongside large, adequately powered sample sizes, narrows the applicability of the PATH approach across contemporary clinical trials. 
+Another factor that may hinder the uptake of predictive approaches for assessing treatment-effect heterogeneity is the requirement for sufficiently large sample sizes. This limitation was highlighted in the original PATH statement, with heuristics for identifying the adequacy of sample sizes as a high-priority research need [@kentPredictiveApproachesTreatment2020]. Our simulation evidence indicates that the likelihood of detecting an interaction between baseline risk and treatment effect is highly dependent on sample size. In particular, elevated empirical type I error rates were detected in smaller datasets. This finding is also consistent with the existing PATH literature, with the majority of re-analyses of clinical trials using the PATH approach being employed large clinical trial datasets [@10.1093/ije/dyw118; @10.1001/jamanetworkopen.2025.22390]. Notably, many of these trials would fall outside the region of elevated Type I error observed in our simulation surface. This apparent requirement for large sample sizes may present a practical barrier to the adoption of PATH analyses, particularly given the increasing emphasis in clinical trial methodology on efficient study designs that aim to answer research questions using the smallest sample size compatible with adequate statistical power while minimizing research costs. The necessity for an overall treatment effect to be present alongside large, adequately powered sample sizes, narrows the applicability of the PATH approach across contemporary clinical trials. 
 
-The lack of formal regulatory guidance on the incorporation of predictive analyses for heterogeneity in the reporting randomised clinical trial results may also have contributed to the limited uptake of the PATH framework. Historically, such advances in medical statistics are initially confined to statistical literature before becoming embedded in regulatory guidance. 
+The lack of formal regulatory guidance on the incorporation of predictive analyses for heterogeneity in the reporting of randomised clinical trial results may also have contributed to the limited uptake of the PATH framework. Historically, methodological advances in clinical trial statistics often remain confined to the statistical literature before becoming embedded within regulatory and reporting frameworks. The estimand framework provides a recent example of this process. Originating from efforts to improve the handling of missing data and more precisely define treatment effects in clinical trials [@doi:10.1056/NEJMsr1203730], the framework was subsequently formalised through the ICH E9(R1) addendum in 2019. Despite this regulatory endorsement, uptake remains incomplete, with a recent systematic review reporting that only 3% of contemporary adaptive trial protocols explicitly specified a primary estimand [@piazzaInvestigatingEstimandConsiderations2026]. The uptake of the CONSORT guidelines into RCT reporting provides a more successful case study. First introduced in 1996 as a means of addressing incomplete and inconsistent reporting of randomised controlled trials, the CONSORT statement has undergone several revisions and updates, ultimately becoming one of the most widely endorsed reporting frameworks in clinical research [@10.1001/jama.2025.4347]. Evidence suggests that journal endorsement of CONSORT is associated with improvements in the completeness and transparency of trial reporting.
+
+
+The experience of the estimand framework suggests that while regulatory guidance may be necessary to encourage adoption of new methodological approaches, widespread implementation may still require substantial time and continued methodological engagement.
+
+
+
+
 
 ....
 Need another 2-3 paragraphs to flesh this out,
@@ -342,4 +361,5 @@ Size of observed treatment effect gusto > IST > DIG+Vital
 Size of sample size (maybe obesity trials and targeting of efficient trials even in phase III)
 Accessibility of data
 Challenged with VITAL trial
+
 
