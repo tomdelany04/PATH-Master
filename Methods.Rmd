@@ -21,36 +21,33 @@ abstract: |
 
   This report demonstrates the implementation of the PATH framework across a range of cardiovascular trial settings and outcome types. While predictive risk modelling identified clinically relevant heterogeneity in some trials, its utility was limited in studies lacking a clear overall treatment effect. Together with the simulation findings, these results suggest that successful application of PATH analyses depends on both adequate sample size and appropriate trial characteristics. (Draft)
 keywords:
-  - GUSTO-I: Global Utilization of Streptokinase and Tissue plasminogen activator for Occluded coronary arteries
-  - IST-I: International Stroke Trial
-  - DIG: Digitalis Investigation Group
-  - VITAL: Vitamin D and Omega-3 Trial
-  - PATH: Predictive Approaches to Treatment Effect Heterogeneity
-  - HTE: Heterogeneity of Treatment Effect
-  - RCT: Randomized Controlled Trial
-  - RCTs: Randomized Controlled Trials
-  - PCORI: Patient-Centered Outcomes Research Institute
-  - CONSORT: Consolidated Standards of Reporting Trials
-  - ADEMP: Aim, Data-generating mechanism, Estimand, Methods, Performance measure
-  - OR: Odds Ratio
-  - ORs: Odds Ratios
-  - RR: Relative Risk
-  - HR: Hazard Ratio
-  - CT: Computed Tomography
-  - BMI: Body Mass Index
-  - NYHA: New York Heart Association
-  - tPA: Tissue plasminogen activator
-  - TPA: Tissue plasminogen activator
-  - ICH E9(R1): International Council for Harmonisation E9 guideline, Revision 1
-  - SYSBP: Systolic Blood Pressure
-  - PREVMI: Previous Myocardial Infarction
-  - RCONSC: Randomization/Baseline Consciousness
-  - RSBP: Randomization/Baseline Systolic Blood Pressure
-  - RATRIAL: Randomization/Baseline Atrial Fibrillation
-  - RDELAY: Randomization/Baseline Treatment Delay
-  - RSLEEP: Sleep status at stroke onset
-  - RVISINF: Visible infarction on Computed Tomography
-  - RDEF1-RDEF5: Neurological deficit variables 1 to 5
+  - GUSTO-I - Global Utilization of Streptokinase and Tissue Plasminogen Activator for Occluded Coronary Arteries
+  - IST-I - International Stroke Trial
+  - DIG - Digitalis Investigation Group
+  - VITAL - Vitamin D and Omega-3 Trial
+  - PATH - Predictive Approaches to Treatment Effect Heterogeneity
+  - HTE - Heterogeneity of Treatment Effect
+  - RCT - Randomized Controlled Trial
+  - PCORI - Patient-Centered Outcomes Research Institute
+  - CONSORT - Consolidated Standards of Reporting Trials
+  - ADEMP - Aim, Data-generating Mechanism, Estimand, Methods, Performance Measure
+  - OR - Odds Ratio
+  - RR - Relative Risk
+  - HR - Hazard Ratio
+  - CT - Computed Tomography
+  - BMI - Body Mass Index
+  - NYHA - New York Heart Association
+  - tPA - Tissue Plasminogen Activator
+  - ICH E9(R1) - International Council for Harmonisation E9 Guideline, Revision 1
+  - SYSBP - Systolic Blood Pressure
+  - PREVMI - Previous Myocardial Infarction
+  - RCONSC - Randomization/Baseline Consciousness
+  - RSBP - Randomization/Baseline Systolic Blood Pressure
+  - RATRIAL - Randomization/Baseline Atrial Fibrillation
+  - RDELAY - Randomization/Baseline Treatment Delay
+  - RSLEEP - Sleep Status at Stroke Onset
+  - RVISINF - Visible Infarction on Computed Tomography
+  - RDEF1–RDEF5 - Neurological Deficit Variables 1 to 5
 bibliography:
   - PATH_intro_references.bib
   - PATH - Thesis/MSc -Thesis.bib
@@ -373,14 +370,23 @@ From our empirical analyses, only the GUSTO-I trial and in a lesser capacity the
 
 Another factor that may hinder the uptake of predictive approaches for assessing treatment-effect heterogeneity is the requirement for sufficiently large sample sizes. This limitation was highlighted in the original PATH statement, with heuristics for identifying the adequacy of sample sizes as a high-priority research need [@kentPredictiveApproachesTreatment2020]. Our simulation evidence indicates that the likelihood of detecting an interaction between baseline risk and treatment effect is highly dependent on sample size. In particular, elevated empirical type I error rates were detected in smaller datasets. This finding is also consistent with the existing PATH literature, with the majority of re-analyses of clinical trials using the PATH approach being employed large clinical trial datasets [@10.1093/ije/dyw118; @10.1001/jamanetworkopen.2025.22390]. Notably, many of these trials would fall outside the region of elevated Type I error observed in our simulation surface. This apparent requirement for large sample sizes may present a practical barrier to the adoption of PATH analyses, particularly given the increasing emphasis in clinical trial methodology on efficient study designs that aim to answer research questions using the smallest sample size compatible with adequate statistical power while minimizing research costs. The necessity for an overall treatment effect to be present alongside large, adequately powered sample sizes, narrows the applicability of the PATH approach across contemporary clinical trials. 
 
-The lack of formal regulatory guidance on the incorporation of predictive analyses for heterogeneity in the reporting of randomised clinical trial results may also have contributed to the limited uptake of the PATH framework. Historically, methodological advances in clinical trial statistics often remain confined to the statistical literature before becoming embedded within regulatory and reporting frameworks. The estimand framework provides a recent example of this process. Originating from efforts to improve the handling of missing data and more precisely define treatment effects in clinical trials [@doi:10.1056/NEJMsr1203730], the framework was subsequently formalised through the ICH E9(R1) addendum in 2019. Despite this regulatory endorsement, uptake remains incomplete, with a recent systematic review reporting that only 3% of contemporary adaptive trial protocols explicitly specified a primary estimand [@piazzaInvestigatingEstimandConsiderations2026]. The uptake of the CONSORT guidelines into RCT reporting provides a more successful case study. First introduced in 1996 as a means of addressing incomplete and inconsistent reporting of randomised controlled trials, the CONSORT statement has undergone several revisions and updates, ultimately becoming one of the most widely endorsed reporting frameworks in clinical research [@10.1001/jama.2025.4347]. Evidence suggests that journal endorsement of CONSORT is associated with improvements in the completeness and transparency of trial reporting [@doi:10.1001/jama.2025.4347]. There remains an appetite for improving outcome reporting in a similar manner to how we have challenged conventional trial reporting with both the estimand and CONSORT frameworks. Whether PATH emerges as the framework that addresses this gap will largely be determined by the extent to which regulators and journals endorse and embed its principles within clinical trial reporting requirements.
+The lack of formal regulatory guidance on the incorporation of predictive analyses for heterogeneity in the reporting of randomised clinical trial results may also have contributed to the limited uptake of the PATH framework. Historically, methodological advances in clinical trial statistics often remain confined to the statistical literature before becoming embedded within regulatory and reporting frameworks. The estimand framework provides a recent example of this process. Originating from efforts to improve the handling of missing data and more precisely define treatment effects in clinical trials [@doi:10.1056/NEJMsr1203730], the framework was subsequently formalised through the ICH E9(R1) addendum in 2019. Despite this regulatory endorsement, uptake remains incomplete, with a recent systematic review reporting that only 3% of contemporary adaptive trial protocols explicitly specified a primary estimand [@piazzaInvestigatingEstimandConsiderations2026]. The uptake of the CONSORT guidelines into RCT reporting provides a more successful case study. First introduced in 1996 as a means of addressing incomplete and inconsistent reporting of randomised controlled trials, the CONSORT statement has undergone several revisions and updates, ultimately becoming one of the most widely endorsed reporting frameworks in clinical research [@10.1001/jama.2025.4347]. Evidence suggests that journal endorsement of CONSORT is associated with improvements in the completeness and transparency of trial reporting [@10.1001/jama.2025.4347]. There remains an appetite for improving outcome reporting in a similar manner to how we have challenged conventional trial reporting with both the estimand and CONSORT frameworks. Whether PATH emerges as the framework that addresses this gap will largely be determined by the extent to which regulators and journals endorse and embed its principles within clinical trial reporting requirements.
 
+A further consideration is, that when met, the implementation of the PATH approach alongside prospective clinical trials or within their protocols may be seen as an additional analytical burden on biostatisticians that does not
 
+## Limitations
 
+One-two paragraph is all
+Talk about data accessibility, time constraints, extension if this project has a longer time scope etc
 
+# Conclusion
+
+one larger paragraph wrap up on limits, approach at its best and worst, next steps etc...
 ....
-Need another 2-3 paragraphs to flesh this out,
-IST trial still needs to be finalised
+plans
+
+probably an update of the MC workflow we have in draw.io, still pretty relevant and will fill half a pg, Maybe a graphical abstract idk. Could use the ADEMP figure we have from morris and colleague either. Fix broken figure refs etc...
+
 
 Use Readme, for the Github Repository - identify elements of the code, that allow for reproduction of the report.
 
