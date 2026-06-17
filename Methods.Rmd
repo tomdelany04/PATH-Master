@@ -63,6 +63,12 @@ header-includes:
 
 In mid-20th century, the US Air Force faced a life threatening challenge. Blame fell on the men in the cockpits, which lead to citing "pilot error" in crash reports as the main etiology. After a thorough investigation, it was found that the problem was not with the pilots but with the design of the cockpit itself. Earlier in the twentieth century, engineers attempted, for the first time to design a fighter plane cockpit that would fit the average pilot. By measuring hundreds of male pilots, researchers established standards for cockpit design, including seat and helmet size, the distance from a pilot’s feet to the throttle, and the reach from the hands to the control stick. These standards were used for more than two decades. However, when 4,063 pilots were measured, it was found that not a single pilot matched the “average” dimensions across all the parameters used to design the fighter-plane cockpit. In other words, nobody actually fit the average-based cockpit design [@rose_end_2016].
 
+"The tendency to think in terms of the 'average man' is a pitfall into which many persons blunder when they attempt to apply human body size data to design problems." -  Daniels, 1952
+
+```{r measures, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', out.width='80%', fig.cap='Measures of original cohort of 4063 men for "Approximate Average", Daniels, 1952'}
+knitr::include_graphics("measures.png")
+```
+
 This historical encounter reflects similar challenge in the modern evidence-based medicine[@kent_personalized_2018]. In medical research, randomized controlled trial (RCT) is used to decide if a treatment is effective or not for a particular medical intervention. National and International guidelines for clinical decision making developed based on this gold standard [@kent_predictive_2020]. However, the average treatment effect resulted that comes from RCT findings fail to answer the practicing clinician question regarding the most likely outcome of an intervention for a particular patient that appears to a clinical service setting. The primary reason for this is that real patient in clinical setting usually differs from the average patient in a trial[@willke_concepts_2012] [@kent_personalized_2018].
 
 Modern trials increasingly enroll patients with less severe disease who are less likely to derive significant benefit from an intervention. Due to this, low-risk patients may attain minimal benefit, swaying the average effect size and reducing the statistical power of the trial, yielding negative or null results. As a result, higher-risk patients who actually possess the potential for a greater-than-observed benefit are left untreated and denied therapy. Conversely, trials tend not to enroll complex older patients with multiple co-morbidities. Unfortunately, the findings from trials are generalized to them in clinical practice. This, in turn, results in overtreatment, as these patients may suffer unique treatment-related harms. [@greenfield_heterogeneity_2007]
@@ -101,7 +107,71 @@ A secondary aim is to employ Monte Carlo simulations designed under the Aims, Da
 
 The remainder of this report is structured to evaluate the predictive approaches and their implications for clinical care. The method section describes the statistical model specification and computational implementation for each of the four trials. It will also bring into visibility the novel statistical method of the ADEMP simulation framework. The results section presents findings through PATH-compatible forest plots and absolute-benefit curves, empirically demonstrating the mathematical reality of risk magnification.
 
-In the end, the discussion synthesizes these results to map the policy and reporting implications for clinical guidelines, trying to address the structural barriers to transitioning from population averages toward a more patient-centered, evidence-based medicine.
+To conclude, we will synthesize these results to explore the policy and reporting implications for clinical guidelines, trying to address the structural barriers to transitioning from population averages toward a more patient-centered, evidence-based medicine.
+
+
+# Trial Characteristics
+```{r trial-characteristics, echo = FALSE}
+library(gt)
+
+trial_summary <- data.frame(
+  Characteristic = c("Goal", "Patients (n)", "Years ran", "Design", "Follow-up"),
+  IST = c(
+    "Aspirin and heparin in acute ischaemic stroke",
+    "19,435",
+    "1991-1996",
+    "Open-label RCT",
+    "14 days and 6 months"
+  ),
+  DIG = c(
+    "Digoxin for mortality and hospitalization in heart failure",
+    "6,800",
+    "1991-1995",
+    "Double-blind placebo-controlled RCT",
+    "37 months (Mean)"
+  ),
+  GUSTO = c(
+    "Thrombolytic strategies in acute myocardial infarction",
+    "41,021",
+    "1990-1993",
+    "Open-label RCT",
+    "30 days"
+  ),
+  VITAL = c(
+    "Vitamin D3 & Omega-3 for cancer/CVD prevention",
+    "25,871",
+    "2011-2017",
+    "Placebo-Controlled Randomized Trial, Factorial (2 by 2)",
+    "5.3 years (Median)"
+  )
+)
+
+trial_summary %>%
+  gt() %>%
+  tab_caption(
+    md("**Table 1.** Summary characteristics of the four cardiovascular trials included in the PATH analyses.")
+  ) %>%
+  cols_label(
+    Characteristic = "Characteristic",
+    IST = md("[International Stroke Trial](https://pubmed.ncbi.nlm.nih.gov/?term=9174558)"),
+    DIG = md("[DIG Trial](https://pubmed.ncbi.nlm.nih.gov/9036306/)"),
+    GUSTO = md("[GUSTO-I Trial](https://pubmed.ncbi.nlm.nih.gov/8204123/)"),
+    VITAL = md("[VITAL](https://www.nejm.org/doi/pdf/10.1056/NEJMoa1809944)")
+  ) %>%
+  cols_width(
+    Characteristic ~ px(120),
+    everything() ~ px(140)
+  ) %>%
+  tab_options(
+    table.width = px(700),
+    table.font.size = px(10)
+  )
+```
+
+As summarized in Table 1, the four trials included in this analysis are all cardiovascular in nature and are, by the standards of predictive heterogeneity research, relatively large studies. This is important in the PATH context, where adequate sample size is emphasized as a key requirement for reliable exploration of treatment-effect heterogeneity. Collectively, these trials also permit comparison across different endpoint structures, including fixed-time binary outcomes in GUSTO-I, IST-I, and DIG, and time-to-event outcomes in VITAL. Just as importantly, they vary in the strength of their reported overall treatment effects: GUSTO-I provides an example of a trial with a comparatively strong beneficial treatment effect, whereas DIG and VITAL provide examples where little or no clear overall benefit of intervention was observed, a contrast that is revisited in the Results and Discussion sections.
+
+
+
 
 
 # Methodology and Results
@@ -327,6 +397,10 @@ The absolute-benefit plots in Figure \ref{fig:vital-absolute-effects} support th
 ## Monte Carlo simulations 
 
 The Monte Carlo simulation study was designed using the ADEMP structure described by Morris and colleagues in 2019 where simulation studies are specified according to their Aim, Data-generating mechanism, Estimand, Methods and Performance measure [@https://doi.org/10.1002/sim.8086]. The aim was to assess whether a risk-based interaction test would falsely detect treatment-effect heterogeneity when no true interaction was present. This was used as a null simulation to evaluate the Type I error behaviour of the likelihood ratio test used in the PATH analyses.
+
+```{r mc-flow, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', out.width='100%', fig.cap='Workflow of the Monte Carlo simulation study used to assess how variation in model dimension and sample size influences empirical Type I error in the null treatment-by-risk interaction setting.'}
+knitr::include_graphics("MC_FLOW.png")
+```
 
 For each simulated dataset, \(p\) independent prognostic covariates were generated from standard normal distributions and treatment assignment was generated independently with equal probability of allocation to treatment or control. Binary outcomes were then generated from the logistic model in Equation \ref{eq:simulation-outcome}, with a constant treatment effect and no treatment-by-covariate interaction:
 
