@@ -268,8 +268,7 @@ null_plot <- ggplot(
   )
 ) +
   geom_contour_filled(aes(fill = after_stat(level_mid))) +
-  geom_contour(color = "black") +
-  geom_point(size = 2) +
+  geom_point(size = 0.5) +
   scale_fill_viridis_c(name = "Type I Error") +
   scale_x_continuous(
     breaks = seq(0, 10, 2),
@@ -308,7 +307,7 @@ null_plot
 #Intermediate values are estimated locally
 #Contour polygons are drawn for ranges of z
 
-
+#Didnt end up using
 ggplot(summary_results,
        aes(x = p,
            y = n,

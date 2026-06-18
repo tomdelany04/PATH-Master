@@ -795,6 +795,40 @@ ci.txt.omega <- sprintf(
   omega.fp$high
 )
 
+count_vital <- function(data, tx_var, active_level) {
+  tab <- table(data[[tx_var]], data$death)
+  data.frame(
+    n_active = sum(tab[active_level, ]),
+    event_active = tab[active_level, "1"],
+    n_placebo = sum(tab["Placebo", ]),
+    event_placebo = tab["Placebo", "1"]
+  )
+}
+
+vitd.counts <- bind_rows(
+  count_vital(vital.subgroup, "vitd", "Active Vit-D"),
+  count_vital(filter(vital.subgroup, risk == "Q4(High)"), "vitd", "Active Vit-D"),
+  count_vital(filter(vital.subgroup, risk == "Q3"), "vitd", "Active Vit-D"),
+  count_vital(filter(vital.subgroup, risk == "Q2"), "vitd", "Active Vit-D"),
+  count_vital(filter(vital.subgroup, risk == "Q(low)"), "vitd", "Active Vit-D"),
+  count_vital(filter(vital.subgroup, age.categ == "Age >= 70"), "vitd", "Active Vit-D"),
+  count_vital(filter(vital.subgroup, age.categ == "Age < 70"), "vitd", "Active Vit-D"),
+  count_vital(filter(vital.subgroup, bmi.categ == "Obese(BMI>=30)"), "vitd", "Active Vit-D"),
+  count_vital(filter(vital.subgroup, bmi.categ == "Non-obese(BMI < 30)"), "vitd", "Active Vit-D")
+)
+
+omega.counts <- bind_rows(
+  count_vital(vital.subgroup, "fishoil", "Active Omega-3"),
+  count_vital(filter(vital.subgroup, risk == "Q4(High)"), "fishoil", "Active Omega-3"),
+  count_vital(filter(vital.subgroup, risk == "Q3"), "fishoil", "Active Omega-3"),
+  count_vital(filter(vital.subgroup, risk == "Q2"), "fishoil", "Active Omega-3"),
+  count_vital(filter(vital.subgroup, risk == "Q(low)"), "fishoil", "Active Omega-3"),
+  count_vital(filter(vital.subgroup, age.categ == "Age >= 70"), "fishoil", "Active Omega-3"),
+  count_vital(filter(vital.subgroup, age.categ == "Age < 70"), "fishoil", "Active Omega-3"),
+  count_vital(filter(vital.subgroup, bmi.categ == "Obese(BMI>=30)"), "fishoil", "Active Omega-3"),
+  count_vital(filter(vital.subgroup, bmi.categ == "Non-obese(BMI < 30)"), "fishoil", "Active Omega-3")
+)
+
 # Plot limits
 x.left  <- -2.2
 x.right <-  2.2
@@ -854,7 +888,7 @@ png(
   res    = 220
 )
 
-x.left  <- -3.2
+x.left  <- -8
 x.right <-  3.2
 
 par(mar = c(4, 4, 2, 2))
@@ -868,6 +902,13 @@ VITAL_report_forest_vitd <- forest(
   xlim     = c(x.left, x.right),
   alim     = c(-1, 1),
   at       = seq(-1, 1, by = 0.5),
+  ilab     = cbind(
+    vitd.counts$n_active,
+    vitd.counts$event_active,
+    vitd.counts$n_placebo,
+    vitd.counts$event_placebo
+  ),
+  ilab.xpos = c(-5, -4, -3, -2),
   refline  = 0,
   xlab     = "Vitamin D: Absolute Risk Difference at 5 years, percentage points",
   mlab     = "",
@@ -883,6 +924,13 @@ VITAL_report_forest_vitd <- forest(
 text(x.left, 15.5, "Study", pos = 4, font = 2, cex = 1.0)
 text(0, 15.5, "VITAL Trial: Vitamin D", font = 2, cex = 1.0)
 text(x.right, 15.5, "ARD [95% CI]", pos = 2, font = 2, cex = 1.0)
+text(
+  c(-5, -4, -3, -2),
+  15.5,
+  c("Vit-D", "Events", "Placebo", "Events"),
+  font = 2,
+  cex = 0.9
+)
 segments(x.left, 15.0, x.right, 15.0, lwd = 1.5)
 text(x.left, 12.2, "Baseline risk (quartiles)", pos = 4, font = 2, cex = 0.9)
 text(x.left, 6.5, "Age", pos = 4, font = 2, cex = 0.9)
@@ -900,7 +948,7 @@ png(
   res    = 220
 )
 
-x.left  <- -3.2
+x.left  <- -8
 x.right <-  3.2
 
 par(mar = c(4, 4, 2, 2))
@@ -914,6 +962,13 @@ VITAL_report_forest_omega <- forest(
   xlim     = c(x.left, x.right),
   alim     = c(-1, 1),
   at       = seq(-1, 1, by = 0.5),
+  ilab     = cbind(
+    omega.counts$n_active,
+    omega.counts$event_active,
+    omega.counts$n_placebo,
+    omega.counts$event_placebo
+  ),
+  ilab.xpos = c(-5, -4, -3, -2),
   refline  = 0,
   xlab     = "Omega-3: Absolute Risk Difference at 5 years, percentage points",
   mlab     = "",
@@ -929,6 +984,13 @@ VITAL_report_forest_omega <- forest(
 text(x.left, 15.5, "Study", pos = 4, font = 2, cex = 1.0)
 text(0, 15.5, "VITAL Trial: Omega-3", font = 2, cex = 1.0)
 text(x.right, 15.5, "ARD [95% CI]", pos = 2, font = 2, cex = 1.0)
+text(
+  c(-5, -4, -3, -2),
+  15.5,
+  c("Omega-3", "Events", "Placebo", "Events"),
+  font = 2,
+  cex = 0.9
+)
 segments(x.left, 15.0, x.right, 15.0, lwd = 1.5)
 text(x.left, 12.2, "Baseline risk (quartiles)", pos = 4, font = 2, cex = 0.9)
 text(x.left, 6.5, "Age", pos = 4, font = 2, cex = 0.9)
