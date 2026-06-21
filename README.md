@@ -3,10 +3,10 @@
 
 This repository is for our research project MSc in health data science at the University of Galway, organised into four folders:
 
-Folder 1: [Report](Report/) : Thesis write-ups
-Folder 2: [Poster](Poster/): poster presentation at the middle of the work processes
-Folder 3: [Presentation](Presentation/): Final presentation
-Folder 4: [code](code/): R analysis for all four datasets
+Folder 1: [Report](Report/) : Thesis write-ups.
+Folder 2: [Poster](Poster/): poster presentation at the middle of the work processes.
+Folder 3: [Presentation](Presentation/): Final presentation.
+Folder 4: [code](code/): R analysis for all four datasets.
 
 
 # Project Overview 
