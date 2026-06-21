@@ -3,10 +3,10 @@
 
 This repository is for our research project MSc in health data science at the University of Galway, organised into four folders:
 
-Folder 1: **Report/** : Thesis write-ups
-Folder 2: **Poster/**: poster presentation at the middle of the work processes
-Folder 3: **Presentation/**: Final presentation
-Folder 4: **Code scripts/**: R analysis for all four datasets
+Folder 1: [Report/] : Thesis write-ups
+Folder 2: [Poster/]: poster presentation at the middle of the work processes
+Folder 3: [Presentation/]: Final presentation
+Folder 4: [Code scripts/]: R analysis for all four datasets
 
 
 # Project Overview 
@@ -18,6 +18,6 @@ Data from the Digitalis Investigation Group Trial, the International Stroke Tria
 
 
 # Getting Started
-1. Open PATH-Master.Rproj in R studio
-2. Analysis scripts are in code Scripts/.
-3. The main thesis document is in Report/.
+1. Open [PATH-Master.Rproj] in R studio
+2. Analysis scripts are in [code Scripts/].
+3. The main thesis document is in [Report/].
