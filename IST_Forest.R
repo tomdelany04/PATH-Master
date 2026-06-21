@@ -420,7 +420,10 @@ res <- rma(
   method = "ML"
 )
 
-png("IST_rf_forest_report.png", width = 2000, height = 1400, res = 300)
+png("IST_rf_forest_report.png",
+    width  = 1800,
+    height = 1200,
+    res    = 220)
 
 par(mar = c(4,4,1,2))
 
@@ -430,7 +433,7 @@ IST_rf_report_forest <- forest(
 
   addfit = FALSE,
 
-  xlim = c(-8, 2.5),
+  xlim = c(-8, 2.25),
 
   at = log(c(0.5, 1, 1.5)),
 
@@ -495,7 +498,7 @@ text(
 )
 
 text(-1, 18, "IST-I trial", pos = 4, font = 2)
-IST_rf_report_forest
+
 
 dev.off()
 ############################################################
@@ -536,7 +539,7 @@ aspirin_plot_rf <- ggplot() +
     aes(x = risk, y = prop),
     linetype = "dashed",
     linewidth = 1.7,
-    colour = "#A80050"
+    colour = "darkblue"
   ) +
 
   # grouped estimates
@@ -572,10 +575,10 @@ aspirin_plot_rf <- ggplot() +
 
   annotate(
     "text",
-    x = 0.3,
+    x = 0.25,
     y = 0.016,
     label = "Proportional effect",
-    color = "#a80050",
+    color = "darkblue",
     hjust = 0,
     size = 6
   ) +

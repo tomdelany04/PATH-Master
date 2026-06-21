@@ -545,7 +545,7 @@ par(mar = c(4, 4, 1, 2))
 forest(
   res_rf,
   addfit = FALSE,
-  xlim = c(-8, 2.5),
+  xlim = c(-8, 2.25),
   at = log(c(0.5, 1)),
   alim = c(log(0.2), log(2)),
   atransf = exp,

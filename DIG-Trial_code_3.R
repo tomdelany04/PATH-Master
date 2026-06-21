@@ -503,7 +503,7 @@ DIG_plot <- ggplot() +
   labs(
     title = "Absolute Benefit of Digoxin Across Baseline Mortality Risk",
     x     = "Baseline risk",
-    y     = "Benefit by Digoxin (absolute risk difference)"
+    y     = "Absolute Benefit from Digoxin"
   ) +
   
   # Theme
@@ -517,16 +517,8 @@ DIG_plot <- ggplot() +
   # annotations without legend needed
   annotate(
     "text",
-<<<<<<< HEAD
-    
-=======
 
-<<<<<<< HEAD
->>>>>>> 0a03a30b35e58756a76950dcc726a3c9c6ed8bb7
-    x = 0.60, y = 0.012,
-=======
-    x = 0.43, y = -0.012,
->>>>>>> 65f21d5a00207ab16195eb8fea1aa2d65b8e199e
+    x = 0.43, y = 0.012,
     label    = "Proportional Effect",
     colour   = "darkblue",
     hjust    = 0,
@@ -537,12 +529,7 @@ DIG_plot <- ggplot() +
 DIG_plot
 
 # saving
-<<<<<<< HEAD
-saveRDS(DIG_plot, "dig_benefit_baseline_risk_plot.rds")
-=======
+
 saveRDS(DIG_plot, "dig_benefit_baseline_risk_plot.rds")
 
 
-
-
->>>>>>> 0a03a30b35e58756a76950dcc726a3c9c6ed8bb7

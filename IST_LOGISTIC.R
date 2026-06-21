@@ -268,13 +268,15 @@ res <- rma(
 par(mar = c(4,4,1,2))
 
 
-png("IST_forest_report.png", width = 2000, height = 1400, res = 300)
+png("IST_forest_report.png", width  = 1800,
+    height = 1200,
+    res    = 220)
 IST_rep_forest <- forest(
 
   res,
   addfit = FALSE,
 
-  xlim = c(-8, 2.5),
+  xlim = c(-8, 2.25),
 
   at = log(c(0.5, 1, 1.5)),
 

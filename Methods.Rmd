@@ -149,9 +149,7 @@ trial_summary %>%
   )
 ```
 
-As summarized in Table 1, the four trials included in this analysis are all cardiovascular in nature and are, by the standards of predictive heterogeneity research, relatively large studies. This is important in the PATH context, where adequate sample size is emphasized as a key requirement for reliable exploration of treatment-effect heterogeneity. Collectively, these trials also permit comparison across different endpoint structures, including fixed-time binary outcomes in GUSTO-I, IST-I, and DIG, and time-to-event outcomes in VITAL. Just as importantly, they vary in the strength of their reported overall treatment effects: GUSTO-I provides an example of a trial with a comparatively strong beneficial treatment effect, whereas DIG and VITAL provide examples where little or no clear overall benefit of intervention was observed, a contrast that is revisited in the Results and Discussion sections.
-
-
+As summarized in Table 1, the four trials included in this analysis are all cardiovascular in nature and are, by the standards of predictive heterogeneity research, relatively large studies. This is important in the PATH context, where adequate sample size is emphasized as a key requirement for reliable exploration of treatment-effect heterogeneity. Collectively, these trials also permit comparison across different endpoint structures, including fixed-time binary outcomes in GUSTO-I, IST-I, and DIG, and time-to-event outcomes in VITAL. Just as importantly, they vary in the strength of their reported overall treatment effects: GUSTO-I provides an example of a trial with a comparatively strong beneficial treatment effect, whereas DIG and VITAL provide examples where little or no clear overall benefit of intervention was observed. The PATH statement advises caution when interpreting treatment-effect heterogeneity in trials that demonstrate weak or absent overall treatment effects. The variation in overall treatment efficacy across these studies therefore provides an opportunity to formally assess how PATH performs under differing treatment-effect scenarios [@kentPredictiveApproachesTreatment2020]. 
 
 
 
