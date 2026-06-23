@@ -370,7 +370,7 @@ dev.off()
 
 png(
   "DIG_report_forest.png",
-  width  = 2200,
+  width  = 1800,
   height = 1200,
   res    = 220
 )
@@ -380,7 +380,6 @@ par(mar = c(4, 4, 1, 2))
 DIG_report_forest <- forest(
   res,
   addfit  = FALSE,
-  header = FALSE,
   xlim    = c(-8, 2.5),
   at      = log(c(0.5, 1, 2)),
   alim    = c(log(0.2), log(2)),
@@ -408,7 +407,7 @@ text(-8,  6, "Age",                      pos = 4, font = 2)
 text(-8,  3, "Ejection Fraction",        pos = 4, font = 2)
 
 text(
-  c(-5, -4, -3, -2, 1.5),
+  c(-5, -4, -3, -2, 3),
   17,
   c(
     "Digoxin",
@@ -504,11 +503,11 @@ DIG_plot <- ggplot() +
   labs(
     title = "Absolute Benefit of Digoxin Across Baseline Mortality Risk",
     x     = "Baseline risk",
-    y     = "Absolute Benefit from Digoxin"
+    y     = "Benefit by Digoxin (absolute risk difference)"
   ) +
   
   # Theme
-  theme_classic(base_size = 14) +
+  theme_classic(base_size = 17) +
   theme(
     plot.title = element_text(face = "bold", size = 14),
     axis.ticks = element_blank(),
@@ -518,19 +517,32 @@ DIG_plot <- ggplot() +
   # annotations without legend needed
   annotate(
     "text",
+<<<<<<< HEAD
+    
+=======
 
-    x = 0.43, y = 0.012,
+<<<<<<< HEAD
+>>>>>>> 0a03a30b35e58756a76950dcc726a3c9c6ed8bb7
+    x = 0.60, y = 0.012,
+=======
+    x = 0.43, y = -0.012,
+>>>>>>> 65f21d5a00207ab16195eb8fea1aa2d65b8e199e
     label    = "Proportional Effect",
     colour   = "darkblue",
     hjust    = 0,
-    size     = 4,
+    size     = 6,
     fontface = "bold"
   ) 
 
 DIG_plot
 
 # saving
-
+<<<<<<< HEAD
+saveRDS(DIG_plot, "dig_benefit_baseline_risk_plot.rds")
+=======
 saveRDS(DIG_plot, "dig_benefit_baseline_risk_plot.rds")
 
 
+
+
+>>>>>>> 0a03a30b35e58756a76950dcc726a3c9c6ed8bb7

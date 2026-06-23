@@ -595,7 +595,7 @@ annotate(
   label = "Proportional effect",
   color = "darkblue",
   hjust = 0,
-  size = 4
+  size = 6
 ) +
 
   annotate(
@@ -605,7 +605,7 @@ annotate(
     label = "Spline (df = 3)",
     color = "#a80050",
     hjust = 0,
-    size = 4
+    size = 6
   )
 gusto_plot
 
@@ -789,7 +789,7 @@ res <- rma(
 
 png(
   "gusto_report_forest.png",
-  width = 2200,
+  width = 1800,
   height = 1200,
   res = 220
 )
@@ -801,7 +801,7 @@ forest(
   res,
   addfit = FALSE,
 
-  xlim = c(-8, 2.25),
+  xlim = c(-8, 2.5),
 
   at = log(c(0.5, 1)),
 
@@ -823,8 +823,6 @@ forest(
   rows = c(1:2, 4:5, 7:8, 10:13, 15),
 
   xlab = "Odds Ratio",
-
-  header = FALSE,
 
   mlab = "",
 
@@ -856,7 +854,7 @@ text(-8, 3, "MI location", pos = 4, font = 2)
 
 text(
 
-  c(-5,-4,-3,-2, 1.5),
+  c(-5,-4,-3,-2, 3),
 
   17,
 
@@ -879,7 +877,7 @@ dev.off()
 
 png(
   "gusto_pres_forest.png",
-  width = 2200,
+  width = 1800,
   height = 1200,
   res = 220
 )

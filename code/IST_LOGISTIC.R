@@ -268,16 +268,13 @@ res <- rma(
 par(mar = c(4,4,1,2))
 
 
-png("IST_forest_report.png", width  = 2200,
-    height = 1200,
-    res    = 220)
+png("IST_forest_report.png", width = 2000, height = 1400, res = 300)
 IST_rep_forest <- forest(
 
   res,
   addfit = FALSE,
-  header = FALSE,
 
-  xlim = c(-8, 2.25),
+  xlim = c(-8, 2.5),
 
   at = log(c(0.5, 1, 1.5)),
 
@@ -329,7 +326,7 @@ text(-8, 3, "Atrial fibrillation", pos = 4, font = 2)
 # Column headers
 
 text(
-  c(-5,-4,-3,-2,1.5),
+  c(-5,-4,-3,-2,3),
   18,
   c(
     "Aspirin",
@@ -615,7 +612,7 @@ aspirin_plot <- ggplot() +
     y = "Benefit by aspirin (absolute risk difference)"
   ) +
 
-  theme_classic(base_size = 13) +
+  theme_classic(base_size = 17) +
   theme(
     axis.ticks = element_blank(),
     axis.line = element_line(color = "grey60", linewidth = 0.5),
@@ -628,7 +625,7 @@ aspirin_plot <- ggplot() +
     label = "Proportional effect",
     color = "darkblue",
     hjust = 0,
-    size = 4
+    size = 6
   ) +
 
   annotate(
@@ -638,7 +635,7 @@ aspirin_plot <- ggplot() +
     label = "Spline (df = 3)",
     color = "#a80050",
     hjust = 0,
-    size = 4
+    size = 6
   ) +
 
   labs(

@@ -420,10 +420,7 @@ res <- rma(
   method = "ML"
 )
 
-png("IST_rf_forest_report.png",
-    width  = 2200,
-    height = 1200,
-    res    = 220)
+png("IST_rf_forest_report.png", width = 2000, height = 1400, res = 300)
 
 par(mar = c(4,4,1,2))
 
@@ -432,9 +429,8 @@ IST_rf_report_forest <- forest(
   res,
 
   addfit = FALSE,
-  header = FALSE,
 
-  xlim = c(-8, 2.25),
+  xlim = c(-8, 2.5),
 
   at = log(c(0.5, 1, 1.5)),
 
@@ -486,7 +482,7 @@ text(-8, 3, "Atrial fibrillation", pos = 4, font = 2)
 # Column headers
 
 text(
-  c(-5,-4,-3,-2,1.5),
+  c(-5,-4,-3,-2,3),
   18,
   c(
     "Aspirin",
@@ -499,7 +495,7 @@ text(
 )
 
 text(-1, 18, "IST-I trial", pos = 4, font = 2)
-
+IST_rf_report_forest
 
 dev.off()
 ############################################################
@@ -531,7 +527,7 @@ aspirin_plot_rf <- ggplot() +
     aes(x = risk, y = after_stat(scaled) * 0.015),
     fill = "grey80",
     color = NA,
-    alpha = 0.6
+    alpha = 0.4
   ) +
 
   # proportional model
@@ -540,7 +536,7 @@ aspirin_plot_rf <- ggplot() +
     aes(x = risk, y = prop),
     linetype = "dashed",
     linewidth = 1.7,
-    colour = "darkblue"
+    colour = "#A80050"
   ) +
 
   # grouped estimates
@@ -576,12 +572,12 @@ aspirin_plot_rf <- ggplot() +
 
   annotate(
     "text",
-    x = 0.25,
+    x = 0.3,
     y = 0.016,
     label = "Proportional effect",
-    color = "darkblue",
+    color = "#a80050",
     hjust = 0,
-    size = 4
+    size = 6
   ) +
 
   labs(
