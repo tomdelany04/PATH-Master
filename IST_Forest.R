@@ -421,7 +421,7 @@ res <- rma(
 )
 
 png("IST_rf_forest_report.png",
-    width  = 1800,
+    width  = 2200,
     height = 1200,
     res    = 220)
 
@@ -432,6 +432,7 @@ IST_rf_report_forest <- forest(
   res,
 
   addfit = FALSE,
+  header = FALSE,
 
   xlim = c(-8, 2.25),
 
@@ -485,7 +486,7 @@ text(-8, 3, "Atrial fibrillation", pos = 4, font = 2)
 # Column headers
 
 text(
-  c(-5,-4,-3,-2,3),
+  c(-5,-4,-3,-2,1.5),
   18,
   c(
     "Aspirin",
@@ -530,7 +531,7 @@ aspirin_plot_rf <- ggplot() +
     aes(x = risk, y = after_stat(scaled) * 0.015),
     fill = "grey80",
     color = NA,
-    alpha = 0.4
+    alpha = 0.6
   ) +
 
   # proportional model
@@ -580,7 +581,7 @@ aspirin_plot_rf <- ggplot() +
     label = "Proportional effect",
     color = "darkblue",
     hjust = 0,
-    size = 6
+    size = 4
   ) +
 
   labs(

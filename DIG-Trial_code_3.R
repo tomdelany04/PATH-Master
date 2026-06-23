@@ -370,7 +370,7 @@ dev.off()
 
 png(
   "DIG_report_forest.png",
-  width  = 1800,
+  width  = 2200,
   height = 1200,
   res    = 220
 )
@@ -380,6 +380,7 @@ par(mar = c(4, 4, 1, 2))
 DIG_report_forest <- forest(
   res,
   addfit  = FALSE,
+  header = FALSE,
   xlim    = c(-8, 2.5),
   at      = log(c(0.5, 1, 2)),
   alim    = c(log(0.2), log(2)),
@@ -407,7 +408,7 @@ text(-8,  6, "Age",                      pos = 4, font = 2)
 text(-8,  3, "Ejection Fraction",        pos = 4, font = 2)
 
 text(
-  c(-5, -4, -3, -2, 3),
+  c(-5, -4, -3, -2, 1.5),
   17,
   c(
     "Digoxin",
@@ -507,7 +508,7 @@ DIG_plot <- ggplot() +
   ) +
   
   # Theme
-  theme_classic(base_size = 17) +
+  theme_classic(base_size = 14) +
   theme(
     plot.title = element_text(face = "bold", size = 14),
     axis.ticks = element_blank(),
@@ -522,7 +523,7 @@ DIG_plot <- ggplot() +
     label    = "Proportional Effect",
     colour   = "darkblue",
     hjust    = 0,
-    size     = 6,
+    size     = 4,
     fontface = "bold"
   ) 
 

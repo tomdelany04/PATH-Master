@@ -293,32 +293,35 @@ print(null_plot)
 dev.off()
 
 
-saveRDS(null_plot, "type1_error_surface_plot.rds")
-
-
-null_plot
-
-
-# geom surface, 2d kernal density plot as alternative
-#plot dots instead and interpolate between 
-
-# discrete points are mapped to a grid
-#Nearby values are connected
-#Intermediate values are estimated locally
-#Contour polygons are drawn for ranges of z
-
-#Didnt end up using
-ggplot(summary_results,
-       aes(x = p,
-           y = n,
-           z = type1_error)) +
-  geom_contour_filled(aes(fill = after_stat(level_mid))) +
-  scale_fill_viridis_c(name = "Type I Error") +
+null_plot2 <- ggplot(
+  summary_results,
+  aes(
+    x = p,
+    y = n,
+    z = type1_error
+  )
+) +
+  geom_contour_filled(
+    breaks = c(0, 0.025, 0.05, 0.075, 0.10, 0.125)
+  ) +
+  geom_point(size = 0.5) +
+  scale_fill_viridis_d(name = "Type I Error") +
   scale_x_continuous(
     breaks = seq(0, 10, 2),
     limits = c(0, 10)
   ) +
   scale_y_log10() +
-  theme_minimal()
+  theme_minimal(base_size = 15) +
+  theme(
+    panel.grid = element_blank()
+  ) +
+  labs(
+    title = "Type I Error Surface Under the Null",
+    x = "Parameters (p)",
+    y = "Sample Size (log(n))",
+    fill = "Type I Error"
+  )
+
+print(null_plot2)
 
 
