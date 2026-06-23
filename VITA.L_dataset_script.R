@@ -55,7 +55,7 @@ vital.hte <- vital %>%
 
 
 # Descriptive statistics
-table1(~ as.factor(death) + age + bmi + sex + htnmed + diabetes + currsmk + familyHist , data =vital.hte,  digits =2)
+table1(~ as.factor(death) + age + bmi + sex + htnmed + diabetes + currsmk + familyHist| vitd, data =vital.hte,  digits =2)
 
 # Descriptive statistics by treatment group
 table(vital.hte$vitd, vital.hte$fishoil)
@@ -103,7 +103,7 @@ ggsurvplot(
 
 #***Factorial analysis: overall treatment effect**#  
 # Coxph model for overall treatment effect 
-cox.factorial <- coxph(Surv(time,death) ~ vitd + fishoil + age + bmi + sex + htnmed + diabetes + currsmk + familyHist,data = vital.hte)
+cox.factorial <- coxph(Surv(time,death) ~ vitd + fishoil + age + bmi + sex + htnmed + diabetes + currsmk + familyHist ,data = vital.hte)
 
 # Fit a Cox proportional hazards model with-out treatment 
 cox.vital.baseline <- coxph(Surv(time,death) ~ age + bmi + sex + htnmed + currsmk + diabetes + familyHist, data = vital.hte)
@@ -133,7 +133,8 @@ cox.spline <- coxph(Surv(time,death) ~ (vitd + fishoil) * ns(risk.center.cox, df
 vital.subgroup <- vital.hte %>% 
   mutate(
     age.categ = ifelse(age >= 70, "Age >= 70", "Age < 70"),
-    bmi.categ = ifelse(bmi >= 30, "Obese(BMI>=30)", "Non-obese(BMI < 30)")
+    bmi.categ = ifelse(bmi >= 30, "Obese(BMI>=30)", "Non-obese(BMI < 30)"),
+    sex
   )
 subgroup.variables <- c( "age.categ", "bmi.categ")
 
@@ -260,7 +261,6 @@ ggplot(vital.plot.HTE,
 
 
 #***marginal effects for treatment heterogeneity fo Omega-3**#
-
 
 # Overall risk difference
 overall.ard.omega <- avg_comparisons(
@@ -653,9 +653,8 @@ VITAL_plot_Omg
 dev.off()
 
 
-#**Standardized plot for presentaion*
-#**Forest plot*
-
+#**Standardized plot for presentation and report*
+#**Forest plot: VitD*
 library(metafor)
 library(dplyr)
 
@@ -666,16 +665,19 @@ png(
   res    = 220
 )
 
-# data prep
-vitd.fp <- vital.plot.HTE %>%
-  mutate(
-    subgroup = as.character(subgroup),
-    estimate = 100 * estimate,
-    low      = 100 * conf.low,
-    high     = 100 * conf.high
-  )
 
-
+# Category order
+vitd.order <- c(
+  "Overall",
+  "Q4(High)",
+  "Q3",
+  "Q2",
+  "Q1(low)",
+  "Age >= 70",
+  "Age < 70",
+  "Obese (BMI >= 30)",
+  "Non-obese (BMI < 30)"
+)
 
 # Labels on the left side 
 vitd.labels <- c(
@@ -693,77 +695,8 @@ vitd.labels <- c(
 # Row positions 
 vitd.rows <- c(13, 11, 10, 9, 8, 6, 5, 3, 2)
 
-# CI text
-ci.txt <- sprintf(
-  "%.2f [%.2f, %.2f]",
-  vitd.fp$estimate,
-  vitd.fp$low,
-  vitd.fp$high
-)
-# Plot limits
-x.left  <- -2.2
-x.right <-  2.2
-
-par(mar = c(4, 4, 2, 2))
-
-forest(
-  x       = vitd.fp$estimate,
-  ci.lb   = vitd.fp$low,
-  ci.ub   = vitd.fp$high,
-  slab    = vitd.labels,
-  rows    = vitd.rows,
-  xlim    = c(x.left, x.right),
-  alim    = c(-1, 1),
-  at      = seq(-1, 1, by = 0.5),
-  refline = 0,
-  xlab    = "Vitamin D: Absolute Risk Difference at 5 years, percentage points",
-  mlab    = "",
-  psize   = 1.4,
-  lwd     = 1.8,
-  col     = "black",
-  cex     = 0.9,
-  ylim    = c(0, 16),
-  header  = FALSE,
-  annotate = FALSE
-)
-
-
-# Top headers
-text(x.left, 15.5, "Study", pos = 4, font = 2, cex = 1.0)
-text(0, 15.5, "VITAL Trial: Vitamin D", font = 2, cex = 1.0)
-text(x.right, 15.5, "ARD [95% CI]", pos = 2, font = 2, cex = 1.0)
-
-# Horizontal line under headers
-segments(x.left, 15.0, x.right, 15.0, lwd = 1.5)
-
-# Section headers
-text(x.left, 12.2, "Baseline risk (quartiles)", pos = 4, font = 2, cex = 0.9)
-text(x.left, 6.5, "Age", pos = 4, font = 2, cex = 0.9)
-text(x.left, 3.5, "BMI", pos = 4, font = 2, cex = 0.9)
-
-# Right-side CI values
-text(
-  x.right,
-  vitd.rows,
-  ci.txt,
-  pos = 2,
-  cex = 0.85,
-  col = "black"
-)
-
-dev.off()
-
-
-#**Omega-3 fish oil forest plot*
-png(
-  "VITAL_presn_forest_omega.png",
-  width  = 1800,
-  height = 1200,
-  res    = 220
-)
-
 # data prep
-omega.fp <- vital.plot.HTE.omega %>%
+vitd.fp <- vital.plot.HTE %>%
   mutate(
     subgroup = as.character(subgroup),
     estimate = 100 * estimate,
@@ -771,28 +704,12 @@ omega.fp <- vital.plot.HTE.omega %>%
     high     = 100 * conf.high
   )
 
-# Labels on the left side
-omega.labels <- c(
-  "Overall (Trial Average)",
-  "Risk Quarter 4",
-  "Risk Quarter 3",
-  "Risk Quarter 2",
-  "Risk Quarter 1",
-  "Age >= 70",
-  "Age < 70",
-  "Obese (BMI >= 30)",
-  "Non-obese (BMI < 30)"
-)
-  
-# Row positions
-omega.rows <- c(13, 11, 10, 9, 8, 6, 5, 3, 2)
-
 # CI text
-ci.txt.omega <- sprintf(
+ci.txt <- sprintf(
   "%.2f [%.2f, %.2f]",
-  omega.fp$estimate,
-  omega.fp$low,
-  omega.fp$high
+  vitd.fp$estimate,
+  vitd.fp$low,
+  vitd.fp$high
 )
 
 count_vital <- function(data, tx_var, active_level) {
@@ -817,6 +734,141 @@ vitd.counts <- bind_rows(
   count_vital(filter(vital.subgroup, bmi.categ == "Non-obese(BMI < 30)"), "vitd", "Active Vit-D")
 )
 
+
+# Plot limits
+x.left  <- -8
+x.right <-  3.2
+
+par(mar = c(4, 4, 2, 2))
+
+forest(
+  x       = vitd.fp$estimate,
+  ci.lb   = vitd.fp$low,
+  ci.ub   = vitd.fp$high,
+  slab    = vitd.labels,
+  rows    = vitd.rows,
+  xlim    = c(x.left, x.right),
+  alim    = c(-1, 1),
+  at      = seq(-1, 1, by = 0.5),
+  refline = 0,
+  ilab = cbind(
+    vitd.counts$n_active,
+    vitd.counts$event_active,
+    vitd.counts$n_placebo,
+    vitd.counts$event_placebo
+  ),
+  ilab.xpos= c(-5.8, -4.8, -3.5, -2.5),
+  xlab    = "Vitamin D: Absolute Risk Difference at 5 years, percentage points",
+  mlab    = "",
+  psize   = 1.4,
+  lwd     = 1.8,
+  col     = "black",
+  cex     = 0.9,
+  ylim    = c(0, 16),
+  header  = FALSE,
+  annotate = FALSE
+)
+
+
+# Top headers
+text(x.left, 15.5, "Categories", pos = 4, font = 2, cex = 1.0)
+text(0, 15.5, "VITAL Trial: Vitamin D", font = 2, cex = 1.0)
+text(x.right, 15.5, "ARD [95% CI]", pos = 2, font = 2, cex = 1.0)
+text(c(-5.8, -4.8, -3.5, -2.5),
+     15.5,
+     c("Vit-D", "Events", "Placebo", "Events"),
+     font = 2,
+     cex = 0.85)
+
+# Horizontal line under headers
+segments(x.left, 15.0, x.right, 15.0, lwd = 1.5)
+
+# Section headers
+text(x.left, 12.2, "Baseline risk (quartiles)", pos = 4, font = 2, cex = 0.9)
+text(x.left, 6.5, "Age", pos = 4, font = 2, cex = 0.9)
+text(x.left, 3.5, "BMI", pos = 4, font = 2, cex = 0.9)
+text(x.right, vitd.rows, ci.txt, pos = 2, cex = 0.85, col = "black")
+
+
+# Right-side CI values
+text(
+  x.right,
+  vitd.rows,
+  ci.txt,
+  pos = 2,
+  cex = 0.85,
+  col = "black"
+)
+
+dev.off()
+
+
+#**Forest plot: Omega-3 fish oil*
+png(
+  "VITAL_presn_forest_omega.png",
+  width  = 1800,
+  height = 1200,
+  res    = 220
+)
+
+
+# Category order
+omega.order <- c(
+  "Overall",
+  "Q4(High)",
+  "Q3",
+  "Q2",
+  "Q1(low)",
+  "Age >= 70",
+  "Age < 70",
+  "Obese (BMI >= 30)",
+  "Non-obese (BMI < 30)"
+)
+
+# Labels on the left side 
+omega.labels <- c(
+  "Overall (Trial Average)",
+  "Risk Quarter 4",
+  "Risk Quarter 3",
+  "Risk Quarter 2",
+  "Risk Quarter 1",
+  "Age >= 70",
+  "Age < 70",
+  "Obese (BMI >= 30)",
+  "Non-obese (BMI < 30)"
+)
+
+# Row positions
+omega.rows <- c(13, 11, 10, 9, 8, 6, 5, 3, 2)
+
+# data prep
+omega.fp <- vital.plot.HTE %>%
+  mutate(
+    subgroup = as.character(subgroup),
+    estimate = 100 * estimate,
+    low      = 100 * conf.low,
+    high     = 100 * conf.high
+  )
+
+
+# CI text
+ci.txt.omega <- sprintf(
+  "%.2f [%.2f, %.2f]",
+  omega.fp$estimate,
+  omega.fp$low,
+  omega.fp$high
+)
+
+count_vital <- function(data, tx_var, active_level) {
+  tab <- table(data[[tx_var]], data$death)
+  data.frame(
+    n_active = sum(tab[active_level, ]),
+    event_active = tab[active_level, "1"],
+    n_placebo = sum(tab["Placebo", ]),
+    event_placebo = tab["Placebo", "1"]
+  )
+}
+
 omega.counts <- bind_rows(
   count_vital(vital.subgroup, "fishoil", "Active Omega-3"),
   count_vital(filter(vital.subgroup, risk == "Q4(High)"), "fishoil", "Active Omega-3"),
@@ -830,10 +882,11 @@ omega.counts <- bind_rows(
 )
 
 # Plot limits
-x.left  <- -2.2
-x.right <-  2.2
+x.left  <- -9.5
+x.right <-  4.2
 par(mar = c(4, 4, 2, 2))
-  
+
+
 forest(
   x       = omega.fp$estimate,
   ci.lb   = omega.fp$low,
@@ -844,6 +897,13 @@ forest(
   alim    = c(-1, 1),
   at      = seq(-1, 1, by = 0.5),
   refline = 0,
+  ilab = cbind(
+    omega.counts$n_active,
+    omega.counts$event_active,
+    omega.counts$n_placebo,
+    omega.counts$event_placebo
+  ),
+  ilab.xpos= c(-5.6, -4.5, -3.3, -2.2),
   xlab    = "Omega-3: Absolute Risk Difference at 5 years, percentage points",
   mlab    = "",
   psize   = 1.4,
@@ -855,12 +915,19 @@ forest(
   annotate = FALSE
 )
 
-# Top headers
-text(x.left, 15.5, "Study", pos = 4, font = 2, cex = 1.0)
-text(0, 15.5, "VITAL Trial: Omega-3", font = 2, cex = 1.0)
-text(x.right, 15.5, "ARD [95% CI]", pos = 2, font = 2, cex = 1.0)
 
-# Horizontal line under headers
+# Top headers
+text(x.left, 15.5, "Categories", pos = 4, font = 2, cex = 1.0)
+text(0, 15.5, "VITAL Trial: Fish oil(Omega-3)", font = 2, cex = 1.0)
+text(x.right, 15.5, "ARD [95% CI]", pos = 2, font = 2, cex = 1.0)
+text(
+  c(-5.8, -4.8, -3.5, -2.5),
+  15.5,
+  c("Omega-3", "Events", "Placebo", "Events"),
+  font = 2,
+  cex = 0.9
+)
+
 segments(x.left, 15.0, x.right, 15.0, lwd = 1.5)
 
 # Section headers
@@ -873,135 +940,12 @@ text(x.left, 3.5, "BMI", pos = 4, font = 2, cex = 0.9)
 text(
   x.right,
   omega.rows,
-  ci.txt.omega,
+  ci.txt,
   pos = 2,
   cex = 0.85,
   col = "black"
 )
 
-dev.off()
-
-png(
-  "VITAL_report_forest_vitd.png",
-  width  = 1800,
-  height = 1200,
-  res    = 220
-)
-
-x.left  <- -8
-x.right <-  3.2
-
-par(mar = c(4, 4, 2, 2))
-
-VITAL_report_forest_vitd <- forest(
-  x        = vitd.fp$estimate,
-  ci.lb    = vitd.fp$low,
-  ci.ub    = vitd.fp$high,
-  slab     = vitd.labels,
-  rows     = vitd.rows,
-  xlim     = c(x.left, x.right),
-  alim     = c(-1, 1),
-  at       = seq(-1, 1, by = 0.5),
-  ilab     = cbind(
-    vitd.counts$n_active,
-    vitd.counts$event_active,
-    vitd.counts$n_placebo,
-    vitd.counts$event_placebo
-  ),
-  ilab.xpos = c(-5, -4, -3, -2),
-  refline  = 0,
-  xlab     = "Vitamin D: Absolute Risk Difference at 5 years, percentage points",
-  mlab     = "",
-  psize    = 1.2,
-  lwd      = 1.5,
-  col      = "black",
-  cex      = 0.9,
-  ylim     = c(0, 16),
-  header   = FALSE,
-  annotate = FALSE
-)
-
-text(x.left, 15.5, "Study", pos = 4, font = 2, cex = 1.0)
-text(0, 15.5, "VITAL Trial: Vitamin D", font = 2, cex = 1.0)
-text(x.right, 15.5, "ARD [95% CI]", pos = 2, font = 2, cex = 1.0)
-text(
-  c(-5, -4, -3, -2),
-  15.5,
-  c("Vit-D", "Events", "Placebo", "Events"),
-  font = 2,
-  cex = 0.9
-)
-segments(x.left, 15.0, x.right, 15.0, lwd = 1.5)
-text(x.left, 12.2, "Baseline risk (quartiles)", pos = 4, font = 2, cex = 0.9)
-text(x.left, 6.5, "Age", pos = 4, font = 2, cex = 0.9)
-text(x.left, 3.5, "BMI", pos = 4, font = 2, cex = 0.9)
-text(x.right, vitd.rows, ci.txt, pos = 2, cex = 0.85, col = "black")
-
-VITAL_report_forest_vitd
 
 dev.off()
-
-png(
-  "VITAL_report_forest_omega.png",
-  width  = 1800,
-  height = 1200,
-  res    = 220
-)
-
-x.left  <- -8
-x.right <-  3.2
-
-par(mar = c(4, 4, 2, 2))
-
-VITAL_report_forest_omega <- forest(
-  x        = omega.fp$estimate,
-  ci.lb    = omega.fp$low,
-  ci.ub    = omega.fp$high,
-  slab     = omega.labels,
-  rows     = omega.rows,
-  xlim     = c(x.left, x.right),
-  alim     = c(-1, 1),
-  at       = seq(-1, 1, by = 0.5),
-  ilab     = cbind(
-    omega.counts$n_active,
-    omega.counts$event_active,
-    omega.counts$n_placebo,
-    omega.counts$event_placebo
-  ),
-  ilab.xpos = c(-5, -4, -3, -2),
-  refline  = 0,
-  xlab     = "Omega-3: Absolute Risk Difference at 5 years, percentage points",
-  mlab     = "",
-  psize    = 1.2,
-  lwd      = 1.5,
-  col      = "black",
-  cex      = 0.9,
-  ylim     = c(0, 16),
-  header   = FALSE,
-  annotate = FALSE
-)
-
-text(x.left, 15.5, "Study", pos = 4, font = 2, cex = 1.0)
-text(0, 15.5, "VITAL Trial: Omega-3", font = 2, cex = 1.0)
-text(x.right, 15.5, "ARD [95% CI]", pos = 2, font = 2, cex = 1.0)
-text(
-  c(-5, -4, -3, -2),
-  15.5,
-  c("Omega-3", "Events", "Placebo", "Events"),
-  font = 2,
-  cex = 0.9
-)
-segments(x.left, 15.0, x.right, 15.0, lwd = 1.5)
-text(x.left, 12.2, "Baseline risk (quartiles)", pos = 4, font = 2, cex = 0.9)
-text(x.left, 6.5, "Age", pos = 4, font = 2, cex = 0.9)
-text(x.left, 3.5, "BMI", pos = 4, font = 2, cex = 0.9)
-text(x.right, omega.rows, ci.txt.omega, pos = 2, cex = 0.85, col = "black")
-
-VITAL_report_forest_omega
-
-dev.off()
-
-
-
-
 
