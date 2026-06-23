@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<!--
+Font-awesome icons ie github or twitter
+-->
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/brands.css" integrity="sha384-n9+6/aSqa9lBidZMRCQHTHKJscPq6NW4pCQBiMmHdUCvPN8ZOg2zJJTkC7WIezWv" crossorigin="anonymous">
+
+<!--
+Google fonts api stuff
+-->
+
+
+
+<title>Predictive Approaches to Treatment Effect Heterogeneity</title>
+
+
+
+
+
+
+<style>
+@page {
+size: 841mm 594mm;
+margin: 0;
+padding: 0;
+}
+body {
+margin: 0;
+font-size: 20pt;
+width: 841mm;
+height: 594mm;
+padding: 0;
+text-align: justify;
+font-family: Palatino;
+}
+.poster_wrap {
+width: 841mm;
+height: 594mm;
+padding: 0cm;
+}
+.title_container {
+width: 100%;
+height: 15%;
+overflow: hidden;
+background-color: #a80050;
+border: 0 solid #a80050
+;
+}
+.logo_left {
+float: left;
+width: 10%;
+height: 100%;
+background-color: #a80050;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+.logo_right {
+float: right;
+width: 10%;
+height: 100%;
+background-color: #a80050;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+.poster_title {
+text-align: center;
+position: relative;
+float: left;
+width: 80%;
+height: 100%;
+color: #FFFFFF;
+top: 50%;
+transform: translateY(-50%);
+-webkit-transform: translateY(-50%);
+}
+#title {
+font-family: Palatino;
+}
+/* unvisited link */
+a:link {
+color: #e6007e;
+text-decoration: none;
+}
+.mybreak {
+  break-before: column;
+}
+/* visited link */
+a:visited {
+color: #e6007e;
+text-decoration: none;
+}
+
+/* mouse over link */
+a:hover {
+color: #e6007e;
+text-decoration: none;
+}
+
+/* selected link */
+a:active {
+color: #e6007e;
+text-decoration: none;
+}
+.poster_body {
+-webkit-column-count: 4; /* Chrome, Safari, Opera */
+-moz-column-count: 4; /* Firefox */
+column-count: 4;
+-webkit-column-fill: auto;
+-moz-column-fill: auto;
+column-fill: auto;
+-webkit-column-rule-width: 1mm;
+-moz-column-rule-width: 1mm;
+column-rule-width: 1mm;
+-webkit-column-rule-style: dashed;
+-moz-column-rule-style: dashed;
+column-rule-style: dashed;
+-webkit-column-rule-color: #a80050;
+-moz-column-rule-color: #a80050;
+column-rule-color: #a80050;
+column-gap: 1em;
+padding-left: 0.5em;
+padding-right: 0.5em;
+height: 100%;
+color: #000000
+background-color: #ffffff;
+}
+.poster_title h1 {
+font-size: 60pt;
+margin: 0;
+border: 0;
+font-weight: normal;
+}
+.poster_body_wrap{
+width: 841mm;
+height: calc(100% - 17%);
+padding-top: calc(594mm * 0.01);
+padding-bottom: calc(594mm * 0.01);
+background-color: #ffffff;
+}
+.poster_title h3 {
+color: white;
+font-size: 38pt;
+margin: 0;
+border: 0;
+font-weight: normal;
+}
+.poster_title h3 > sup {
+  font-size: 35pt;
+  margin-left: 0.02em;
+}
+.poster_title h5 {
+color: #FFFFFF;
+font-size: 35pt;
+margin: 0;
+border: 0;
+font-weight: normal;
+}
+img {
+margin-top: 0;
+margin-bottom: 0;
+}
+.section {
+  padding: 0.2em;
+}
+.poster_body h1 {
+text-align: center;
+color: #FFFFFF;
+font-size: 65pt;
+border: 2mm solid #a80050;
+background-color: #a80050;
+border-radius: 4mm 0mm;
+margin-top: 2mm;
+margin-bottom: 2mm;
+font-weight: normal;
+}
+.poster_body h2 {
+color: #000000;
+font-size: 40pt;
+padding-left: 4mm;
+font-weight: normal;
+}
+.span {
+width: 200%;
+}
+/* center align leaflet map,
+from https://stackoverflow.com/questions/52112119/center-leaflet-in-a-rmarkdown-document */
+.html-widget {
+margin: auto;
+position: sticky;
+margin-top: 2cm;
+margin-bottom: 2cm;
+}
+.leaflet.html-widget.html-widget-static-bound.leaflet-container.leaflet-touch.leaflet-fade-anim.leaflet-grab.leaflet-touch-drag.leaflet-touch-zoom {
+position: sticky;
+width: 100%;
+}
+pre.sourceCode.r, pre.sourceCode.python {
+background-color: #ffffff20;
+border: solid #84003d 1mm;
+border-radius: 0.5em;
+padding: 4mm;
+margin: auto;
+margin-top: 1em;
+margin-bottom: 1em;
+/* align-items: center; */
+}
+div.sourceCode {
+background-color: transparent;
+width: 85%;
+margin-left: auto;
+margin-right: auto;
+}
+code.sourceCode.r, code.sourceCode.python {
+background-color: transparent;
+font-size: 20pt;
+border-radius: 2mm;
+}
+code {
+font-size: 25pt;
+font-family: monospace;
+background-color: #84003d24;
+color: #84003d;
+padding: 1.2mm;
+line-height: 1;
+border-radius: 2mm;
+}
+.caption {
+font-size: 20pt;
+}
+.table caption {
+font-size: 20pt;
+padding-bottom: 3mm;
+
+}
+code {
+font-size: 1em;
+font-family: monospace;
+background-color: #84003d24;
+color: #a80050;
+padding: 1.2mm;
+border-radius: 2mm;
+}
+.poster_title code {
+font-size: 1em;
+}
+table {
+font-size: 40px;
+margin: auto;
+border-top: 3px solid #666;
+border-bottom: 3px solid #666;
+}
+table thead th {
+border-bottom: 3px solid #ddd;
+}
+td {
+padding: 8px;
+}
+th {
+padding: 15px;
+}
+caption {
+margin-bottom: 10px;
+}
+.poster_body p {
+margin-right: 4mm;
+margin-left: 4mm;
+margin-top: 6mm;
+margin-bottom: 10mm;
+color: #000000
+}
+.poster_body ol {
+margin-right: 4mm;
+margin-left: 4mm;
+}
+#ul {
+margin-right: 4mm;
+margin-left: 4mm;
+}
+.references p {
+font-size: 20pt;
+}
+.orcid img {
+  width: 1em;
+}
+</style>
+</head>
+<body>
+
+
+<div class="poster_wrap">
+<div class="title_container">
+<!-- Left Logo  -->
+<div class="logo_left">
+<img src=https://sport.universityofgalway.ie/assets/img/logo2.png style="width: 80%">
+</div>
+<!-- Poster Title -->
+<div class= "poster_title">
+<h1 id="title">Predictive Approaches to Treatment Effect Heterogeneity</h1>
+<h3 id="author">Tom Delany<sup></sup>, Misgana Ojamo<sup>1</sup></h3>
+<h5 id="affiliation"><sup>1</sup> School of Mathematical and Statistical Sciences, University of Galway</h5>
+</div>
+<!-- Right Logo  -->
+<div class="logo_right">
+</div>
+</div>
+
+<div class='poster_body_wrap'>
+<div class='poster_body'>
+<style type="text/css">
+div.logo_left{
+  width: 20%;
+}
+div.poster_title{
+  width: 80%;
+}
+.section h4 {
+    break-after: column;
+}
+div.footnotes {
+    font-size: 18pt;
+}
+</style>
+<!-- Don't change anything above, except the title and author names, unless you know what you are doing. -->
+<div id="background" class="section level1">
+<h1>Background</h1>
+<!-- You can add references by inserting the following ^[reference details here] -->
+<p>• Randomised controlled trials are typically reported in terms of average treatment effects. This assumes homogenous patient response and ignores patients differences in demographics, disease severity, and other contextual factors - termed patient <strong>Heterogeneity (HTE)</strong> <a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>, crucially, these factors may modify the effectiveness of treatment.</p>
+<p>• Traditional <strong>subgroup analyses</strong> attempt to address HTE by examining one variable at a time (e.g Male vs Female). However, these analyses are frequently underpowered, suffer from high rates of false positives and miss multivariate treatment response patterns.</p>
+<p>• <strong>Predictive Approaches to Treatment effect Heterogeneity (PATH)</strong> shift the focus to individualized prediction, modelling risk and treatment effects across individuals <a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>.</p>
+<div id="objectives" class="section level3">
+<h3>Objectives:</h3>
+<ol style="list-style-type: decimal">
+<li>Implement and evaluate predictive HTE models across multiple clinical datasets.</li>
+<li>Assess the clinical relevance and reporting implications of PATH analyses.</li>
+</ol>
+</div>
+</div>
+<div id="our-trials" class="section level1">
+<h1>Our Trials</h1>
+<p>Analyses are based on published clinical trial data from the GUSTO-I trial (GUSTO) <a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a> and the Digitalis Investigation Group trial (DIG) <a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a>, the characteristics of which are described below.</p>
+<div id="nvbqchwonc" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#nvbqchwonc table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#nvbqchwonc thead, #nvbqchwonc tbody, #nvbqchwonc tfoot, #nvbqchwonc tr, #nvbqchwonc td, #nvbqchwonc th {
+  border-style: none;
+}
+
+#nvbqchwonc p {
+  margin: 0;
+  padding: 0;
+}
+
+#nvbqchwonc .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 3px;
+  border-top-color: #84003D;
+  border-right-style: none;
+  border-right-width: 3px;
+  border-right-color: #84003D;
+  border-bottom-style: solid;
+  border-bottom-width: 3px;
+  border-bottom-color: #84003D;
+  border-left-style: none;
+  border-left-width: 3px;
+  border-left-color: #84003D;
+}
+
+#nvbqchwonc .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#nvbqchwonc .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#nvbqchwonc .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#nvbqchwonc .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#nvbqchwonc .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#nvbqchwonc .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #84003D;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#nvbqchwonc .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 10px;
+  padding-bottom: 11px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#nvbqchwonc .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#nvbqchwonc .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#nvbqchwonc .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#nvbqchwonc .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #84003D;
+  vertical-align: bottom;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#nvbqchwonc .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#nvbqchwonc .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#nvbqchwonc .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#nvbqchwonc .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#nvbqchwonc .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#nvbqchwonc .gt_row {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #84003D;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #84003D;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #84003D;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#nvbqchwonc .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nvbqchwonc .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#nvbqchwonc .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#nvbqchwonc .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#nvbqchwonc .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nvbqchwonc .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#nvbqchwonc .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#nvbqchwonc .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#nvbqchwonc .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nvbqchwonc .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#nvbqchwonc .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#nvbqchwonc .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#nvbqchwonc .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#nvbqchwonc .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#nvbqchwonc .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nvbqchwonc .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#nvbqchwonc .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nvbqchwonc .gt_left {
+  text-align: left;
+}
+
+#nvbqchwonc .gt_center {
+  text-align: center;
+}
+
+#nvbqchwonc .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#nvbqchwonc .gt_font_normal {
+  font-weight: normal;
+}
+
+#nvbqchwonc .gt_font_bold {
+  font-weight: bold;
+}
+
+#nvbqchwonc .gt_font_italic {
+  font-style: italic;
+}
+
+#nvbqchwonc .gt_super {
+  font-size: 65%;
+}
+
+#nvbqchwonc .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#nvbqchwonc .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#nvbqchwonc .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#nvbqchwonc .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#nvbqchwonc .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#nvbqchwonc .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#nvbqchwonc .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#nvbqchwonc .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#nvbqchwonc div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    <tr class="gt_heading">
+      <td colspan="3" class="gt_heading gt_title gt_font_normal gt_bottom_border" style="color: #84003D; font-size: 28px; font-weight: bold;">Overview of GUSTO and DIG trials</td>
+    </tr>
+    
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="border-right-width: 2px; border-right-style: solid; border-right-color: #84003d; color: #000000; font-size: 22px; font-weight: bold;" scope="col" id="Characteristic">Characteristic</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="border-right-width: 2px; border-right-style: solid; border-right-color: #84003d; color: #000000; font-size: 22px; font-weight: bold;" scope="col" id="GUSTO">GUSTO</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="color: #000000; font-size: 22px; font-weight: bold;" scope="col" id="DIG">DIG</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="Characteristic" class="gt_row gt_left" style="border-right-width: 2px; border-right-style: solid; border-right-color: #84003d; color: #000000; font-size: 22px;">Patients (n)</td>
+<td headers="GUSTO" class="gt_row gt_left" style="border-right-width: 2px; border-right-style: solid; border-right-color: #84003d; color: #000000; font-size: 22px;">41,021</td>
+<td headers="DIG" class="gt_row gt_left" style="color: #000000; font-size: 22px;">6,800</td></tr>
+    <tr><td headers="Characteristic" class="gt_row gt_left" style="border-right-width: 2px; border-right-style: solid; border-right-color: #84003d; color: #000000; font-size: 22px;">Treatments</td>
+<td headers="GUSTO" class="gt_row gt_left" style="border-right-width: 2px; border-right-style: solid; border-right-color: #84003d; color: #000000; font-size: 22px;">Accelerated tPA vs Streptokinase (± heparin)</td>
+<td headers="DIG" class="gt_row gt_left" style="color: #000000; font-size: 22px;">Digoxin vs Placebo</td></tr>
+    <tr><td headers="Characteristic" class="gt_row gt_left" style="border-right-width: 2px; border-right-style: solid; border-right-color: #84003d; color: #000000; font-size: 22px;">Years ran</td>
+<td headers="GUSTO" class="gt_row gt_left" style="border-right-width: 2px; border-right-style: solid; border-right-color: #84003d; color: #000000; font-size: 22px;">1989–1993</td>
+<td headers="DIG" class="gt_row gt_left" style="color: #000000; font-size: 22px;">1991–1995</td></tr>
+    <tr><td headers="Characteristic" class="gt_row gt_left" style="border-right-width: 2px; border-right-style: solid; border-right-color: #84003d; color: #000000; font-size: 22px;">Design</td>
+<td headers="GUSTO" class="gt_row gt_left" style="border-right-width: 2px; border-right-style: solid; border-right-color: #84003d; color: #000000; font-size: 22px;">Open-Label</td>
+<td headers="DIG" class="gt_row gt_left" style="color: #000000; font-size: 22px;">Double-blind, placebo-controlled</td></tr>
+    <tr><td headers="Characteristic" class="gt_row gt_left" style="border-right-width: 2px; border-right-style: solid; border-right-color: #84003d; color: #000000; font-size: 22px;">Follow-up</td>
+<td headers="GUSTO" class="gt_row gt_left" style="border-right-width: 2px; border-right-style: solid; border-right-color: #84003d; color: #000000; font-size: 22px;">30 days</td>
+<td headers="DIG" class="gt_row gt_left" style="color: #000000; font-size: 22px;">37 Months (mean)</td></tr>
+    <tr><td headers="Characteristic" class="gt_row gt_left" style="border-right-width: 2px; border-right-style: solid; border-right-color: #84003d; color: #000000; font-size: 22px;">Location</td>
+<td headers="GUSTO" class="gt_row gt_left" style="border-right-width: 2px; border-right-style: solid; border-right-color: #84003d; color: #000000; font-size: 22px;">International - 15 Countries</td>
+<td headers="DIG" class="gt_row gt_left" style="color: #000000; font-size: 22px;">USA - 302 Centres</td></tr>
+    <tr><td headers="Characteristic" class="gt_row gt_left" style="border-right-width: 2px; border-right-style: solid; border-right-color: #84003d; color: #000000; font-size: 22px;">Primary outcome</td>
+<td headers="GUSTO" class="gt_row gt_left" style="border-right-width: 2px; border-right-style: solid; border-right-color: #84003d; color: #000000; font-size: 22px;">30-day mortality</td>
+<td headers="DIG" class="gt_row gt_left" style="color: #000000; font-size: 22px;">All-cause mortality</td></tr>
+  </tbody>
+  
+</table>
+</div>
+<!-- This #### below causes the columns to break -->
+<!-- You can change where you put these breaks, and the "column_numbers: 4" argument in the YAMLS header to change the layout of the poster, with care! -->
+<div id="section" class="section level4">
+<h4></h4>
+</div>
+</div>
+<div id="early-results" class="section level1">
+<h1>Early Results</h1>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig-table1"></span>
+<img src="combined.png" alt="Key subgroups and their characteristics for DIG and GUSTO. MI - Myocardial Infarction, NYHA - New York Heart Association, EJF_PER - Ejection fraction (percent)" width="100%" />
+<p class="caption">
+Figure 1: Key subgroups and their characteristics for DIG and GUSTO. MI - Myocardial Infarction, NYHA - New York Heart Association, EJF_PER - Ejection fraction (percent)
+</p>
+</div>
+<div id="path-compatible-forest-plots" class="section level3">
+<h3>PATH Compatible Forest Plots</h3>
+<p>To evaluate how our effects stratified by baseline risk compare with effects observed in traditional subgroups, we generated the following forest plots for the DIG and GUSTO trials.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:DIG-fig-forest"></span>
+<img src="MSc_poster_final_files/figure-html/DIG-fig-forest-1.png" alt="DIG Trial, Forest plot of treatment heterogeneity. Points represent odds ratios and horizontal lines indicate 95% confidence intervals." width="100%" />
+<p class="caption">
+Figure 2: DIG Trial, Forest plot of treatment heterogeneity. Points represent odds ratios and horizontal lines indicate 95% confidence intervals.
+</p>
+</div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig-forest"></span>
+<img src="MSc_poster_final_files/figure-html/fig-forest-1.png" alt="GUSTO Trial. Forest plot of treatment heterogeneity. Points represent odds ratios and horizontal lines indicate 95% confidence intervals; the vertical line denotes no effect (OR = 1)." width="100%" />
+<p class="caption">
+Figure 3: GUSTO Trial. Forest plot of treatment heterogeneity. Points represent odds ratios and horizontal lines indicate 95% confidence intervals; the vertical line denotes no effect (OR = 1).
+</p>
+</div>
+</div>
+<div id="absolute-benefit-of-treatment-by-baseline-risk" class="section level3">
+<h3>Absolute Benefit of Treatment by Baseline Risk</h3>
+<p>• Absolute treatment benefit from a main-effects model <strong>increases with baseline risk;</strong> the solid maroon curve shows expected risk reduction under a proportional treatment effect assumption.</p>
+<p>• Proportional-effect and <strong>spline-smoothed</strong> (dashed red curve) approaches yield similar estimates of treatment benefit, indicating increasing absolute benefit with higher baseline risk.</p>
+<p>• The histogram at the bottom of the plot shows substantial <strong>heterogeneity in baseline risk</strong>, concentrated in low risk values.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig-proportional"></span>
+<img src="MSc_poster_final_files/figure-html/fig-proportional-1.png" alt="Absolute treatment benefit increases with baseline risk across estimates in the GUSTO trial." width="100%" />
+<p class="caption">
+Figure 4: Absolute treatment benefit increases with baseline risk across estimates in the GUSTO trial.
+</p>
+</div>
+<div id="section-1" class="section level4">
+<h4></h4>
+</div>
+</div>
+</div>
+<div id="next-steps" class="section level1">
+<h1>Next Steps</h1>
+<p>We will conduct further analyses on the International Stroke Trial (IST) <a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a> and the National Lung screening Trial (NLST) <a href="#fn6" class="footnote-ref" id="fnref6"><sup>6</sup></a>, to evaluate the applicability of PATH across domains. We also plan to implement a machine-learning approach using causal forests for patient risk prediction. We will use the <code>grf</code> package for this.</p>
+<div id="wrbwhxsjgj" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#wrbwhxsjgj table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#wrbwhxsjgj thead, #wrbwhxsjgj tbody, #wrbwhxsjgj tfoot, #wrbwhxsjgj tr, #wrbwhxsjgj td, #wrbwhxsjgj th {
+  border-style: none;
+}
+
+#wrbwhxsjgj p {
+  margin: 0;
+  padding: 0;
+}
+
+#wrbwhxsjgj .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 3px;
+  border-top-color: #84003D;
+  border-right-style: none;
+  border-right-width: 3px;
+  border-right-color: #84003D;
+  border-bottom-style: solid;
+  border-bottom-width: 3px;
+  border-bottom-color: #84003D;
+  border-left-style: none;
+  border-left-width: 3px;
+  border-left-color: #84003D;
+}
+
+#wrbwhxsjgj .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#wrbwhxsjgj .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#wrbwhxsjgj .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#wrbwhxsjgj .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#wrbwhxsjgj .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wrbwhxsjgj .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #84003D;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#wrbwhxsjgj .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 10px;
+  padding-bottom: 11px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#wrbwhxsjgj .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#wrbwhxsjgj .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#wrbwhxsjgj .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#wrbwhxsjgj .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #84003D;
+  vertical-align: bottom;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#wrbwhxsjgj .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#wrbwhxsjgj .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#wrbwhxsjgj .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#wrbwhxsjgj .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#wrbwhxsjgj .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#wrbwhxsjgj .gt_row {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #84003D;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #84003D;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #84003D;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#wrbwhxsjgj .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wrbwhxsjgj .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#wrbwhxsjgj .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#wrbwhxsjgj .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#wrbwhxsjgj .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wrbwhxsjgj .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#wrbwhxsjgj .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#wrbwhxsjgj .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wrbwhxsjgj .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wrbwhxsjgj .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#wrbwhxsjgj .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wrbwhxsjgj .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#wrbwhxsjgj .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wrbwhxsjgj .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#wrbwhxsjgj .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wrbwhxsjgj .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#wrbwhxsjgj .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wrbwhxsjgj .gt_left {
+  text-align: left;
+}
+
+#wrbwhxsjgj .gt_center {
+  text-align: center;
+}
+
+#wrbwhxsjgj .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#wrbwhxsjgj .gt_font_normal {
+  font-weight: normal;
+}
+
+#wrbwhxsjgj .gt_font_bold {
+  font-weight: bold;
+}
+
+#wrbwhxsjgj .gt_font_italic {
+  font-style: italic;
+}
+
+#wrbwhxsjgj .gt_super {
+  font-size: 65%;
+}
+
+#wrbwhxsjgj .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#wrbwhxsjgj .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#wrbwhxsjgj .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#wrbwhxsjgj .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#wrbwhxsjgj .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#wrbwhxsjgj .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#wrbwhxsjgj .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#wrbwhxsjgj .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#wrbwhxsjgj div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    <tr class="gt_heading">
+      <td colspan="3" class="gt_heading gt_title gt_font_normal gt_bottom_border" style="color: #84003D; font-size: 28px; font-weight: bold;">Overview of IST and NLST trials</td>
+    </tr>
+    
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="border-right-width: 2px; border-right-style: solid; border-right-color: #84003d; color: #000000; font-size: 22px; font-weight: bold;" scope="col" id="Characteristic">Characteristic</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="border-right-width: 2px; border-right-style: solid; border-right-color: #84003d; color: #000000; font-size: 22px; font-weight: bold;" scope="col" id="IST">IST</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="color: #000000; font-size: 22px; font-weight: bold;" scope="col" id="NLST">NLST</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="Characteristic" class="gt_row gt_left" style="border-right-width: 2px; border-right-style: solid; border-right-color: #84003d; color: #000000; font-size: 22px;">Patients (n)</td>
+<td headers="IST" class="gt_row gt_left" style="border-right-width: 2px; border-right-style: solid; border-right-color: #84003d; color: #000000; font-size: 22px;">19,435</td>
+<td headers="NLST" class="gt_row gt_left" style="color: #000000; font-size: 22px;">53,254</td></tr>
+    <tr><td headers="Characteristic" class="gt_row gt_left" style="border-right-width: 2px; border-right-style: solid; border-right-color: #84003d; color: #000000; font-size: 22px;">Treatments</td>
+<td headers="IST" class="gt_row gt_left" style="border-right-width: 2px; border-right-style: solid; border-right-color: #84003d; color: #000000; font-size: 22px;">Factorial (± Heparin ± Aspirin)</td>
+<td headers="NLST" class="gt_row gt_left" style="color: #000000; font-size: 22px;">CT screening vs. chest radiography</td></tr>
+    <tr><td headers="Characteristic" class="gt_row gt_left" style="border-right-width: 2px; border-right-style: solid; border-right-color: #84003d; color: #000000; font-size: 22px;">Years ran</td>
+<td headers="IST" class="gt_row gt_left" style="border-right-width: 2px; border-right-style: solid; border-right-color: #84003d; color: #000000; font-size: 22px;">1991–1996</td>
+<td headers="NLST" class="gt_row gt_left" style="color: #000000; font-size: 22px;">2002-2009</td></tr>
+    <tr><td headers="Characteristic" class="gt_row gt_left" style="border-right-width: 2px; border-right-style: solid; border-right-color: #84003d; color: #000000; font-size: 22px;">Design</td>
+<td headers="IST" class="gt_row gt_left" style="border-right-width: 2px; border-right-style: solid; border-right-color: #84003d; color: #000000; font-size: 22px;">Open-Label</td>
+<td headers="NLST" class="gt_row gt_left" style="color: #000000; font-size: 22px;">Randomized controlled trial</td></tr>
+    <tr><td headers="Characteristic" class="gt_row gt_left" style="border-right-width: 2px; border-right-style: solid; border-right-color: #84003d; color: #000000; font-size: 22px;">Follow-up</td>
+<td headers="IST" class="gt_row gt_left" style="border-right-width: 2px; border-right-style: solid; border-right-color: #84003d; color: #000000; font-size: 22px;">14 days (early outcomes); 6 months (main)</td>
+<td headers="NLST" class="gt_row gt_left" style="color: #000000; font-size: 22px;">Median 6.5 years</td></tr>
+    <tr><td headers="Characteristic" class="gt_row gt_left" style="border-right-width: 2px; border-right-style: solid; border-right-color: #84003d; color: #000000; font-size: 22px;">Location</td>
+<td headers="IST" class="gt_row gt_left" style="border-right-width: 2px; border-right-style: solid; border-right-color: #84003d; color: #000000; font-size: 22px;">International - 36 Countries</td>
+<td headers="NLST" class="gt_row gt_left" style="color: #000000; font-size: 22px;">USA - 33 centres</td></tr>
+    <tr><td headers="Characteristic" class="gt_row gt_left" style="border-right-width: 2px; border-right-style: solid; border-right-color: #84003d; color: #000000; font-size: 22px;">Primary outcome</td>
+<td headers="IST" class="gt_row gt_left" style="border-right-width: 2px; border-right-style: solid; border-right-color: #84003d; color: #000000; font-size: 22px;">14-day and 6 month mortality</td>
+<td headers="NLST" class="gt_row gt_left" style="color: #000000; font-size: 22px;">Lung-cancer mortality</td></tr>
+  </tbody>
+  
+</table>
+</div>
+</div>
+<div id="github" class="section level1">
+<h1>GitHub</h1>
+<p>The code and datasets for this project can be viewed at our GitHub repository here: <a href="https://github.com/tomdelany04/PATH-Master/" class="uri">https://github.com/tomdelany04/PATH-Master/</a></p>
+</div>
+<div id="references" class="section level1">
+<h1>References</h1>
+</div>
+<div class="footnotes footnotes-end-of-document">
+<hr />
+<ol>
+<li id="fn1"><p>Kent et al. 2020, doi: 10.7326/M18-3668<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>Willke et al. 2012, doi: 10.1186/1471-2288-12-185<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+<li id="fn3"><p>The GUSTO investigators, 1993, doi: 10.1056/NEJM199309023291001<a href="#fnref3" class="footnote-back">↩︎</a></p></li>
+<li id="fn4"><p>The Digitalis Investigation Group, Feb. 1997, doi: 10.1056/NEJM199702203360801<a href="#fnref4" class="footnote-back">↩︎</a></p></li>
+<li id="fn5"><p>Sandercock et al., 2011, doi: 10.1186/1745-6215-12-101<a href="#fnref5" class="footnote-back">↩︎</a></p></li>
+<li id="fn6"><p>The National Lung Screening Trial Research Team, 2011, doi: 10.1056/NEJMoa1102873<a href="#fnref6" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
+</div>
+</div>
+
+</div>
+
+
+
+</body>
+</html>

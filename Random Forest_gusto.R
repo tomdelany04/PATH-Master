@@ -415,7 +415,7 @@ theme_classic(base_size = 13) +
   label = "Proportional effect",
   color = "darkblue",
   hjust = 0,
-  size = 6
+  size = 4
 ) +
 
   annotate(
@@ -425,7 +425,7 @@ theme_classic(base_size = 13) +
     label = "Restricted cubic spline (3 knots)",
     color = "#a80050",
     hjust = 0,
-    size = 6
+    size = 4
   )
 
 gusto_plot_rf
@@ -535,7 +535,7 @@ res_rf <- rma(
 
 png(
   "gusto_rf_report_forest.png",
-  width = 1800,
+  width = 2200,
   height = 1200,
   res = 220
 )
@@ -545,6 +545,7 @@ par(mar = c(4, 4, 1, 2))
 forest(
   res_rf,
   addfit = FALSE,
+  header = FALSE,
   xlim = c(-8, 2.25),
   at = log(c(0.5, 1)),
   alim = c(log(0.2), log(2)),
@@ -572,7 +573,7 @@ text(-8, 6, "Age", pos = 4, font = 2)
 text(-8, 3, "MI location", pos = 4, font = 2)
 
 text(
-  c(-5, -4, -3, -2, 3),
+  c(-5, -4, -3, -2, 1.5),
   17,
   c("tPA", "Events", "SK", "Events", "OR [95% CI]"),
   font = 2

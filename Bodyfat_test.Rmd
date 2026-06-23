@@ -1,0 +1,202 @@
+---
+title: "Bodyfat -test"
+author: "Tom Delany"
+date: "2026-02-09"
+output: html_document
+---
+
+Get libs
+```{r}
+
+library(glmnet)   # ridge & lasso
+library(pls)      # PCR & PLS
+library(tidyverse)
+library(ggcorrplot)
+library(leaps)
+library(gt)
+
+```
+
+Read in data and see where to split
+```{r}
+bodyfat<- read.csv("bodyfat.csv")
+summary(bodyfat)
+names(bodyfat)
+dim(bodyfat)
+```
+```{r}
+set.seed(1)
+
+train <- sample(
+  c(TRUE, FALSE),
+  nrow(bodyfat),
+  replace = TRUE,
+  prob = c(0.7, 0.3)
+)
+
+train_data <- bodyfat[train, ]
+test_data <- bodyfat[!train, ]
+
+dim(train_data)
+dim(test_data)
+```
+
+
+Both subsets have 14 predictor variables, with 175 vs 75 rows.
+
+OLS 
+
+
+```{r}
+lm_fit <- lm(BodyFat ~ ., data = train_data)
+
+lm_pred <- predict(lm_fit, newdata = test_data)
+
+lm_mse <- mean((lm_pred - test_data$BodyFat)^2)
+lm_mse
+```
+**Ridge and Lasso**
+Matrices for matrix-based numerical optimization problems (lasso and ridge)
+```{r}
+x <-model.matrix(BodyFat ~ ., bodyfat)[,-1]
+y <- bodyfat$BodyFat
+
+y.test <- y[test]
+```
+
+
+```{r}
+ridge.mod <-glmnet(x[train, ], y[train], alpha = 0,
+  lambda = grid)
+plot(ridge.mod)
+
+
+```
+
+```{r}
+set.seed(1)
+ cv.out <-cv.glmnet(x[train, ], y[train], alpha = 0)
+ plot(cv.out)
+ bestlams <- cv.out$lambda.min
+ ridge.pred <-predict(ridge.mod, s = bestlam,
+   newx = x[test, ])
+ 
+ bestlams
+ 
+ MSE <- mean((ridge.pred-y.test )^2)
+ MSE
+```
+
+
+
+The optimal lambda will be 0.70. we will use this in our predictions for the Ridge Regression method. The MSE was equal to 19.65.
+
+
+
+
+
+LASSO
+
+```{r}
+lasso.mod <-glmnet(x[train, ], y[train], alpha = 1,
+  lambda = grid)
+plot(lasso.mod)
+```
+
+
+```{r}
+set.seed(1)
+ cv.out <-cv.glmnet(x[train, ], y[train], alpha = 1)
+ plot(cv.out)
+ bestlam <- cv.out$lambda.min
+ lasso.pred <-predict(lasso.mod, s = bestlam,
+   newx = x[test, ])
+ 
+ 
+ 
+ MSE <- mean((lasso.pred-y.test )^2)
+ MSE
+```
+In lasso we achieve an MSE of 19.85 as our best MSE with lambda = ~120.
+
+
+PCR and PLS
+
+
+
+```{r}
+pcr_fit <- pcr(
+  BodyFat ~ .,
+  data = bodyfat, subset = train,
+  scale = TRUE,
+  validation = "CV",
+  segments = 10
+)
+
+
+validationplot(pcr_fit, val.type = "MSEP")
+summary(pcr_fit)
+```
+
+
+```{r}
+set.seed(1)
+rmsep_vals <- RMSEP(pcr_fit)$val[1, , -1]
+best_M_pcr <- which.min(rmsep_vals)
+best_M_pcr
+
+pcr_pred <- predict(pcr_fit, newdata = test_data, ncomp = best_M_pcr)
+pcr_mse <- mean((pcr_pred - test_data$BodyFat)^2)
+pcr_mse
+
+```
+Best fit for PCR is with 13 components with an MSE of 21.30
+
+
+PLS fitting
+
+
+```{r}
+set.seed(1)
+pls_fit <- plsr(
+  BodyFat ~ .,
+  data = bodyfat, subset = train,
+  scale = TRUE,
+  validation = "CV",
+  segments = 10
+)
+
+
+validationplot(pls_fit, val.type = "MSEP")
+summary(pls_fit)
+
+rmsep_vals <- RMSEP(pls_fit)$val[1, , -1]
+best_M_pls <- which.min(rmsep_vals)
+best_M_pls
+
+pls_pred <- predict(pls_fit, newdata = test_data, ncomp = best_M_pls)
+pls_mse <- mean((pls_pred - test_data$BodyFat)^2)
+pls_mse
+
+
+```
+Best fit for PLS is with 12 components with an MSE of 21.286.
+
+
+
+From our 5 methods The tests MSEs were as follows 
+```{r}
+trial_summary <- data.frame(
+`Method` = c("OLS", "Ridge", "Lasso", "PCR", "PLS"),
+`Score` = c("21.3", "19.65", "19.85", "21.3", "21.29"))
+
+
+
+trial_summary %>% gt()
+
+
+```
+
+
+As we can see the minimal MSE was achieved with the Lasso and ridge methods. If I were to interpret the results at hand I would say that the best method = Lasso and ridge, the two shrinkage methods. Ridge and lasso achieve the lowest test MSE, suggesting that prediction of bodyfat benefits more from coefficient shrinkage than from hard variable selection. This indicates that most predictors contribute some information to the response. Ridge itself does perform slightly better than lasso, which may be an indication that there are many predictor variables within the model that are weakly correlated to our outcome variable of BodyFat. In any case, we have improved the bias/variance trade off of our initial OLS model, which could have been overfitting to the data at hand (Low bias high variance) and utilised a slightly more biased model which optimises the MSE in our test data.
+

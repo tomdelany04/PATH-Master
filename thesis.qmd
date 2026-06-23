@@ -13,7 +13,7 @@ format:
     transition: slide
     transition-speed: slow
     footer: "[GitHub](https://github.com/tomdelany04/PATH-Master)"
-    logo: "images/University_Of_Galway_Logo.png"
+    logo: "University_Of_Galway_Logo.png"
     slide-number: true
     theme: simple
     width: 1280
@@ -27,8 +27,6 @@ resources:
   - mean.png
   - people.png
   - age-range.png
-  - FDA_logo.png
-  - EMA_Logo.png
   - IST-1.PNG
   - Digitalis2-1.jpg
   - Gusto.svg
@@ -54,46 +52,51 @@ editor: visual
 -   Simulation Evidence
 -   Implications and Future Directions
 
-::: info-box
+::: {.info-box}
 <ul>
 
-<li>This slidedeck was built in <img src="images/clipboard-3280506532.png" alt="RStudio logo" style="height:1.2em; vertical-align:middle;"> using <img src="images/quarto.png" alt="Quarto logo" style="height:1.2em; vertical-align:middle;"></li>
-<li>Our GitHub repository is linked in the footer <img src="images/GitHub_Invertocat_Black.png" alt="GitHub logo" style="height:1.2em; vertical-align:middle;"></li>
+<li>This slidedeck was built in ![](clipboard-3280506532.png){height="1.2em"} using ![](quarto.png){height="1.2em"}</li>
+
+<li>Our GitHub repository is linked in the footer ![](GitHub_Invertocat_Black.png){height="1.2em"}</li>
+
 </ul>
 :::
 
-## Treatment Effect Heterogeneity{.concept-slide}
+## Treatment Effect Heterogeneity {.concept-slide}
 
-Responses to a given treatment can vary considerably across individuals within a trial 
+Responses to a given treatment can vary considerably across individuals within a trial
 
-::: {.columns .concept-grid}
-::: {.column width="33%"}
+::::::::: {.columns .concept-grid}
+:::: {.column width="33%"}
 ::: {.concept-card .fragment}
-<img src="mean.png" class="concept-image" alt="Average effect icon">
+![](mean.png){.concept-image}
+
 <h3>Average Effect</h3>
-<p>
-Randomised trials usually report one overall treatment estimate
-for the full study population.
-</p>
-:::
-:::
 
-::: {.column width="33%"}
+<p>Randomised trials usually report one overall treatment estimate for the full study population.</p>
+:::
+::::
+
+:::: {.column width="33%"}
 ::: {.concept-card .fragment}
-<img src="people.png" class="concept-image" alt="Demographic differences icon">
+![](people.png){.concept-image}
+
 <h3>Patient Differences</h3>
+
 <p>Demographics, disease severity, and baseline prognosis can all change the magnitude of treatment benefit.</p>
 :::
-:::
+::::
 
-::: {.column width="33%"}
+:::: {.column width="33%"}
 ::: {.concept-card .fragment}
-<img src="age-range.png" class="concept-image" alt="Subgroup analysis icon">
+![](age-range.png){.concept-image}
+
 <h3>Subgroup Limitations</h3>
+
 <p>Traditional one-variable subgroup analyses are often underpowered and can miss multivariable response patterns.</p>
 :::
-:::
-:::
+::::
+:::::::::
 
 ::: {.info-box .fragment}
 Which patients benefit most, least, or even differently from the same treatment?
@@ -103,32 +106,47 @@ Which patients benefit most, least, or even differently from the same treatment?
 
 The PATH statement provides guidance for analysing and reporting predictive approaches to treatment effect heterogeneity.
 
-::: {.columns .path-grid}
-::: {.column width="50%"}
-::: {.path-card .fragment}
-<div class="path-badge">1</div>
+::::::::: {.columns .path-grid}
+::::: {.column width="50%"}
+:::: {.path-card .fragment}
+::: path-badge
+1
+:::
+
 <h3>What PATH Is</h3>
+
 <p>PATH is a reporting framework for <strong>predictive HTE analyses</strong> in randomised trials.</p>
+
 <ul>
+
 <li>It focuses on how treatment benefit varies across <strong>baseline patient profiles</strong>.</li>
+
 <li>Its aim to provide patient-centered estimates of outcome risks with versus without the intervention.</li>
+
 </ul>
-:::
+::::
+:::::
+
+::::: {.column width="50%"}
+:::: {.path-card .fragment}
+::: path-badge
+2
 :::
 
-::: {.column width="50%"}
-::: {.path-card .fragment}
-<div class="path-badge">2</div>
 <h3>Improvement</h3>
-<ul>
-<li>PATH analyses allow for multivariate modelling of risk on the individual level</li>
-<li>It is better aligned with clinical decisions, where patients differ across several risk factors simultaneously.</li>
-<li>Mitigates certain limitations of subgroup analyses (Type I error, low power).</li>
-</ul>
-:::
-:::
-:::
 
+<ul>
+
+<li>PATH analyses allow for multivariate modelling of risk on the individual level</li>
+
+<li>It is better aligned with clinical decisions, where patients differ across several risk factors simultaneously.</li>
+
+<li>Mitigates certain limitations of subgroup analyses (Type I error, low power).</li>
+
+</ul>
+::::
+:::::
+:::::::::
 
 ## Our Studies and Datasets
 
@@ -209,70 +227,75 @@ trial_summary %>%
   )
 ```
 
-::: {.info-box}
+::: info-box
 <strong>Why these studies?</strong> Large N, Availability, Contrasting Outcomes
 :::
 
 ## Overall outcome of studies {.outcomes-slide}
 
-::: {.columns .outcomes-grid}
-::: {.column width="50%"}
+::::::: {.columns .outcomes-grid}
+:::: {.column width="50%"}
 ::: {.outcome-card .fragment}
-<img src="IST-1.PNG" class="outcome-image" alt="IST trial logo">
-<p><strong>Beneficial overall effect:</strong> aspirin  significantly reduced death or non-fatal recurrent stroke <strong>(OR 0.95)</strong>.</p>
-:::
-:::
+![](IST-1.PNG){.outcome-image}
 
-::: {.column width="50%"}
+<p><strong>Beneficial overall effect:</strong> aspirin significantly reduced death or non-fatal recurrent stroke <strong>(OR 0.95)</strong>.</p>
+:::
+::::
+
+:::: {.column width="50%"}
 ::: {.outcome-card .fragment}
-<img src="Digitalis2-1.jpg" class="outcome-image" alt="DIG trial logo">
+![](Digitalis2-1.jpg){.outcome-image}
+
 <p><strong>No clear overall difference:</strong> all-cause mortality was similar for digoxin versus placebo <strong>(RR 0.99)</strong>.</p>
 :::
-:::
-:::
+::::
+:::::::
 
-::: {.columns .outcomes-grid}
-::: {.column width="50%"}
+::::::: {.columns .outcomes-grid}
+:::: {.column width="50%"}
 ::: {.outcome-card .fragment}
-<strong>GUSTO-1</strong> 
+<strong>GUSTO-1</strong>
+
 <p><strong>Beneficial overall effect:</strong> 30-day mortality was significantly lower with accelerated tPA than with streptokinase <strong>(OR 0.85)</strong>.</p>
 :::
-:::
+::::
 
-::: {.column width="50%"}
+:::: {.column width="50%"}
 ::: {.outcome-card .fragment}
-<img src="VITAL.jpg" class="outcome-image" alt="VITAL trial logo">
+![](VITAL.jpg){.outcome-image}
+
 <p><strong>No clear overall difference:</strong> vitamin D/Omega-3 supplementation did not significantly lower cancer compared with placebo <strong>(HR 0.96/0.92).</strong></p>
 :::
-:::
-:::
+::::
+:::::::
 
 ::: {.info-box .fragment style="margin-top:0.38rem; padding:0.42rem 0.72rem; font-size:0.62em; line-height:1.06;"}
 <strong>PATH recommendation:</strong> Risk-modeling approaches should generally be applied in presence of an overall treatment effect, and interpreted more cautiously when there is not.
 :::
 
-
-
 ## Path Workflow {.workflow-slide}
 
-::: {.columns}
-::: {.column width="74%"}
-::: {.workflow-card}
+::::::: columns
+:::: {.column width="74%"}
+::: workflow-card
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width='100%'}
 knitr::include_graphics("PATH.png")
 ```
 :::
-:::
+::::
 
-::: {.column width="26%"}
-::: {.workflow-side-card}
-<img src="path (1).png" class="workflow-icon" alt="Path icon">
+:::: {.column width="26%"}
+::: workflow-side-card
+![](path (1).png){.workflow-icon}
+
 <p><strong>Stage 1:</strong> Prepare Datasets for Analysis.</p>
+
 <p><strong>Stage 2:</strong> Model Baseline risk using appropriate method.</p>
+
 <p><strong>Stage 3:</strong> Visualise Treatment Heterogeneity on Relative and Absolute Scales.</p>
 :::
-:::
-:::
+::::
+:::::::
 
 ## Logistic Regression Specification
 
@@ -295,7 +318,6 @@ $$
 <strong>GUSTO-I:</strong> model adjustment was informed from [Steyeberg et al., 2000](https://www.sciencedirect.com/science/article/pii/S0002870300900012).
 
 ::: {style="margin-top: 0.8rem; padding: 0.8rem 1rem; border: 1px solid #84003d; border-radius: 10px; background: #ADD8E6; font-size: 0.8em;"}
-
 $$
 \text{sysbp}_{\text{maxed},i} = \min(\text{sysbp}_i, 120)
 $$
@@ -340,7 +362,6 @@ rf_fit_IST <- ranger(
 **VITAL:** Model adjustment was informed by [Caldeira et al., 2022](https://pubmed.ncbi.nlm.nih.gov/36482183/).
 
 ::: {style="margin-top: 1rem; padding: 1.2rem 1rem; border: 1px solid #84003d; border-radius: 10px; background: #ADD8E6; font-size: 0.95em; text-align: center;"}
-
 $$
 h(t \mid X_i)
 =
@@ -357,34 +378,49 @@ h_0(t)\exp\Big(
 $$
 :::
 
-
 ## Relative vs Absolute Benefit {.path-slide}
 
-::: {.columns .path-grid}
-::: {.column width="50%"}
-::: {.path-card}
-<div class="path-badge">R</div>
-<h3>Relative Effects</h3>
-<p>Relative effects describe how treatment changes outcomes proportionally, typically through odds ratios or hazard ratios.</p>
-<ul>
-<li>In PATH, they help assess whether treatment benefit is broadly consistent across baseline risk strata.</li>
-<li>In this presentation and in the report, we show these using PATH-aligned forest plots.</li>
-</ul>
-:::
+::::::::: {.columns .path-grid}
+::::: {.column width="50%"}
+:::: path-card
+::: path-badge
+R
 :::
 
-::: {.column width="50%"}
-::: {.path-card}
-<div class="path-badge">A</div>
-<h3>Absolute Effects</h3>
-<p>Absolute effects describe the change in event probability itself, so they are often more directly interpretable for patients and practice.</p>
+<h3>Relative Effects</h3>
+
+<p>Relative effects describe how treatment changes outcomes proportionally, typically through odds ratios or hazard ratios.</p>
+
 <ul>
-<li>In PATH, they show how treatment benefit may increase or decrease across baseline risk even when relative effects look stable.</li>
-<li>We present these as absolute treatment-benefit plots here and in the final report.</li>
+
+<li>In PATH, they help assess whether treatment benefit is broadly consistent across baseline risk strata.</li>
+
+<li>In this presentation and in the report, we show these using PATH-aligned forest plots.</li>
+
 </ul>
+::::
+:::::
+
+::::: {.column width="50%"}
+:::: path-card
+::: path-badge
+A
 :::
-:::
-:::
+
+<h3>Absolute Effects</h3>
+
+<p>Absolute effects describe the change in event probability itself, so they are often more directly interpretable for patients and practice.</p>
+
+<ul>
+
+<li>In PATH, they show how treatment benefit may increase or decrease across baseline risk even when relative effects look stable.</li>
+
+<li>We present these as absolute treatment-benefit plots here and in the final report.</li>
+
+</ul>
+::::
+:::::
+:::::::::
 
 ## Relative Effect Illustration {.forest-slide}
 
@@ -395,47 +431,53 @@ knitr::include_graphics("gusto_pres_forest.png")
 ```
 :::
 
-::: {.info-box}
+::: info-box
 <ul>
+
 <li>Risk-based quartiles suggest a broadly similar relative effect, but lower-risk groups have wider confidence intervals.</li>
+
 </ul>
 :::
 
 ## Relative Effect Results {.results-panel-slide}
 
-::: {.columns .results-panel-grid}
-::: {.column width="50%"}
-::: {.results-panel-card}
+::::::: {.columns .results-panel-grid}
+:::: {.column width="50%"}
+::: results-panel-card
 <h3>DIG</h3>
-<img src="DIG_presn_forest.png" alt="DIG relative effect forest plot" style="width:100%; height:auto;">
-:::
-:::
 
-::: {.column width="50%"}
-::: {.results-panel-card}
+![](DIG_presn_forest.png){width="100%"}
+:::
+::::
+
+:::: {.column width="50%"}
+::: results-panel-card
 <h3>IST-1</h3>
-<img src="IST_pres_forest.png" alt="IST-1 relative effect forest plot" style="width:100%; height:auto;">
+
+![](IST_pres_forest.png){width="100%"}
 :::
-:::
-:::
+::::
+:::::::
 
 ## VITAL Relative Effect Results {.results-panel-slide}
 
-::: {.columns .results-panel-grid}
-::: {.column width="50%"}
-::: {.results-panel-card}
+::::::: {.columns .results-panel-grid}
+:::: {.column width="50%"}
+::: results-panel-card
 <h3>VITAL: Omega-3</h3>
-<img src="VITAL_presn_forest_omega.png" alt="VITAL omega-3 relative effect forest plot" style="width:100%; height:auto;">
-:::
-:::
 
-::: {.column width="50%"}
-::: {.results-panel-card}
+![](VITAL_presn_forest_omega.png){width="100%"}
+:::
+::::
+
+:::: {.column width="50%"}
+::: results-panel-card
 <h3>VITAL: Vitamin D</h3>
-<img src="VITAL_presn_forest_vitd.png" alt="VITAL vitamin D relative effect forest plot" style="width:100%; height:auto;">
+
+![](VITAL_presn_forest_vitd.png){width="100%"}
 :::
-:::
-:::
+::::
+:::::::
 
 ## Absolute treatment effect {.absolute-slide}
 
@@ -448,70 +490,85 @@ Gusto_plot
 
 ::: {.info-box style="padding:0.35rem 0.6rem;"}
 <ul>
+
 <li>In the GUSTO trial, absolute treatment benefit increases as baseline risk increases, with larger gains concentrated in higher-risk patients.</li>
+
 <li>Random forest stratification produced similar quartiles across all studies</li>
+
 </ul>
 :::
 
 ## Absolute Benefit Results {.results-panel-slide .absolute-results-panel-slide}
 
-::: {.columns .results-panel-grid}
-::: {.column width="50%"}
-::: {.results-panel-card}
+::::::: {.columns .results-panel-grid}
+:::: {.column width="50%"}
+::: results-panel-card
 <h3>IST</h3>
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width='100%', fig.width=9.6, fig.height=6.4}
 aspirin_plot <- readRDS("aspirin_plot.rds")
 aspirin_plot
 ```
 :::
-:::
+::::
 
-::: {.column width="50%"}
-::: {.results-panel-card}
+:::: {.column width="50%"}
+::: results-panel-card
 <h3>DIG</h3>
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width='100%', fig.width=9.6, fig.height=6.4}
 dig_benefit_plot <- readRDS("dig_benefit_baseline_risk_plot.rds")
 dig_benefit_plot
 ```
 :::
-:::
-:::
+::::
+:::::::
 
 ## VITAL Absolute Benefit Results {.results-panel-slide .absolute-results-panel-slide}
 
-::: {.columns .results-panel-grid}
-::: {.column width="50%"}
-::: {.results-panel-card}
+::::::: {.columns .results-panel-grid}
+:::: {.column width="50%"}
+::: results-panel-card
 <h3>VITAL: Omega-3</h3>
-<img src="VITAL_plot_omg.png" alt="VITAL omega-3 absolute benefit plot" style="width:100%; height:auto;">
-:::
-:::
 
-::: {.column width="50%"}
-::: {.results-panel-card}
+![](VITAL_plot_omg.png){width="100%"}
+:::
+::::
+
+:::: {.column width="50%"}
+::: results-panel-card
 <h3>VITAL: Vitamin D</h3>
-<img src="VITAL_plot_Vit.png" alt="VITAL vitamin D absolute benefit plot" style="width:100%; height:auto;">
+
+![](VITAL_plot_Vit.png){width="100%"}
 :::
-:::
-:::
+::::
+:::::::
 
 ## Simulation Study Design [Morris et al. 2019](https://pmc.ncbi.nlm.nih.gov/articles/PMC6492164/) {.ademp-slide}
 
 ADEMP is a structured way to summarise a simulation study through its <strong>Aim</strong>, <strong>Data-generating mechanism</strong>, <strong>Estimand</strong>, <strong>Methods</strong>, and <strong>Performance measure</strong>.
 
-::: {.columns .ademp-grid}
-::: {.column width="34%"}
-::: {.ademp-card .fragment}
-<div class="ademp-badge">A</div>
-<h3>Aim</h3>
-<p>Evaluate whether risk-based interaction testing falsely detects treatment effect heterogeneity under the null</p>
-:::
+:::::::::::: {.columns .ademp-grid}
+::::: {.column width="34%"}
+:::: {.ademp-card .fragment}
+::: ademp-badge
+A
 :::
 
-::: {.column width="42%"}
-::: {.ademp-card .fragment}
-<div class="ademp-badge">D</div>
+<h3>Aim</h3>
+
+<p>Evaluate whether risk-based interaction testing falsely detects treatment effect heterogeneity under the null</p>
+::::
+:::::
+
+::::: {.column width="42%"}
+:::: {.ademp-card .fragment}
+::: ademp-badge
+D
+:::
+
 <h3>Data-Generating Mechanism</h3>
+
 <p>Binary outcomes were generated from:</p>
 
 $$
@@ -521,64 +578,85 @@ $$
 $$
 X_j \sim N(0,1), \qquad Z_i \sim \text{Bernoulli}(0.5)
 $$
-:::
+::::
+:::::
+
+::::: {.column width="24%"}
+:::: {.ademp-card .fragment}
+::: ademp-badge
+E
 :::
 
-::: {.column width="24%"}
-::: {.ademp-card .fragment}
-<div class="ademp-badge">E</div>
 <h3>Estimand</h3>
+
 <p>The ground truth under the null was:</p>
 
 $$
 H_0:\beta_{Z \times lp}=0
 $$
-:::
-:::
-:::
+::::
+:::::
+::::::::::::
 
 ::: {.ademp-card .fragment .ademp-wide-card}
 <h3>Simulation Conditions</h3>
+
 <ul>
-<li>Sample sizes varied across <strong>n =  50, 75, 100, 150, 200, 300, 500, 750,1000, 2000, 5000</strong>.</li>
+
+<li>Sample sizes varied across <strong>n = 50, 75, 100, 150, 200, 300, 500, 750,1000, 2000, 5000</strong>.</li>
+
 <li>The number of prognostic covariates varied from <strong>p = 1</strong> to <strong>p = 10</strong>.</li>
+
 <li>Each dataset was split <strong>50:50</strong> into training and test sets.</li>
+
 </ul>
 :::
 
 ## ADEMP: Methods and Performance {.ademp-slide}
 
-::: {.columns .ademp-grid}
-::: {.column width="45%"}
-::: {.ademp-card .fragment}
-<div class="ademp-badge">M</div>
+::::::::: {.columns .ademp-grid}
+::::: {.column width="45%"}
+:::: {.ademp-card .fragment}
+::: ademp-badge
+M
+:::
+
 <h3>Methods</h3>
+
 <p>Risk modelling and likelihood ratio interaction testing compared:</p>
 
 $$
 Y_{\text{null}} \sim Z + lp
 $$
 
-<p class="ademp-versus">versus</p>
+<p class="ademp-versus">
+
+versus
+
+</p>
 
 $$
 Y_{\text{null}} \sim Z + lp + Z:lp
 $$
-:::
+::::
+:::::
+
+::::: {.column width="55%"}
+:::: {.ademp-card .fragment}
+::: ademp-badge
+P
 :::
 
-::: {.column width="55%"}
-::: {.ademp-card .fragment}
-<div class="ademp-badge">P</div>
 <h3>Performance Measure</h3>
-<p>Empirical rejection rate at <strong>&alpha; = 0.05</strong>.</p>
+
+<p>Empirical rejection rate at <strong>α = 0.05</strong>.</p>
+
 ```{r}
 knitr::include_graphics("Heatmap_MC.png")
 ```
-:::
-:::
-:::
-
+::::
+:::::
+:::::::::
 
 ## Ongoing Work
 
@@ -594,58 +672,72 @@ $$
 
 ## Implications and Conclusion {.conclusion-slide}
 
-::: {.columns .conclusion-grid}
-::: {.column width="33%"}
+::::::::: {.columns .conclusion-grid}
+:::: {.column width="33%"}
 ::: {.conclusion-card .fragment}
 <h3>Dataset Requirements</h3>
-<ul>
-<li>PATH is most feasible in large, well-characterised datasets where baseline risk and subgroup differences can be estimated reliably.</li>
-<li>Trials of this size being conducted and available to analyse is a potential barrier.</li>
-</ul>
-::: 
-:::
 
-::: {.column width="33%"}
+<ul>
+
+<li>PATH is most feasible in large, well-characterised datasets where baseline risk and subgroup differences can be estimated reliably.</li>
+
+<li>Trials of this size being conducted and available to analyse is a potential barrier.</li>
+
+</ul>
+:::
+::::
+
+:::: {.column width="33%"}
 ::: {.conclusion-card .fragment}
 <h3>Treatment Effect</h3>
+
 <ul>
-<li>The usefulness of PATH also depends on the trial's overall treatment effect.</li> 
+
+<li>The usefulness of PATH also depends on the trial's overall treatment effect.</li>
+
 <li>When weak/ not evident, detection of HTE may remain difficult even in strong datasets.</li>
+
 </ul>
 :::
-:::
+::::
 
-::: {.column width="33%"}
+:::: {.column width="33%"}
 ::: {.conclusion-card .fragment}
 <h3>Implementation</h3>
+
 <ul>
+
 <li>Implementation may depend on future reporting expectations from major regulators.</li>
+
 <li>There is currently no routine regulatory requirement for PATH analyses.</li>
+
 </ul>
 :::
-:::
-:::
+::::
+:::::::::
 
-::: {.fragment}
-- Thank you for listening.
-:::
+<ul class="fragment">
+
+<li>Thank you for listening.</li>
+
+</ul>
 
 ## References {.references-slide}
 
-::: {.columns .references-grid}
+::::: {.columns .references-grid}
 ::: {.column width="50%"}
-- Kent DM, van Klaveren D, Paulus JK, et al. The Predictive Approaches to Treatment Effect Heterogeneity (PATH) Statement: Explanation and Elaboration. *Ann Intern Med.* 2020;172(1):W1-W25.
-- Morris TP, White IR, Crowther MJ. Using simulation studies to evaluate statistical methods. *Stat Med.* 2019;38(11):2074-2102.
-- International Stroke Trial Collaborative Group. The International Stroke Trial (IST): a randomised trial of aspirin, subcutaneous heparin, both, or neither among 19,435 patients with acute ischaemic stroke. *Lancet.* 1997.
-- The Digitalis Investigation Group. The effect of digoxin on mortality and morbidity in patients with heart failure. *N Engl J Med.* 1997;336:525-533.
-- The GUSTO Investigators. An international randomized trial comparing four thrombolytic strategies for acute myocardial infarction. *N Engl J Med.* 1993;329:673-682.
-::: 
+-   Kent DM, van Klaveren D, Paulus JK, et al. The Predictive Approaches to Treatment Effect Heterogeneity (PATH) Statement: Explanation and Elaboration. *Ann Intern Med.* 2020;172(1):W1-W25.
+-   Morris TP, White IR, Crowther MJ. Using simulation studies to evaluate statistical methods. *Stat Med.* 2019;38(11):2074-2102.
+-   International Stroke Trial Collaborative Group. The International Stroke Trial (IST): a randomised trial of aspirin, subcutaneous heparin, both, or neither among 19,435 patients with acute ischaemic stroke. *Lancet.* 1997.
+-   The Digitalis Investigation Group. The effect of digoxin on mortality and morbidity in patients with heart failure. *N Engl J Med.* 1997;336:525-533.
+-   The GUSTO Investigators. An international randomized trial comparing four thrombolytic strategies for acute myocardial infarction. *N Engl J Med.* 1993;329:673-682.
+:::
 
 ::: {.column width="50%"}
-- Manson JE, Cook NR, Lee IM, et al. Marine n-3 fatty acids and prevention of cardiovascular disease and cancer. *N Engl J Med.* 2019;380:23-32.
-- Caldeira D, Costa J, Fernandes RM, et al. Analysis of the VITAL cohort. *Eur J Clin Nutr.* 2022.
-- Thompson DDO, et al. Adjustment model specification for 14-day mortality in the International Stroke Trial. 2015. 
-- Steyerberg EW, et al. Adjustment model specification in the GUSTO-I trial. 2000.
-- Hwangbo H, et al. Ensemble-learning approaches for treatment heterogeneity analysis in the IST trial. *Sci Rep.* 2022;12.
+-   Manson JE, Cook NR, Lee IM, et al. Marine n-3 fatty acids and prevention of cardiovascular disease and cancer. *N Engl J Med.* 2019;380:23-32.
+-   Caldeira D, Costa J, Fernandes RM, et al. Analysis of the VITAL cohort. *Eur J Clin Nutr.* 2022.
+-   Thompson DDO, et al. Adjustment model specification for 14-day mortality in the International Stroke Trial. 2015.
+-   Steyerberg EW, et al. Adjustment model specification in the GUSTO-I trial. 2000.
+-   Hwangbo H, et al. Ensemble-learning approaches for treatment heterogeneity analysis in the IST trial. *Sci Rep.* 2022;12.
 :::
-:::
+:::::
