@@ -29,8 +29,8 @@ keywords:
   - Heterogeneity of Treatment Effect
   - Randomized Controlled Trial
 bibliography:
-  - PATH_intro_references.bib
-  - PATH - Thesis/MSc -Thesis.bib
+  - ../Report/PATH_intro_references.bib
+  - MSc -Thesis.bib
 biblio-style: unsrt
 output: rticles::arxiv_article
 header-includes:
@@ -48,7 +48,7 @@ In mid-20th century, the US Air Force faced a life threatening challenge. Blame 
 "The tendency to think in terms of the 'average man' is a pitfall into which many persons blunder when they attempt to apply human body size data to design problems." [@zotero-item-39]
 
 ```{r measures, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', out.width='80%', fig.cap='Measures of original cohort of 4063 men for "Approximate Average". The original measurements were intended to provide a combined generalisation of the overall population. Daniels, 1952'}
-knitr::include_graphics("measures.png")
+knitr::include_graphics("../Measures.PNG")
 ```
 
 This historical encounter reflects similar challenge in the modern evidence-based medicine[@kent_personalized_2018]. In medical research, randomized controlled trial (RCT) is used to decide if a treatment is effective or not for a particular medical intervention. National and International guidelines for clinical decision making developed based on this gold standard [@kent_predictive_2020]. However, the average treatment effect resulted that comes from RCT findings fail to answer the practicing clinician question regarding the most likely outcome of an intervention for a particular patient that appears to a clinical service setting. The primary reason for this is that real patient in clinical setting usually differs from the average patient in a trial [@willke_concepts_2012; @kent_personalized_2018].
@@ -186,7 +186,7 @@ The absolute-benefit plots were designed to show both the estimated treatment be
 
 
 ```{r path-workflow, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', out.width='80%', fig.cap='Overview of the empirical PATH workflow used across the trial analyses.'}
-knitr::include_graphics("PATH.png")
+knitr::include_graphics("../PATH.png")
 ```
 
 Binary Logistic Regression and Random Forest models were employed for baseline risk stratification in the GUSTO-I and IST-I trials, with model specification determined by previously published analyses of the trials. For the DIG binary outcome analysis, baseline risk stratification was illustrated using multivariable logistic regression only.
@@ -239,21 +239,21 @@ A random forest model was developed using the principal baseline prognostic vari
 
 PATH compatible forest plots, similar to those used for displaying the results of conventional subgroup analyses [@cuzickForestPlotsInterpretation2005], were constructed using the `metafor` package to present the relative effects of the GUSTO-I trial across risk quartiles (Figures \ref{fig:gusto-relative-effects-logistic} and \ref{fig:gusto-relative-effects-rf}). Additionally, these forest plots allow for direct comparison of relative effects (ORs) within strata of traditional subgroups, namely Sex, Age and the location of any Myocardial Infarctions. These prognostic variables were selected for their interpretability for a general audience, as well as being prognostic of 30 day-mortality in the GUSTO-I trial [@califf_selection_1997]. The corresponding absolute-benefit plots are presented in Figures \ref{fig:gusto-absolute-effects-logistic} and \ref{fig:gusto-absolute-effects-rf}.
 
-```{r gusto-relative-effects-logistic, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', out.width='95%', fig.cap='PATH-compatible forest plot showing the relative treatment effect of tissue plasminogen activator compared with streptokinase across baseline-risk quartiles and conventional one-variable-at-a-time subgroups in GUSTO-I, with quartiles derived from the multivariable logistic regression model.'}
-knitr::include_graphics("gusto_report_forest.png")
+```{r gusto-relative-effects-logistic, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', out.width='95%', fig.cap='PATH-compatible forest plot, constructed using the `metafor` package, showing the relative treatment effect of tissue plasminogen activator compared with streptokinase across baseline-risk quartiles and conventional one-variable-at-a-time subgroups in GUSTO-I, with quartiles derived from the multivariable logistic regression model.'}
+knitr::include_graphics("../gusto_report_forest.png")
 ```
 
-```{r gusto-relative-effects-rf, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', out.width='95%', fig.cap='PATH-compatible forest plot showing the relative treatment effect of tissue plasminogen activator compared with streptokinase across baseline-risk quartiles and conventional one-variable-at-a-time subgroups in GUSTO-I, with quartiles derived from the random forest model.'}
-knitr::include_graphics("gusto_rf_report_forest.png")
+```{r gusto-relative-effects-rf, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', out.width='95%', fig.cap='PATH-compatible forest plot, constructed using the `metafor` package, showing the relative treatment effect of tissue plasminogen activator compared with streptokinase across baseline-risk quartiles and conventional one-variable-at-a-time subgroups in GUSTO-I, with quartiles derived from the random forest model.'}
+knitr::include_graphics("../gusto_rf_report_forest.png")
 ```
 
-```{r gusto-absolute-effects-logistic, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', fig.width=7, fig.height=4.2, out.width='88%', fig.cap='Absolute benefit of tissue plasminogen activator compared with streptokinase across predicted baseline risk in GUSTO-I, using the multivariable logistic regression baseline-risk model.'}
+```{r gusto-absolute-effects-logistic, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', fig.width=7, fig.height=4.2, out.width='88%', fig.cap='Absolute benefit of tissue plasminogen activator compared with streptokinase across predicted baseline risk in GUSTO-I, using the multivariable logistic regression baseline-risk model. The plot was produced in `ggplot2` and includes a patient-density overlay along the risk axis.'}
 library(ggplot2)
-print(readRDS("gusto_plot.rds"))
+print(readRDS("../gusto_plot.rds"))
 ```
 
-```{r gusto-absolute-effects-rf, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', fig.width=7, fig.height=4.2, out.width='88%', fig.cap='Absolute benefit of tissue plasminogen activator compared with streptokinase across predicted baseline risk in GUSTO-I, using the random forest baseline-risk model.'}
-print(readRDS("gusto_plot_rf.rds"))
+```{r gusto-absolute-effects-rf, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', fig.width=7, fig.height=4.2, out.width='88%', fig.cap='Absolute benefit of tissue plasminogen activator compared with streptokinase across predicted baseline risk in GUSTO-I, using the random forest baseline-risk model. The plot was produced in `ggplot2` and includes a patient-density overlay along the risk axis.'}
+print(readRDS("../gusto_plot_rf.rds"))
 ```
 
 In the GUSTO-I analyses, the PATH-compatible forest plots indicate that the relative treatment effect of tissue plasminogen activator (tPA), compared with streptokinase, is broadly maintained across baseline-risk strata. This supports the interpretation that there is limited heterogeneity on the relative scale, consistent with the PATH framework and with the absence of strong evidence for treatment interaction in relation to baseline risk. However, when the results are viewed on the absolute scale, heterogeneity becomes more apparent, with patients in the upper tail of predicted baseline risk deriving greater absolute benefit from tPA than those at the lower end of the distribution.
@@ -298,21 +298,21 @@ A random forest model was also fitted to estimate baseline mortality risk. Consi
 # )
 ```
 
-```{r ist-relative-effects-logistic, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', out.width='95%', fig.cap='PATH-compatible forest plot showing the relative treatment effect of aspirin compared with control across baseline-risk quartiles and conventional one-variable-at-a-time subgroups in IST-I, with quartiles derived from the logistic regression baseline-risk model.'}
-knitr::include_graphics("IST_forest_report.png")
+```{r ist-relative-effects-logistic, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', out.width='95%', fig.cap='PATH-compatible forest plot, constructed using the `metafor` package, showing the relative treatment effect of aspirin compared with control across baseline-risk quartiles and conventional one-variable-at-a-time subgroups in IST-I, with quartiles derived from the logistic regression baseline-risk model.'}
+knitr::include_graphics("../IST_forest_report.png")
 ```
 
-```{r ist-relative-effects-rf, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', out.width='95%', fig.cap='PATH-compatible forest plot showing the relative treatment effect of aspirin compared with control across baseline-risk quartiles and conventional one-variable-at-a-time subgroups in IST-I, with quartiles derived from the random forest baseline-risk model.'}
-knitr::include_graphics("IST_rf_forest_report.png")
+```{r ist-relative-effects-rf, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', out.width='95%', fig.cap='PATH-compatible forest plot, constructed using the `metafor` package, showing the relative treatment effect of aspirin compared with control across baseline-risk quartiles and conventional one-variable-at-a-time subgroups in IST-I, with quartiles derived from the random forest baseline-risk model.'}
+knitr::include_graphics("../IST_rf_forest_report.png")
 ```
 
-```{r ist-absolute-effects-logistic, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', fig.width=7, fig.height=4.2, out.width='88%', fig.cap='Absolute benefit of aspirin across predicted baseline risk in IST-I, using the logistic regression baseline-risk model.'}
+```{r ist-absolute-effects-logistic, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', fig.width=7, fig.height=4.2, out.width='88%', fig.cap='Absolute benefit of aspirin across predicted baseline risk in IST-I, using the logistic regression baseline-risk model. The plot was produced in `ggplot2` and includes a patient-density overlay along the risk axis.'}
 library(ggplot2)
-print(readRDS("aspirin_plot.rds"))
+print(readRDS("../aspirin_plot.rds"))
 ```
 
-```{r ist-absolute-effects-rf, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', fig.width=7, fig.height=4.2, out.width='88%', fig.cap='Absolute benefit of aspirin across predicted baseline risk in IST-I, using the random forest baseline-risk model.'}
-print(readRDS("aspirin_plot_rf.rds"))
+```{r ist-absolute-effects-rf, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', fig.width=7, fig.height=4.2, out.width='88%', fig.cap='Absolute benefit of aspirin across predicted baseline risk in IST-I, using the random forest baseline-risk model. The plot was produced in `ggplot2` and includes a patient-density overlay along the risk axis.'}
+print(readRDS("../aspirin_plot_rf.rds"))
 ```
 
 In the IST-I analyses, the PATH-compatible forest plots suggest that the relative treatment effect of aspirin remains broadly consistent across both baseline-risk quartiles and traditional one-variable-at-a-time subgroups. The overall odds ratio is close to the null, and the quartile-specific estimates from both the logistic regression and random forest baseline-risk models show no clear or consistent departure from this trial average. Similarly, the estimates across consciousness, age, and atrial fibrillation subgroups remain largely compatible with a common relative effect, with confidence intervals overlapping and generally crossing 1. This supports the interpretation that there is limited evidence of heterogeneity on the relative scale.
@@ -340,13 +340,13 @@ For the DIG trial, baseline risk stratification was performed using logistic reg
 \end{aligned}
 \label{eq:dig-logistic}
 \end{equation}
-```{r dig-relative-effect, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', out.width='95%', fig.cap='PATH-compatible forest plot showing the relative treatment effect of digoxin compared with placebo across baseline-risk quartiles and conventional one-variable-at-a-time subgroups in the DIG trial.'}
-knitr::include_graphics("DIG_report_forest.png")
+```{r dig-relative-effect, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', out.width='95%', fig.cap='PATH-compatible forest plot, constructed using the `metafor` package, showing the relative treatment effect of digoxin compared with placebo across baseline-risk quartiles and conventional one-variable-at-a-time subgroups in the DIG trial.'}
+knitr::include_graphics("../DIG_report_forest.png")
 ```
 
-```{r dig-absolute-effect, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', fig.width=7, fig.height=4.2, out.width='88%', fig.cap='Absolute benefit of digoxin across predicted baseline mortality risk in the DIG trial.'}
+```{r dig-absolute-effect, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', fig.width=7, fig.height=4.2, out.width='88%', fig.cap='Absolute benefit of digoxin across predicted baseline mortality risk in the DIG trial. The plot was produced in `ggplot2` and includes a patient-density overlay along the risk axis.'}
 library(ggplot2)
-print(readRDS("dig_benefit_baseline_risk_plot.rds"))
+print(readRDS("../dig_benefit_baseline_risk_plot.rds"))
 ```
 
 In the DIG analysis, there is little evidence of heterogeneity in either the relative or absolute treatment effect of digoxin compared with placebo. The PATH-compatible forest plot in Figure \ref{fig:dig-relative-effect} shows an overall trial estimate close to the null, with an odds ratio of 0.98, and the risk-based quartiles do not show a consistent departure from this overall effect. The quartile-specific estimates fluctuate around the line of no effect, with confidence intervals crossing 1 throughout, suggesting no clear evidence that the relative effect of digoxin differs across the distribution of predicted baseline mortality risk.
@@ -406,20 +406,20 @@ where \(S_0(t)=\exp\{-H_0(t)\}\) is the baseline survival function. Accordingly,
 
 
 
-```{r vital-relative-effects-omega, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', out.width='95%', fig.cap='PATH-compatible forest plot showing absolute risk differences for omega-3 supplementation across baseline-risk quartiles and conventional subgroups in VITAL.'}
-knitr::include_graphics("VITAL_report_forest_omega.png")
+```{r vital-relative-effects-omega, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', out.width='95%', fig.cap='PATH-compatible forest plot showing absolute risk differences for omega-3 supplementation across baseline-risk quartiles and conventional subgroups in VITAL, formatted in a PATH-compatible manner.'}
+knitr::include_graphics("../VITAL_presn_forest_omega.png")
 ```
 
-```{r vital-relative-effects-vitd, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', out.width='95%', fig.cap='PATH-compatible forest plot showing absolute risk differences for vitamin D supplementation across baseline-risk quartiles and conventional subgroups in VITAL.'}
-knitr::include_graphics("VITAL_report_forest_vitd.png")
+```{r vital-relative-effects-vitd, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', out.width='95%', fig.cap='PATH-compatible forest plot showing absolute risk differences for vitamin D supplementation across baseline-risk quartiles and conventional subgroups in VITAL, formatted in a PATH-compatible manner.'}
+knitr::include_graphics("../VITAL_presn_forest_vitd.png")
 ```
 
-```{r vital-absolute-effects-omega, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', out.width='88%', fig.cap='Absolute benefit of omega-3 supplementation across predicted 5-year baseline risk of cardiovascular death in VITAL.'}
-knitr::include_graphics("VITAL_plot_omg.png")
+```{r vital-absolute-effects-omega, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', out.width='88%', fig.cap='Absolute benefit of omega-3 supplementation across predicted 5-year baseline risk of cardiovascular death in VITAL. The plot was rendered using base R graphics for the time-to-event analysis.'}
+knitr::include_graphics("../VITAL_plot_omg.png")
 ```
 
-```{r vital-absolute-effects-vitd, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', out.width='88%', fig.cap='Absolute benefit of vitamin D supplementation across predicted 5-year baseline risk of cardiovascular death in VITAL.'}
-knitr::include_graphics("VITAL_plot_Vit.png")
+```{r vital-absolute-effects-vitd, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', out.width='88%', fig.cap='Absolute benefit of vitamin D supplementation across predicted 5-year baseline risk of cardiovascular death in VITAL. The plot was rendered using base R graphics for the time-to-event analysis.'}
+knitr::include_graphics("../VITAL_plot_Vit.png")
 ```
 
 The VITAL analysis required a different modelling approach from the binary outcome trials because the endpoint was time to cardiovascular death at 5 years, rather than a fixed-date, binary outcome. Baseline risk was therefore estimated using the Cox proportional hazards model in Equation \ref{eq:vital-cox}, with covariates selected from the adjusted VITAL cohort analysis by Caldeira and colleagues [@caldeiraFishIntakeRisk2023]. The trial itself also had a more challenging structure than the others, using a 2-by-2 factorial design to evaluate vitamin D supplementation and marine omega-3 fatty acid supplementation within the same study population. For the PATH analysis, this meant that absolute risk differences were estimated separately for each intervention, while still employing the same PATH workflow.
@@ -435,8 +435,8 @@ The absolute-benefit plots in Figures \ref{fig:vital-absolute-effects-omega} and
 
 The Monte Carlo simulation study was designed using the ADEMP structure described by Morris and colleagues in 2019 where simulation studies are specified according to their Aim, Data-generating mechanism, Estimand, Methods and Performance measure [@https://doi.org/10.1002/sim.8086]. The aim was to assess whether a risk-based interaction test would falsely detect treatment-effect heterogeneity when no true interaction was present. This was used as a null simulation to evaluate the Type I error behaviour of the likelihood ratio test used in the PATH analyses.
 
-```{r mc-flow, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', out.width='100%', fig.cap='Workflow of the Monte Carlo simulation study used to assess how variation in model dimension and sample size influences empirical Type I error in the null treatment-by-risk interaction setting.'}
-knitr::include_graphics("MC_FLOW.png")
+```{r mc-flow, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', out.width='100%', fig.cap='Workflow of the Monte Carlo simulation study used to assess how variation in model dimension and sample size influences empirical Type I error in the null treatment-by-risk interaction setting. This schematic summarises the simulation design and analysis pipeline.'}
+knitr::include_graphics("../MC_FLOW.png")
 ```
 
 For each simulated dataset, \(p\) independent prognostic covariates were generated from standard normal distributions, such that \(X_{ij} \sim N(0,1)\) for \(j = 1, \ldots, p\), and treatment assignment was generated independently with equal probability of allocation to treatment or control. In the data-generating model, each prognostic covariate contributed equally to the outcome through a coefficient of 0.5. Binary outcomes were then generated from the logistic model in Equation \ref{eq:simulation-outcome}, with a constant treatment effect and no treatment-by-covariate interaction:
@@ -464,8 +464,8 @@ H_1:\ \text{logit}\{P(Y_i = 1)\} = \beta_0 + \beta_1 Z_i + \beta_2 lp_i + \beta_
 
 The estimand was the null treatment-by-risk interaction, \(H_0:\beta_{Z \times lp}=0\). A likelihood ratio test was used to compare the main-effects model in Equation \ref{eq:simulation-main} with the interaction model in Equation \ref{eq:simulation-interaction}, and the performance measure was the empirical Type I error rate, defined as the proportion of Monte Carlo repetitions with \(p < 0.05\). For each simulation condition, 1000 Monte Carlo repetitions were performed. The simulation results were summarised as a Type I error surface across sample size and number of prognostic parameters (Figure \ref{fig:mc-type1-surface}).
 
-```{r mc-type1-surface, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', out.width='92%', fig.cap='Empirical Type I error surface for the likelihood ratio test of a treatment-by-risk interaction across simulated sample sizes and numbers of prognostic covariates.'}
-knitr::include_graphics("Heatmap_MC.png")
+```{r mc-type1-surface, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.pos='!htbp', out.width='92%', fig.cap='Empirical Type I error surface for the likelihood ratio test of a treatment-by-risk interaction across simulated sample sizes and numbers of prognostic covariates. The heatmap was produced in `ggplot2`.'}
+knitr::include_graphics("../Heatmap_MC.png")
 ```
 
 Each point on the type I error surface represents the 1000 observations of empirical type I error rate at that particular combination of parameter and sample size values. The surface around each of these points was interpolated using geom_contour_filled argument in `ggplot2`. This linearly interpolates across the adjacent observations to give approximate levels of type I error rates across the entire surface. Type I error rates are notably higher in the lower portion of the graph, representing sample size values below n = 300. Within this region the empirical type one error rate lies in the [0.09-0.12] range, and begins to stabilize towards 0.05 once sample sizes are sufficiently large.

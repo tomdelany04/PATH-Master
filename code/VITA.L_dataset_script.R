@@ -736,8 +736,8 @@ vitd.counts <- bind_rows(
 
 
 # Plot limits
-x.left  <- -8
-x.right <-  3.2
+x.left  <- -9
+x.right <-  3.6
 
 par(mar = c(4, 4, 2, 2))
 
@@ -918,7 +918,7 @@ forest(
 
 # Top headers
 text(x.left, 15.5, "Categories", pos = 4, font = 2, cex = 1.0)
-text(0, 15.5, "VITAL Trial: Fish oil(Omega-3)", font = 2, cex = 1.0)
+text(0, 15.5, "VITAL Trial: (Omega-3)", font = 2, cex = 1.0)
 text(x.right, 15.5, "ARD [95% CI]", pos = 2, font = 2, cex = 1.0)
 text(
   c(-5.8, -4.8, -3.5, -2.5),
