@@ -6,7 +6,7 @@ This repository is for our research project MSc in health data science at the Un
 Folder 1: [Report](Report/) : Thesis write-ups.
 Folder 2: [Poster](Poster/): poster presentation at the middle of the work processes.
 Folder 3: [Presentation](Presentation/): Final presentation.
-Folder 4: [code](code/): R analysis for all four datasets.
+Folder 4: [code_v2](code_v2/): R analysis for all four datasets and simulation. Updated from original folder (code).
 
 
 # Project Overview 
